@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+    <listener>
+        <description>Hibernate "Open Session In View" Session Lifecycle</description>
+        <listener-class>
+            org.zkoss.zkplus.hibernate.OpenSessionInViewListener
+        </listener-class>
+    </listener>
+    <listener>
+        <description>Hibernate thread session context handler</description>
+        <listener-class>
+            org.zkoss.zkplus.spring.SpringTransactionSynchronizationListener
+        </listener-class>
+    </listener>
+    <zscript-config>
+        <language-name>GroovyGrails</language-name>
+        <interpreter-class>
+            org.zkoss.zkgrails.scripting.GroovyGrailsInterpreter
+        </interpreter-class>
+    </zscript-config>
+</zk>
