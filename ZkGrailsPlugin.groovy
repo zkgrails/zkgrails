@@ -32,6 +32,28 @@ support to Grails applications.
     }
 
     def doWithWebDescriptor = { xml ->
+        def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
+
+        // adding GrailsOpenSessionInView
+        def filterElements = xml.'filter'[0]
+        filterElements + {
+            'filter' {
+                'filter-name' ("GOSIVFilter")
+                'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+            }
+        }
+
+        // filter for each ZK urls
+        def filterMappingElements = xml.'filter-mapping'[0]
+        ["*.zul", "/zkau/*"].each {p ->
+            filterMappingElements + {
+                'filter-mapping' {
+                    'filter-name'("GOSIVFilter")
+                    'url-pattern'("${p}")
+                }
+            }
+        }
+
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name' == 'sitemesh'}
         pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter')
@@ -59,7 +81,6 @@ support to Grails applications.
             }
         }
 
-        def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
         urls.each {p ->
             mappingElements + {
                 'servlet-mapping' {

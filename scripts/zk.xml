@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk>
-    <listener>
+    <!-- listener>
         <description>Hibernate "Open Session In View" Session Lifecycle</description>
         <listener-class>
             org.zkoss.zkgrails.ZKGrailsOpenSessionInViewListener
         </listener-class>
-    </listener>
+    </listener -->
     <listener>
         <description>Hibernate thread session context handler</description>
         <listener-class>

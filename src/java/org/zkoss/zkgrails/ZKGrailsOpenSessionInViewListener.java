@@ -34,6 +34,13 @@ import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.codehaus.groovy.grails.commons.ApplicationAttributes;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.zkoss.zkplus.spring.SpringUtil;
 
 import org.hibernate.StaleObjectStateException;
@@ -67,9 +74,9 @@ public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, Executi
         return null;
     }
 
-    private SessionFactory sessionFactory;
+    private static SessionFactory sessionFactory = null;
 
-    private Session getSession(SessionFactory sessionFactory) throws DataAccessResourceFailureException {
+    private Session getSession() throws DataAccessResourceFailureException {
         Session session = SessionFactoryUtils.getSession(sessionFactory, true);
         session.setFlushMode(FlushMode.AUTO);
         return session;
@@ -77,10 +84,12 @@ public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, Executi
 
 	//-- ExecutionInit --//
 	public void init(Execution exec, Execution parent) {
-	    sessionFactory = lookupSessionFactory();
+	    if(sessionFactory == null) {
+	        sessionFactory = lookupSessionFactory();
+        }
 		if (parent == null) { //the root execution of a servlet request
 			log.debug("Starting a database transaction: "+exec);
-			getSession(sessionFactory).beginTransaction();
+			getSession().beginTransaction();
 		}
 	}
 
@@ -89,9 +98,11 @@ public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, Executi
 		if (parent == null) { //the root execution of a servlet request
 			try {
 				if (errs == null || errs.isEmpty()) {
-					// Commit and cleanup
-					log.debug("Committing the database transaction: "+exec);
-					getSession(sessionFactory).getTransaction().commit();
+				    //if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
+    					// Commit and cleanup
+    					log.debug("Committing the database transaction: "+exec);
+    					sessionFactory.getCurrentSession().getTransaction().commit();
+				    //}
 				} else {
 					final Throwable ex = (Throwable) errs.get(0);
 					if (ex instanceof StaleObjectStateException) {
@@ -105,7 +116,7 @@ public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, Executi
 					}
 				}
 			} finally {
-                Session session = getSession(sessionFactory);
+                Session session = sessionFactory.getCurrentSession();
                 if(!FlushMode.MANUAL.equals(session.getFlushMode())) {
                     session.flush();
                 }
@@ -159,10 +170,11 @@ public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, Executi
 	 * @param ex the StaleObjectStateException being thrown (and not handled) during the execution
 	 */
 	private void rollback(Execution exec, Throwable ex) {
+	    // sessionFactory = lookupSessionFactory();
 		try {
-			if (getSession(sessionFactory).getTransaction().isActive()) {
+			if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
 				log.debug("Trying to rollback database transaction after exception:"+ex);
-				getSession(sessionFactory).getTransaction().rollback();
+				sessionFactory.getCurrentSession().getTransaction().rollback();
 			}
 		} catch (Throwable rbEx) {
 			log.error("Could not rollback transaction after exception! Original Exception:\n"+ex, rbEx);
