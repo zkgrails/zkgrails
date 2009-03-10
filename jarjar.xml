@@ -6,18 +6,9 @@
             
         <!-- TODO get zk distribution directly -->        
             
-        <jarjar jarfile="lib/zk-all.jar">
+        <jarjar jarfile="lib/zk.jar">
             <zipfileset src="org-lib/commons-fileupload.jar"/>
-            <zipfileset src="org-lib/zcommon.jar"/>
-            <zipfileset src="org-lib/zcommons-el.jar"/>
-            <zipfileset src="org-lib/zhtml.jar"/>
             <zipfileset src="org-lib/zk.jar"/>
-            <zipfileset src="org-lib/zkex.jar"/>
-            <zipfileset src="org-lib/zkmax.jar"/>
-            <zipfileset src="org-lib/zkplus.jar"/>
-            <zipfileset src="org-lib/zml.jar"/>
-            <zipfileset src="org-lib/zul.jar"/>
-            <zipfileset src="org-lib/zweb.jar"/>
             <rule pattern="org.apache.commons.fileupload.**" result="zkjarjar.apache.commons.fileupload.@1"/>
         </jarjar>
     </target>

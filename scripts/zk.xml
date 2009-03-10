@@ -3,7 +3,7 @@
     <listener>
         <description>Hibernate "Open Session In View" Session Lifecycle</description>
         <listener-class>
-            org.zkoss.zkplus.hibernate.OpenSessionInViewListener
+            org.zkoss.zkgrails.ZKGrailsOpenSessionInViewListener
         </listener-class>
     </listener>
     <listener>
