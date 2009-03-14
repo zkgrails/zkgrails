@@ -1,8 +1,10 @@
 import org.zkoss.zkplus.spring.SpringUtil;
+import java.lang.reflect.Method;
+import org.springframework.context.ApplicationContext;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
     
-    publoc GrailsComposer() {
+    public GrailsComposer() {
         super('_');
         resolveSpringBeans();
     }
