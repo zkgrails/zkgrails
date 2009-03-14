@@ -1,14 +1,14 @@
-import org.codehaus.groovy.runtime.InvokerHelper
-import java.util.Collections
+
+import java.util.concurrent.ConcurrentHashMap;
 
 class ZkBuilder {
 
     // TODO need synch?
-    private static ZKNODES = Collections.synchronizedMap([:])
+    private static ZKNODES = new ConcurrentHashMap();
 
     def parent
     def idComponents = [:]
-  
+
     boolean resolveTag(String pack, String tag) {
         try {
             def name = tag[0].toUpperCase() + tag[1..-1];
@@ -19,7 +19,7 @@ class ZkBuilder {
             return false;
         }
     }
-  
+
     boolean getTag(String tag) {
         if(ZKNODES.containsKey(tag)) return true
 
@@ -31,10 +31,10 @@ class ZkBuilder {
             if(resolveTag("org.zkoss.zul", tag)) return true
             if(resolveTag("org.zkoss.zhtml", tag)) return true
             if(resolveTag("org.zkoss.zkex.zul", tag)) return true
-            if(resolveTag("org.zkoss.zkmax.zul", tag)) return true            
+            if(resolveTag("org.zkoss.zkmax.zul", tag)) return true
         }
-        
-        return false      
+
+        return false
     }
 
   def methodMissing(String name, args) {
