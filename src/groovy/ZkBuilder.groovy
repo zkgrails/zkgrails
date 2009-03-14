@@ -1,9 +1,10 @@
 import org.codehaus.groovy.runtime.InvokerHelper
+import java.util.Collections
 
 class ZkBuilder {
 
     // TODO need synch?
-    private static ZKNODES = [:]
+    private static ZKNODES = Collections.synchronizedMap([:])
 
     def parent
     def idComponents = [:]
