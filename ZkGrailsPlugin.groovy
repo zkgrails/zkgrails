@@ -1,8 +1,10 @@
+import org.zkoss.zk.ui.AbstractComponent
+
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "0.6.1-SNAPSHOT"
+    def version = "0.6.1"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "1.1-RC2 > *"
+    def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
     // resources that are excluded from plugin packaging
@@ -105,7 +107,10 @@ support to Grails applications.
     }
 
     def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
+        AbstractComponent.metaClass.append = { closure ->
+            closure.resolveStrategy = Closure.DELEGATE_FIRST
+            closure.call()
+        }
     }
 
     def onChange = { event ->
