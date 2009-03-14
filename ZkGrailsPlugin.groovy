@@ -1,5 +1,3 @@
-import org.zkoss.zk.ui.AbstractComponent
-
 class ZkGrailsPlugin {
     // the plugin version
     def version = "0.7"
@@ -106,8 +104,9 @@ support to Grails applications.
         }
     }
 
-    def doWithDynamicMethods = { ctx ->
-        AbstractComponent.metaClass.append = { closure ->
+    def doWithDynamicMethods = { ctx ->        
+        org.zkoss.zk.ui.AbstractComponent.metaClass.append = { closure ->
+            closure.delegate = new ZkBuilder(parent: delegate)
             closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure.call()
         }
