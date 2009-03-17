@@ -10,11 +10,15 @@
 
 <window apply="${@artifact.name@Composer}">
 
+    <vbox>
+        <image src="images/grails_logo.jpg"/>
+    </vbox>
+
     <grid id="gdMain">
         <rows>
             <row>
                 Name: <textbox id="txtName" />
-                <button id="btnSearch" label="Search"/>
+                <button id="btnHello" label="Hello"/>
             </row>
         </rows>
     </grid>
