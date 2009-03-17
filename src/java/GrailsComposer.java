@@ -6,9 +6,10 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
     
     public GrailsComposer() {
         super('_');
-        resolveSpringBeans();
+        // resolveSpringBeans();
     }
 
+/*
     private void resolveSpringBeans() {
         ApplicationContext ctx = SpringUtil.getApplicationContext();
         // ctx.getBean()
@@ -19,9 +20,10 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
                 p = Character.toLowerCase(p.charAt(3)) + p.substring(4);                
                 try {
                     if(ctx.containsBean(p)) m.invoke(this, new Object[]{ctx.getBean(p)});
-                } catch (Throwable e) { /* do nothing */ }
+                } catch (Throwable e) {  do nothing  }
             }
         }
     }    
+*/
     
 }
