@@ -1,3 +1,5 @@
+import org.zkoss.zkgrails.*
+
 class ZkGrailsPlugin {
     // the plugin version
     def version = "0.7"
@@ -5,6 +7,14 @@ class ZkGrailsPlugin {
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
+    
+    def loadAfter = ['hibernate']
+    
+    def artefacts = [ org.zkoss.zkgrails.ComposerArtefactHandler ]
+    
+    def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
+							"file:./plugins/*/grails-app/composers/**/*Composer.groovy"]    
+    
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"
@@ -16,7 +26,7 @@ class ZkGrailsPlugin {
     def title = "ZK 3.6.0 for Grails"
     def description = '''\\
 Derived from Flyisland ZK Grails Plugin,
-this plugin add ZK Ajax framework (www.zkoss.org)
+this plugin adds ZK Ajax framework (www.zkoss.org)
 support to Grails applications.
 '''
 
@@ -24,7 +34,14 @@ support to Grails applications.
     def documentation = "http://grails.org/Zk+Plugin"
 
     def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
+		application.composerClasses.each { composerClass ->
+
+            "${composerClass.propertyName}"(composerClass.clazz) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "byName"
+            }
+                
+		}
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -113,9 +130,28 @@ support to Grails applications.
     }
 
     def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
+        if (application.isArtefactOfType(ComposerArtefactHandler.TYPE, event.source)) {
+            def context = event.ctx
+            if (!context) {
+                if (log.isDebugEnabled())
+                    log.debug("Application context not found. Can't reload")
+                return
+            }
+            def composerClass = application.addArtefact(ComposerArtefactHandler.TYPE, event.source)
+            def beanDefinitions = beans {
+                "${composerClass.propertyName}"(composerClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
+            }
+            // now that we have a BeanBuilder calling registerBeans and passing the app ctx will
+            // register the necessary beans with the given app ctx
+            beanDefinitions.registerBeans(event.ctx)
+
+            // Add the dynamic methods back to the class (since it's
+            // effectively a completely new class).
+            // event.manager?.getGrailsPlugin("zk")?.doWithDynamicMethods(event.ctx)
+        }        
     }
 
     def onConfigChange = { event ->
