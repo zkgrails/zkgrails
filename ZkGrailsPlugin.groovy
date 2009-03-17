@@ -127,6 +127,12 @@ support to Grails applications.
             closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure.call()
         }
+        
+        org.zkoss.zul.Listbox.metaClass.clear = { ->
+            while (delegate.itemCount > 0) {
+                delegate.removeItemAt(0)
+            }
+        }
     }
 
     def onChange = { event ->
