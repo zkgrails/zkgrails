@@ -1,9 +1,11 @@
+package org.zkoss.zkgrails
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap
+import org.codehaus.groovy.runtime.InvokerHelper
+import org.zkoss.zk.ui.event.EventListener
 
 class ZkBuilder {
 
-    // TODO need synch?
     private static ZKNODES = new ConcurrentHashMap();
 
     def parent
@@ -96,7 +98,7 @@ class ZkBuilder {
   }
 
   private def createEventListener(zkObject, String name, args) {
-    def listener = args[0]
+    def listener = InvokerHelper.asList(args)[0]
     if(listener instanceof Closure) {
       Closure cls = listener
       ZkBuilder zkBuilder = new ZkBuilder()
