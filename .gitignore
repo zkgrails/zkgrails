@@ -6,4 +6,6 @@ stacktrace.log
 docs/
 grails-app/i18n/
 web-app/
+.svn
+docs
 
