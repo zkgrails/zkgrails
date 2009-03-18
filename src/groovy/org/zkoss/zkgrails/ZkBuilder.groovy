@@ -105,7 +105,7 @@ class ZkBuilder {
             zkBuilder.idComponents = idComponents
             cls.delegate = zkBuilder
         }
-        if (name = ~ /on[A-Z]\w+/) {
+        if (name =~ /on[A-Z]\w+/) {
             zkObject.addEventListener(name, listener as EventListener)
             return true
         }
