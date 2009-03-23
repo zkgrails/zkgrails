@@ -162,6 +162,10 @@ support to Grails applications.
             delegate.getModel().clear()
             delegate.getModel().addAll(list)
         }
+        
+        org.zkoss.zul.AbstractListModel.getAt = { Integer i ->
+            return delegate.getElementAt(i)
+        }
     }
 
     def onChange = { event ->
