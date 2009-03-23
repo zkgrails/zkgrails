@@ -69,6 +69,12 @@ support to Grails applications.
                 'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
             }
         }
+        filterElements + {
+            'filter' {
+                'filter-name' ("requestContextFilter")
+                'filter-class' ("org.springframework.web.filter.RequestContextFilter")
+            }
+        }        
 
         // filter for each ZK urls
         def filterMappingElements = xml.'filter-mapping'[0]
@@ -79,6 +85,12 @@ support to Grails applications.
                     'url-pattern'("${p}")
                 }
             }
+            filterMappingElements + {
+                'filter-mapping' {
+                    'filter-name'("requestContextFilter")
+                    'url-pattern'("${p}")
+                }
+            }            
         }
 
         // quick hack for page filtering
@@ -90,11 +102,6 @@ support to Grails applications.
             'listener' {
                 'display-name' ("ZK Session Cleaner")
                 'listener-class' ("org.zkoss.zk.ui.http.HttpSessionListener")
-            }
-        }
-        listenerElements + {
-            'listener' {
-                'listener-class' ("org.springframework.web.context.request.RequestContextListener")
             }
         }
         
