@@ -69,12 +69,12 @@ support to Grails applications.
                 'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
             }
         }
-        filterElements + {
+        /*filterElements + {
             'filter' {
                 'filter-name' ("requestContextFilter")
                 'filter-class' ("org.springframework.web.filter.RequestContextFilter")
             }
-        }        
+        }*/        
 
         // filter for each ZK urls
         def filterMappingElements = xml.'filter-mapping'[0]
@@ -85,12 +85,14 @@ support to Grails applications.
                     'url-pattern'("${p}")
                 }
             }
+            /*
             filterMappingElements + {
                 'filter-mapping' {
                     'filter-name'("requestContextFilter")
                     'url-pattern'("${p}")
                 }
-            }            
+            } 
+            */           
         }
 
         // quick hack for page filtering
@@ -154,6 +156,11 @@ support to Grails applications.
             while (delegate.itemCount > 0) {
                 delegate.removeItemAt(0)
             }
+        }
+        
+        org.zkoss.zul.Listbox.metaClass.setModel = { java.util.List list ->
+            delegate.getModel().clear()
+            delegate.getModel().addAll(list)
         }
     }
 
