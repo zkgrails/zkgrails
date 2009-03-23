@@ -6,6 +6,9 @@
             org.zkoss.zkgrails.ZKGrailsOpenSessionInViewListener
         </listener-class>
     </listener -->
+    <system-config>
+        <disable-event-thread/>
+    </system-config>    
     <listener>
         <description>Hibernate thread session context handler</description>
         <listener-class>
