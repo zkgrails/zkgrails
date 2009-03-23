@@ -7,14 +7,19 @@ class ZkGrailsPlugin {
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
-    
+
     def loadAfter = ['hibernate']
-    
-    def artefacts = [ org.zkoss.zkgrails.ComposerArtefactHandler ]
-    
+
+    def artefacts = [
+        org.zkoss.zkgrails.ComposerArtefactHandler,
+        org.zkoss.zkgrails.FacadeArtefactHandler
+    ]
+
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
-							"file:./plugins/*/grails-app/composers/**/*Composer.groovy"]    
-    
+							"file:./plugins/*/grails-app/composers/**/*Composer.groovy",
+                            "file:./grails-app/facade/**/*Facade.groovy",		
+							"file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
+
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"
@@ -35,13 +40,18 @@ support to Grails applications.
 
     def doWithSpring = {
 		application.composerClasses.each { composerClass ->
-
             "${composerClass.propertyName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
-                
 		}
+		
+		application.facadeClasses.each { facadeClass ->
+            "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
+                bean.scope = "session"
+                bean.autowire = "byName"
+            }
+		}		
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -121,13 +131,13 @@ support to Grails applications.
         }
     }
 
-    def doWithDynamicMethods = { ctx ->        
+    def doWithDynamicMethods = { ctx ->
         org.zkoss.zk.ui.AbstractComponent.metaClass.append = { closure ->
             closure.delegate = new ZkBuilder(parent: delegate)
             closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure.call()
         }
-        
+
         org.zkoss.zul.Listbox.metaClass.clear = { ->
             while (delegate.itemCount > 0) {
                 delegate.removeItemAt(0)
@@ -157,7 +167,22 @@ support to Grails applications.
             // Add the dynamic methods back to the class (since it's
             // effectively a completely new class).
             // event.manager?.getGrailsPlugin("zk")?.doWithDynamicMethods(event.ctx)
-        }        
+        } else if (application.isArtefactOfType(FacadeArtefactHandler.TYPE, event.source)) {
+            def context = event.ctx
+            if (!context) {
+                if (log.isDebugEnabled())
+                    log.debug("Application context not found. Can't reload")
+                return
+            }
+            def facadeClass = application.addArtefact(FacadeArtefactHandler.TYPE, event.source)
+            def beanDefinitions = beans {
+                "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
+                    bean.scope = "session"
+                    bean.autowire = "byName"
+                }
+            }
+            beanDefinitions.registerBeans(event.ctx)
+        }
     }
 
     def onConfigChange = { event ->
