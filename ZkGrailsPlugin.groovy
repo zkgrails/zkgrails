@@ -92,7 +92,12 @@ support to Grails applications.
                 'listener-class' ("org.zkoss.zk.ui.http.HttpSessionListener")
             }
         }
-
+        listenerElements + {
+            'listener' {
+                'listener-class' ("org.springframework.web.context.request.RequestContextListener")
+            }
+        }
+        
         def servletElements = xml.'servlet'[0]
         def mappingElements = xml.'servlet-mapping'[0]
 
