@@ -6,6 +6,8 @@ class @artifact.name@ extends GrailsComposer {
     def btnHello
     def lstResult
     
+    def @artifact.name.prop@Facade
+    
     def onClick_btnHello() {
         lstResult.clear()
         lstResult.append {
