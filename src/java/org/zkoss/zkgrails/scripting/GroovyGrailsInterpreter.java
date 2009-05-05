@@ -1,23 +1,29 @@
 /* GroovyGrailsInterpreter.java
 
-{{IS_NOTE
-    Purpose:
-
-    Description:
-
-    History:
-        Fri Feb  9 15:47:22     2007, Created by tomyeh
-        June 2008, A lot of improvement, by Chanwit
-}}IS_NOTE
-
 Copyright (C) 2007 Potix Corporation. All Rights Reserved.
-Copyright (C) 2008 Chanwit Kaewkasi
+Copyright (C) 2008, 2009 Chanwit Kaewkasi
 
-{{IS_RIGHT
-    This program is distributed under GPL Version 2.0 in the hope that
-    it will be useful, but WITHOUT ANY WARRANTY.
-}}IS_RIGHT
- */
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+/*
+History:
+  Fri Feb  9 15:47:22     2007, Created by tomyeh
+  June 2008, A lot of improvement, by Chanwit
+*/
+
 package org.zkoss.zkgrails.scripting;
 
 import groovy.lang.Binding;
