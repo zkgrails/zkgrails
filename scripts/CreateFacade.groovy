@@ -43,7 +43,7 @@ target ('default': "Creates a new model facade") {
         domainToFacade = name
         println "Domain class name is not specified as 2nd arg, use 1st arg instead."
     }
-    def domainName = GrailsNameUtils.getClassName(argsMap["params"][1], null)
+    def domainName = GrailsNameUtils.getClassName(domainToFacade, null)
     // println "Domain name : $domainName"
     def filename = GrailsNameUtils.getClassName(name, type)
 
