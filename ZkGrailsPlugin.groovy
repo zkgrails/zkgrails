@@ -163,7 +163,7 @@ support to Grails applications.
             delegate.getModel().addAll(list)
         }
         
-        org.zkoss.zul.AbstractListModel.getAt = { Integer i ->
+        org.zkoss.zul.AbstractListModel.metaClass.getAt = { Integer i ->
             return delegate.getElementAt(i)
         }
     }
