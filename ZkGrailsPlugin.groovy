@@ -1,4 +1,5 @@
 import org.zkoss.zkgrails.*
+import org.zkoss.zk.ui.event.EventListener
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -146,6 +147,14 @@ support to Grails applications.
     }
 
     def doWithDynamicMethods = { ctx ->
+        org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
+            if(name.startsWith("on") && handler instanceof Closure) {
+                delegate.addEventListener(name, handler as EventListener)
+            } else {
+                throw new MissingPropertyException(name, delegate.class)
+            }
+        }        
+        
         org.zkoss.zk.ui.AbstractComponent.metaClass.append = { closure ->
             closure.delegate = new ZkBuilder(parent: delegate)
             closure.resolveStrategy = Closure.DELEGATE_FIRST
