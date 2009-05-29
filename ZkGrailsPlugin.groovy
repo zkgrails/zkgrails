@@ -154,7 +154,7 @@ support to Grails applications.
         }
 
         org.zkoss.zul.Listbox.metaClass.setModel = { java.util.List list ->
-        	if(delegate.getModel()==null) {
+        	if(delegate.getModel()!=null) {
             	delegate.getModel().clear()
             	delegate.getModel().addAll(list)
         	} else {
