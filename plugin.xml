@@ -1,7 +1,7 @@
 <plugin name='zk' version='0.7.2' grailsVersion='1.1 &gt; *'>
   <author>chanwit</author>
   <authorEmail>chanwit@gmail.com</authorEmail>
-  <title>ZK 3.6.0 for Grails</title>
+  <title>ZK for Grails</title>
   <description>\
 Derived from Flyisland ZK Grails Plugin,
 this plugin adds ZK Ajax framework (www.zkoss.org)
