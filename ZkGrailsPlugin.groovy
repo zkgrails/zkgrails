@@ -1,5 +1,6 @@
 import org.zkoss.zkgrails.*
 import org.zkoss.zk.ui.event.EventListener
+import org.zkoss.zkplus.databind.BindingListModelList
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -157,8 +158,8 @@ support to Grails applications.
         	if(delegate.getModel()!=null) {
             	delegate.getModel().clear()
             	delegate.getModel().addAll(list)
-        	} else {
-        		delegate.setModel(list)
+        	} else {        		
+        		delegate.setModel(new BindingListModelList(list, false))
         	}
         }
 
