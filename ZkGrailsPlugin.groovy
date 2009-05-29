@@ -63,6 +63,7 @@ support to Grails applications.
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
 
         // adding GrailsOpenSessionInView
+        // TODO: if(manager?.hasGrailsPlugin("hibernate"))
         def filterElements = xml.'filter'[0]
         filterElements + {
             'filter' {
@@ -70,13 +71,6 @@ support to Grails applications.
                 'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
             }
         }
-        /*filterElements + {
-            'filter' {
-                'filter-name' ("requestContextFilter")
-                'filter-class' ("org.springframework.web.filter.RequestContextFilter")
-            }
-        }*/
-
         // filter for each ZK urls
         def filterMappingElements = xml.'filter-mapping'[0]
         ["*.zul", "/zkau/*"].each {p ->
@@ -86,14 +80,6 @@ support to Grails applications.
                     'url-pattern'("${p}")
                 }
             }
-            /*
-            filterMappingElements + {
-                'filter-mapping' {
-                    'filter-name'("requestContextFilter")
-                    'url-pattern'("${p}")
-                }
-            }
-            */
         }
 
         // quick hack for page filtering
@@ -168,8 +154,12 @@ support to Grails applications.
         }
 
         org.zkoss.zul.Listbox.metaClass.setModel = { java.util.List list ->
-            delegate.getModel().clear()
-            delegate.getModel().addAll(list)
+        	if(delegate.getModel()==null) {
+            	delegate.getModel().clear()
+            	delegate.getModel().addAll(list)
+        	} else {
+        		delegate.setModel(list)
+        	}
         }
 
         org.zkoss.zul.Listbox.metaClass.getModel = { ->
