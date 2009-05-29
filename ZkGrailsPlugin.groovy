@@ -18,7 +18,7 @@ class ZkGrailsPlugin {
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
 							"file:./plugins/*/grails-app/composers/**/*Composer.groovy",
-                            "file:./grails-app/facade/**/*Facade.groovy",		
+                            "file:./grails-app/facade/**/*Facade.groovy",
 							"file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
 
     // resources that are excluded from plugin packaging
@@ -46,13 +46,13 @@ support to Grails applications.
                 bean.autowire = "byName"
             }
 		}
-		
+
 		application.facadeClasses.each { facadeClass ->
             "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                 bean.scope = "session"
                 bean.autowire = "byName"
             }
-		}		
+		}
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -75,7 +75,7 @@ support to Grails applications.
                 'filter-name' ("requestContextFilter")
                 'filter-class' ("org.springframework.web.filter.RequestContextFilter")
             }
-        }*/        
+        }*/
 
         // filter for each ZK urls
         def filterMappingElements = xml.'filter-mapping'[0]
@@ -92,8 +92,8 @@ support to Grails applications.
                     'filter-name'("requestContextFilter")
                     'url-pattern'("${p}")
                 }
-            } 
-            */           
+            }
+            */
         }
 
         // quick hack for page filtering
@@ -107,7 +107,7 @@ support to Grails applications.
                 'listener-class' ("org.zkoss.zk.ui.http.HttpSessionListener")
             }
         }
-        
+
         def servletElements = xml.'servlet'[0]
         def mappingElements = xml.'servlet-mapping'[0]
 
@@ -153,8 +153,8 @@ support to Grails applications.
             } else {
                 throw new MissingPropertyException(name, delegate.class)
             }
-        }        
-        
+        }
+
         org.zkoss.zk.ui.AbstractComponent.metaClass.append = { closure ->
             closure.delegate = new ZkBuilder(parent: delegate)
             closure.resolveStrategy = Closure.DELEGATE_FIRST
@@ -166,16 +166,16 @@ support to Grails applications.
                 delegate.removeItemAt(0)
             }
         }
-        
+
         org.zkoss.zul.Listbox.metaClass.setModel = { java.util.List list ->
             delegate.getModel().clear()
             delegate.getModel().addAll(list)
         }
-        
+
         org.zkoss.zul.Listbox.metaClass.getModel = { ->
             delegate.getModel()
         }
-        
+
         org.zkoss.zul.AbstractListModel.metaClass.getAt = { Integer i ->
             return delegate.getElementAt(i)
         }
