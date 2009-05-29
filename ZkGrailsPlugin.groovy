@@ -3,7 +3,7 @@ import org.zkoss.zk.ui.event.EventListener
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "0.7.2"
+    def version = "0.7.2-AE"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
@@ -29,7 +29,7 @@ class ZkGrailsPlugin {
     // TODO Fill in these fields
     def author = "chanwit"
     def authorEmail = "chanwit@gmail.com"
-    def title = "ZK 3.6.0 for Grails"
+    def title = "ZK for Grails"
     def description = '''\\
 Derived from Flyisland ZK Grails Plugin,
 this plugin adds ZK Ajax framework (www.zkoss.org)
