@@ -18,9 +18,9 @@ class ZkGrailsPlugin {
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
-							"file:./plugins/*/grails-app/composers/**/*Composer.groovy",
+                            "file:./plugins/*/grails-app/composers/**/*Composer.groovy",
                             "file:./grails-app/facade/**/*Facade.groovy",
-							"file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
+                            "file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
@@ -41,19 +41,19 @@ support to Grails applications.
     def documentation = "http://grails.org/Zk+Plugin"
 
     def doWithSpring = {
-		application.composerClasses.each { composerClass ->
+        application.composerClasses.each { composerClass ->
             "${composerClass.propertyName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
-		}
+        }
 
-		application.facadeClasses.each { facadeClass ->
+        application.facadeClasses.each { facadeClass ->
             "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                 bean.scope = "session"
                 bean.autowire = "byName"
             }
-		}
+        }
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -63,22 +63,24 @@ support to Grails applications.
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
 
-        // adding GrailsOpenSessionInView
-        // TODO: if(manager?.hasGrailsPlugin("hibernate"))
-        def filterElements = xml.'filter'[0]
-        filterElements + {
-            'filter' {
-                'filter-name' ("GOSIVFilter")
-                'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+        // Adding GrailsOpenSessionInView
+        // Only if hibernate exists
+        if(manager?.hasGrailsPlugin("hibernate")) {
+            def filterElements = xml.'filter'[0]
+            filterElements + {
+                'filter' {
+                    'filter-name' ("GOSIVFilter")
+                    'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+                }
             }
-        }
-        // filter for each ZK urls
-        def filterMappingElements = xml.'filter-mapping'[0]
-        ["*.zul", "/zkau/*"].each {p ->
-            filterMappingElements + {
-                'filter-mapping' {
-                    'filter-name'("GOSIVFilter")
-                    'url-pattern'("${p}")
+            // filter for each ZK urls
+            def filterMappingElements = xml.'filter-mapping'[0]
+            ["*.zul", "/zkau/*"].each {p ->
+                filterMappingElements + {
+                    'filter-mapping' {
+                        'filter-name'("GOSIVFilter")
+                        'url-pattern'("${p}")
+                    }
                 }
             }
         }
@@ -155,12 +157,12 @@ support to Grails applications.
         }
 
         org.zkoss.zul.Listbox.metaClass.setModel = { java.util.List list ->
-        	if(delegate.getModel()!=null) {
-            	delegate.getModel().clear()
-            	delegate.getModel().addAll(list)
-        	} else {        		
-        		delegate.setModel(new BindingListModelList(list, false))
-        	}
+            if(delegate.getModel()!=null) {
+                delegate.getModel().clear()
+                delegate.getModel().addAll(list)
+            } else {
+                delegate.setModel(new BindingListModelList(list, false))
+            }
         }
 
         org.zkoss.zul.Listbox.metaClass.getModel = { ->

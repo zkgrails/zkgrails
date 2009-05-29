@@ -10,7 +10,7 @@
         <disable-event-thread/>
     </system-config>    
     <listener>
-        <description>Hibernate thread session context handler</description>
+        <description>Thread session context handler</description>
         <listener-class>
             org.zkoss.zkplus.spring.SpringTransactionSynchronizationListener
         </listener-class>
