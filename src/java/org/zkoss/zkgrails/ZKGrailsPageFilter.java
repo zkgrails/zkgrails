@@ -20,26 +20,29 @@ package org.zkoss.zkgrails;
 
 import com.opensymphony.module.sitemesh.Config;
 import com.opensymphony.module.sitemesh.Factory;
-import com.opensymphony.sitemesh.Content;
-import com.opensymphony.sitemesh.ContentProcessor;
-import com.opensymphony.sitemesh.Decorator;
-import com.opensymphony.sitemesh.DecoratorSelector;
+import com.opensymphony.module.sitemesh.factory.DefaultFactory;
+import com.opensymphony.sitemesh.*;
+import com.opensymphony.sitemesh.compatability.Content2HTMLPage;
+import com.opensymphony.sitemesh.compatability.DecoratorMapper2DecoratorSelector;
+import com.opensymphony.sitemesh.compatability.OldDecorator2NewDecorator;
 import com.opensymphony.sitemesh.webapp.ContainerTweaks;
-import com.opensymphony.sitemesh.webapp.ContentBufferingResponse;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.opensymphony.sitemesh.webapp.SiteMeshWebAppContext;
+import com.opensymphony.sitemesh.webapp.decorator.NoDecorator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder;
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
-import org.codehaus.groovy.grails.web.util.WebUtils;
+import org.codehaus.groovy.grails.support.NullPersistentContextInterceptor;
+import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
+import java.util.Map;
 import org.codehaus.groovy.grails.web.sitemesh.*;
 
 /**
@@ -59,14 +62,27 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";
 
+
     private FilterConfig filterConfig;
     private ContainerTweaks containerTweaks;
+    private WebApplicationContext applicationContext;
+    private PersistenceContextInterceptor persistenceInterceptor = new NullPersistentContextInterceptor();
 
     public void init(FilterConfig filterConfig) {
         super.init(filterConfig);
         this.filterConfig = filterConfig;
         this.containerTweaks = new ContainerTweaks();
-        FactoryHolder.setFactory(Factory.getInstance(new Config(filterConfig)));
+        Config config = new Config(filterConfig);
+        DefaultFactory defaultFactory = new DefaultFactory(config);
+        config.getServletContext().setAttribute("sitemesh.factory", defaultFactory);
+        defaultFactory.refresh();
+        FactoryHolder.setFactory(defaultFactory);
+
+        this.applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(filterConfig.getServletContext());
+        Map interceptors = applicationContext.getBeansOfType(PersistenceContextInterceptor.class);
+        if(!interceptors.isEmpty()) {
+            persistenceInterceptor = (PersistenceContextInterceptor) interceptors.values().iterator().next();
+        }
     }
 
     public void destroy() {
@@ -145,6 +161,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
 
              detectContentTypeFromPage(content, response);
              Decorator decorator = decoratorSelector.selectDecorator(content, webAppContext);
+             persistenceInterceptor.reconnect();
              decorator.render(content, webAppContext);
 
          } catch (IllegalStateException e) {
@@ -163,7 +180,60 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
              request.setAttribute(ALREADY_APPLIED_KEY, null);
              throw e;
          }
+         finally {
+            if(persistenceInterceptor.isOpen()) {
+                persistenceInterceptor.destroy();
+            }
+         }
 
+    }
+
+    @Override
+
+    protected DecoratorSelector initDecoratorSelector(SiteMeshWebAppContext webAppContext) {
+        // TODO: Remove heavy coupling on horrible SM2 Factory
+        final Factory factory = Factory.getInstance(new Config(filterConfig));
+        factory.refresh();
+        return new DecoratorMapper2DecoratorSelector(factory.getDecoratorMapper()) {
+            public Decorator selectDecorator(Content content, SiteMeshContext context) {
+                SiteMeshWebAppContext webAppContext = (SiteMeshWebAppContext) context;
+                final com.opensymphony.module.sitemesh.Decorator decorator =
+                        factory.getDecoratorMapper().getDecorator(webAppContext.getRequest(), new Content2HTMLPage(content));
+                if (decorator == null || decorator.getPage() == null) {
+                    return new NoDecorator();
+                } else {
+                    return new OldDecorator2NewDecorator(decorator) {
+
+
+                        protected void render(Content content, HttpServletRequest request, HttpServletResponse response,
+                                              ServletContext servletContext, SiteMeshWebAppContext webAppContext)
+                                throws IOException, ServletException {
+
+                            request.setAttribute(PAGE, new Content2HTMLPage(content));
+
+                            // see if the URI path (webapp) is set
+                            if (decorator.getURIPath() != null) {
+                                // in a security conscious environment, the servlet container
+                                // may return null for a given URL
+                                if (servletContext.getContext(decorator.getURIPath()) != null) {
+                                    servletContext = servletContext.getContext(decorator.getURIPath());
+                                }
+                            }
+                            // get the dispatcher for the decorator
+                            RequestDispatcher dispatcher = servletContext.getRequestDispatcher(decorator.getPage());
+                            if(response.isCommitted()) {
+                                dispatcher.include(request, response);
+                            }
+                            else {
+                                dispatcher.forward(request, response);
+                            }
+
+                            request.removeAttribute(PAGE);
+                        }
+                    };
+                }
+            }
+        };
     }
 
     /**
@@ -175,27 +245,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
                                    HttpServletRequest request, HttpServletResponse response, FilterChain chain)
              throws IOException, ServletException {
 
-         ContentBufferingResponse contentBufferingResponse = new ContentBufferingResponse(response, contentProcessor, webAppContext) {
-             public void sendError(int sc) throws IOException {
-                 GrailsWebRequest webRequest = WebUtils.retrieveGrailsWebRequest();
-                 try {
-                     super.sendError(sc);
-                 } finally {
-                     WebUtils.storeGrailsWebRequest(webRequest);
-                 }
-             }
-
-             public void sendError(int sc, String msg) throws IOException {
-                 GrailsWebRequest webRequest = WebUtils.retrieveGrailsWebRequest();
-                 try {
-                     super.sendError(sc, msg);
-                 } finally {
-                     WebUtils.storeGrailsWebRequest(webRequest);
-                 }
-
-             }
-
-         };
+         GrailsContentBufferingResponse contentBufferingResponse = new GrailsContentBufferingResponse(response, contentProcessor, webAppContext);
 
          setDefaultConfiguredEncoding(request, contentBufferingResponse);
          chain.doFilter(request, contentBufferingResponse);
@@ -209,7 +259,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
          return contentBufferingResponse.getContent();
      }
 
-    private void setDefaultConfiguredEncoding(HttpServletRequest request, ContentBufferingResponse contentBufferingResponse) {
+    private void setDefaultConfiguredEncoding(HttpServletRequest request, GrailsContentBufferingResponse contentBufferingResponse) {
         UrlPathHelper urlHelper = new UrlPathHelper();
         String requestURI = urlHelper.getOriginatingRequestUri(request);
         // static content?
@@ -221,14 +271,20 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
 
     }
 
-    private boolean filterAlreadyAppliedForRequest(HttpServletRequest request) {
+
+
+
+
+
+ 	private boolean filterAlreadyAppliedForRequest(HttpServletRequest request) {
         if (request.getAttribute(ALREADY_APPLIED_KEY) == Boolean.TRUE) {
             return true;
         } else {
         request.setAttribute(ALREADY_APPLIED_KEY, Boolean.TRUE);
         return false;
         }
-    }
+ 	}
+
 
     private void detectContentTypeFromPage(Content page, HttpServletResponse response) {
          String contentType = page.getProperty("meta.http-equiv.Content-Type");
@@ -236,5 +292,6 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
              response.setContentType(contentType);
          }
      }
+
 
 }
