@@ -129,7 +129,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
         DecoratorSelector decoratorSelector = initDecoratorSelector(webAppContext);
 
         if(isZK(request)) {
-            chain.doFilter(request, response);
+            // chain.doFilter(request, response);
             return;
         }
 

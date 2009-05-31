@@ -108,7 +108,7 @@ support to Grails applications.
                     'param-name' ("update-uri")
                     'param-value' ("/zkau")
                 }
-                'load-on-startup' (0)
+                'load-on-startup' (1)
             }
         }
 
