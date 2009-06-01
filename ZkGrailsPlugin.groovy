@@ -154,7 +154,7 @@ support to Grails applications.
             }
         }
 
-        org.zkoss.zul.Listbox.metaClass.setModel = { java.util.List list ->            
+        org.zkoss.zul.Listbox.metaClass.setModel = { list ->            
             ListboxModelDynamicMethods.setModel(delegate, list)
         }
 
