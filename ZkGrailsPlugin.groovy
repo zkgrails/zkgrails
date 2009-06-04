@@ -2,6 +2,8 @@ import org.zkoss.zkgrails.*
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zkplus.databind.BindingListModelList
 import org.zkoss.spring.web.servlet.view.ZkResourceViewResolver
+import grails.util.Environment
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -42,11 +44,17 @@ support to Grails applications.
     def documentation = "http://grails.org/Zk+Plugin"
 
     def doWithSpring = {
-        
-        zkViewResolver(ZkResourceViewResolver.class) {
-            prefix = "/WEB-INF/grails-app/views"
-            suffix = ".zul"
-        }
+
+        boolean developmentMode = !application.warDeployed
+        Environment env = Environment.current
+        boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload == true || (developmentMode && env == Environment.DEVELOPMENT)
+        boolean warDeployedWithReload = application.warDeployed && enableReload
+
+        //zkViewResolver(ZkResourceViewResolver) {
+        //    prefix = GrailsApplicationAttributes.PATH_TO_VIEWS
+        //    suffix = ".zul"
+        //    order = 1
+        //}
         
 		application.composerClasses.each { composerClass ->
             "${composerClass.propertyName}"(composerClass.clazz) { bean ->
@@ -69,6 +77,12 @@ support to Grails applications.
 
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
+        
+        def welcomeFileLists = xml.'welcome-file-list'[0]    
+        def wf = welcomeFileLists.'welcome-file'[0]
+        wf + {
+            'welcome-file'('index.zul')
+        }
 
         // adding GrailsOpenSessionInView
         // TODO: if(manager?.hasGrailsPlugin("hibernate"))
