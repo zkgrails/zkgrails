@@ -1,6 +1,7 @@
 import org.zkoss.zkgrails.*
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zkplus.databind.BindingListModelList
+import org.zkoss.spring.web.servlet.view.ZkResourceViewResolver
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -41,6 +42,12 @@ support to Grails applications.
     def documentation = "http://grails.org/Zk+Plugin"
 
     def doWithSpring = {
+        
+        zkViewResolver(ZkResourceViewResolver.class) {
+            prefix = "/WEB-INF/grails-app/views"
+            suffix = ".zul"
+        }
+        
 		application.composerClasses.each { composerClass ->
             "${composerClass.propertyName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
