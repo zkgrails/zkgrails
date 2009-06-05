@@ -13,7 +13,7 @@ class ZkGrailsPlugin {
     // the other plugins this plugin depends on
     def dependsOn = [:]
 
-    def loadAfter = ['hibernate']
+    def loadAfter = ['app-engine']
 
     def artefacts = [
         org.zkoss.zkgrails.ComposerArtefactHandler,
@@ -84,22 +84,23 @@ support to Grails applications.
             'welcome-file'('index.zul')
         }
 
-        // adding GrailsOpenSessionInView
-        // TODO: if(manager?.hasGrailsPlugin("hibernate"))
-        def filterElements = xml.'filter'[0]
-        filterElements + {
-            'filter' {
-                'filter-name' ("GOSIVFilter")
-                'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+        // optional adding GrailsOpenSessionInView
+        if(manager?.hasGrailsPlugin("hibernate")) {
+            def filterElements = xml.'filter'[0]
+            filterElements + {
+                'filter' {
+                    'filter-name' ("GOSIVFilter")
+                    'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+                }
             }
-        }
-        // filter for each ZK urls
-        def filterMappingElements = xml.'filter-mapping'[0]
-        ["*.zul", "/zkau/*"].each {p ->
-            filterMappingElements + {
-                'filter-mapping' {
-                    'filter-name'("GOSIVFilter")
-                    'url-pattern'("${p}")
+            // filter for each ZK urls
+            def filterMappingElements = xml.'filter-mapping'[0]
+            ["*.zul", "/zkau/*"].each {p ->
+                filterMappingElements + {
+                    'filter-mapping' {
+                        'filter-name'("GOSIVFilter")
+                        'url-pattern'("${p}")
+                    }
                 }
             }
         }
