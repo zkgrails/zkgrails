@@ -22,6 +22,7 @@ package org.zkoss.zkgrails;
 import org.zkoss.zkgrails.*;
 import org.zkoss.zkplus.databind.BindingListModelList;
 import org.zkoss.zul.Listbox;
+import org.zkoss.zul.SimpleListModel;
 
 public class ListboxModelDynamicMethods {
 
