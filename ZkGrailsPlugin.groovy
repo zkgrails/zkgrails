@@ -21,9 +21,9 @@ class ZkGrailsPlugin {
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
-							"file:./plugins/*/grails-app/composers/**/*Composer.groovy",
+                            "file:./plugins/*/grails-app/composers/**/*Composer.groovy",
                             "file:./grails-app/facade/**/*Facade.groovy",
-							"file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
+                            "file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
@@ -55,20 +55,20 @@ support to Grails applications.
         //    suffix = ".zul"
         //    order = 1
         //}
-        
-		application.composerClasses.each { composerClass ->
+
+        application.composerClasses.each { composerClass ->
             "${composerClass.propertyName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
-		}
+        }
 
-		application.facadeClasses.each { facadeClass ->
+        application.facadeClasses.each { facadeClass ->
             "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                 bean.scope = "session"
                 bean.autowire = "byName"
             }
-		}
+        }
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -77,8 +77,8 @@ support to Grails applications.
 
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
-        
-        def welcomeFileLists = xml.'welcome-file-list'[0]    
+
+        def welcomeFileLists = xml.'welcome-file-list'[0]
         def wf = welcomeFileLists.'welcome-file'[0]
         wf + {
             'welcome-file'('index.zul')
@@ -175,7 +175,7 @@ support to Grails applications.
             }
         }
 
-        org.zkoss.zul.Listbox.metaClass.setModel = { list ->            
+        org.zkoss.zul.Listbox.metaClass.setModel = { list ->
             ListboxModelDynamicMethods.setModel(delegate, list)
         }
 
