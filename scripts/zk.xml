@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk>
+	<system-config>
+		<disable-event-thread/>
+		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
+	</system-config>
     <listener>
         <description>ThreadLocal Synchronization Listener</description>
         <listener-class>org.zkoss.zkplus.util.ThreadLocalListener</listener-class>
