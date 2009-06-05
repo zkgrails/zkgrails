@@ -152,6 +152,12 @@ support to Grails applications.
                 'url-pattern'("/zkau/*")
             }
         }
+        mappingElements + {
+            'servlet-mapping' {
+                'servlet-name'("auEngine")
+                'url-pattern'("/zkau")
+            }
+        }        
     }
 
     def doWithDynamicMethods = { ctx ->
