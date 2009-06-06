@@ -1,8 +1,11 @@
 
-eventPluginLoadEnd = { pluginManager ->
-    println "Copy theme jars to ZK plugin directory"
-    ant.copy(todir:"${zkPluginDir}/lib/", overwrite: true) {
-        fileset(dir:"${basedir}/zk-themes/", includes:"*.jar")
+eventSetClasspath = { classLoader ->
+    if(new File("${basedir}/zk-themes/").exists()) {
+        println "Adding theme jars to class loader"
+        def themeJars = resolveResources("file:${basedir}/zk-themes/*.jar")
+        for(jar in themeJars) {
+            classLoader.addURL(jar.URL)
+        }
     }
 }
 
