@@ -48,15 +48,17 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         try {
             Object scaffold =
                 GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
-            ApplicationContext ctx = SpringUtil.getApplicationContext();
-            GrailsApplication app = (GrailsApplication) ctx.getBean(
-                    GrailsApplication.APPLICATION_ID,
-                    GrailsApplication.class);
+            if(scaffold != null) {
+                ApplicationContext ctx = SpringUtil.getApplicationContext();
+                GrailsApplication app = (GrailsApplication) ctx.getBean(
+                        GrailsApplication.APPLICATION_ID,
+                        GrailsApplication.class);
 
-           ScaffoldingTemplate template = (ScaffoldingTemplate) ctx.getBean(
-                    "zkgrailsScaffoldingTemplate",
-                    ScaffoldingTemplate.class);                    
-            template.initComponents((Class<?>)scaffold, (Component)comp, app);
+               ScaffoldingTemplate template = (ScaffoldingTemplate) ctx.getBean(
+                        "zkgrailsScaffoldingTemplate",
+                        ScaffoldingTemplate.class);
+                template.initComponents((Class<?>)scaffold, (Component)comp, app);
+            }
         } catch(BeansException e) {}
     }
 
