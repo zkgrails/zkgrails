@@ -165,7 +165,7 @@ support to Grails applications.
 
         org.zkoss.zk.ui.AbstractComponent.metaClass.append = { closure ->
             closure.delegate = new ZkBuilder(parent: delegate)
-            closure.resolveStrategy = Closure.DELEGATE_FIRST
+            closure.resolveStrategy = Closure.OWNER_FIRST
             closure.call()
         }
 
