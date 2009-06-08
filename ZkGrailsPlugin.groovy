@@ -4,6 +4,7 @@ import org.zkoss.zkplus.databind.BindingListModelList
 import org.zkoss.spring.web.servlet.view.ZkResourceViewResolver
 import grails.util.Environment
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -68,6 +69,11 @@ support to Grails applications.
                 bean.scope = "session"
                 bean.autowire = "byName"
             }
+        }
+
+        zkgrailsScaffoldingTemplate(DefaultScaffoldingTemplate.class) { bean ->
+            bean.scope = "prototype"
+            bean.autowire = "byName"
         }
     }
 
