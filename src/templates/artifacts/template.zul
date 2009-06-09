@@ -14,7 +14,7 @@
         <image src="images/grails_logo.jpg"/>
     </hbox>
     
-    <vbox id="placeHolder"/>
+    <vbox id="scaffoldingBox"/>
 
 </window>
 

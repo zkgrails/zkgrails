@@ -73,7 +73,7 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
         this.scaffold = scaffold
 
         def dc = grailsApplication.getDomainClass(scaffold.name)
-        placeHolder = window.getFellowIfAny("placeHolder")
+        placeHolder = window.getFellowIfAny("scaffoldingBox")
 
         scaffoldProps = (dc.properties as Object[]).findAll {
             it.name != "id" && it.name != "version"

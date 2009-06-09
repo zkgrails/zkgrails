@@ -2,7 +2,7 @@
 
 class @artifact.name@ extends GrailsComposer {
 
-    def afterCompose = { c ->
-        // initialize component here
+    def afterCompose = { window ->
+        // initialize components here
     }
 }
