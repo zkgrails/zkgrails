@@ -4,8 +4,9 @@ import org.zkoss.zkgrails.*
 import org.codehaus.groovy.grails.scaffolding.*
 import org.zkoss.zkplus.databind.DataBinder
 import org.zkoss.zk.ui.event.ForwardEvent
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.zkoss.zk.ui.Component;
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.zkoss.zk.ui.Component
+import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor as Events
 
 class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
 
@@ -14,24 +15,79 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
     def placeHolder
     def binder = new DataBinder()
 
+    def dc
+
     def scaffoldPaging
     def scaffoldListbox
     def scaffoldProps
 
-    def selected    
+    def selected
 
-    def getTagFromType(type) {
-        def tag = "textbox"
-        switch(type) {
-            case Boolean.class: tag = "checkbox"; break
-            case Integer.class: tag = "intbox"; break
-            case Long.class:    tag = "longbox"; break
+    def renderEditor(b, it, p, cp) {
+        def old = b.parent
+        b.parent = it
+        def colwidth = 25
+        def editor = null
+        switch(p.type) {
+            case String.class:
+            case URL.class:
+                editor = b.textbox(id: "fd_${p.name}", cols: colwidth)
+                binder.addBinding(editor, "value", "selected.${p.name}")
+                break
+            case Integer.class:
+                editor = b.intbox(id: "fd_${p.name}", cols: colwidth)
+                binder.addBinding(editor, "value", "selected.${p.name}")
+                break
+            case Long.class:
+                editor = b.longbox(id: "fd_${p.name}", cols: colwidth)
+                binder.addBinding(editor, "value", "selected.${p.name}")
+                break
             case Double.class:
-            case Float.class:   tag = "doublebox"; break
+            case Float.class:
+                editor = b.doublebox(id: "fd_${p.name}", cols: colwidth)
+                binder.addBinding(editor, "value", "selected.${p.name}")
+                break
             case java.util.Date.class:
-                                tag = "datebox"; break
+            case java.sql.Date.class:
+            case Calendar.class:
+                editor = b.datebox(id: "fd_${p.name}", cols: colwidth);
+                binder.addBinding(editor, "value", "selected.${p.name}")
+                break
+            case java.sql.Time.class:
+                editor = b.timebox(id: "fd_${p.name}", cols: colwidth);
+                binder.addBinding(editor, "value", "selected.${p.name}")
+                break
+            case Boolean.class:
+                editor = b.checkbox(id: "fd_${p.name}")
+                binder.addBinding(editor, "checked", "selected.${p.name}")
+                break
+            case TimeZone.class:
+            case Locale.class:
+            case Currency.class:
+                // select
+                break
+            case ([] as Byte[]).class:
+            case ([] as byte[]).class:
+                // byte array editor
+                break
+            default:
+                if(p.isEnum()) {
+                    println "enum"
+                } else if(p.manyToOne || p.oneToOne) {
+                    if(property.association) {
+                        b.label(id: "fd_${f.name}", onClick:{
+                            // FIXME: open bandded dialog
+                        })
+                        binder.addBinding(editor, "value", "selected.${p.name}")
+                    }
+                } else if((p.oneToMany && !p.bidirectional)
+                         || (p.manyToMany && p.isOwningSide())) {
+                    println "relation M-M"
+                } else if(p.oneToMany) {
+                    println "relation 1-M"
+                }
         }
-        return tag
+        b.parent = old
     }
 
     def redrawForm() {
@@ -49,8 +105,13 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
         scaffoldListbox.append {
             list.each { e ->
                 listitem(value: e) {
-                     scaffoldProps.each { p ->
-                        listcell(label: e[p.name])
+                    def count = 0
+                    scaffoldProps.each { p ->
+                        def cp = dc.constrainedProperties[p.name]
+                        if(cp?.display==true && count < 6) {
+                            count++
+                            listcell(label: e[p.name])
+                        }
                     }
                 }
             }
@@ -58,34 +119,50 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
     }
 
     // TODO
-    // 1. wire events
-    // 2. add paginate
-    // 3. add annotation (if possible)
-    // 4. refactor it to another class,
+    // x. wire events
+    // x. add paginate
+    // x. add annotation (if possible)
+    // x. refactor it to another class,
     //    probably in to org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
     // x. name to Name, createdDate to Created Date
     // 6. i18n
     // x. type mapping
-    public void initComponents(Class<?> scaffold, 
-                                Component window, 
+    // 8. handle relations
+    public void initComponents(Class<?> scaffold,
+                                Component window,
                                 GrailsApplication grailsApplication) {
-                                    
+
         this.scaffold = scaffold
 
-        def dc = grailsApplication.getDomainClass(scaffold.name)
+        dc = grailsApplication.getDomainClass(scaffold.name)
         placeHolder = window.getFellowIfAny("scaffoldingBox")
 
+        def excludedProps = ['version',
+                               Events.ONLOAD_EVENT,
+                               Events.BEFORE_DELETE_EVENT,
+                               Events.BEFORE_INSERT_EVENT,
+                               Events.BEFORE_UPDATE_EVENT]
         scaffoldProps = (dc.properties as Object[]).findAll {
-            it.name != "id" && it.name != "version"
+            !excludedProps.contains(it.name)
         }
+
         scaffoldProps = scaffoldProps.sort(new DomainClassPropertyComparator(dc))
-        if(scaffoldProps.size() > 6) scaffoldProps = scaffoldProps[0..5]
 
         placeHolder.append {
             scaffoldListbox = listbox(id: "lst${scaffold.name}", multiple:true, rows: 10) {
                 listhead {
-                    scaffoldProps.each { p ->
-                        listheader(label:"${p.naturalName}")
+                    def count = 0
+                    scaffoldProps.each{ p ->
+                        def cp = dc.constrainedProperties[p.name]
+                        if(cp?.display==true && count < 6) {
+                            count++
+                            if(!p.isAssociation()) {
+                                // TODO: enable sorting
+                                listheader(label:"${p.naturalName}")
+                            } else {
+                                listheader(label:"${p.naturalName}")
+                            }
+                        }
                     }
                 }
             }
@@ -130,18 +207,14 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                 grid {
                     rows {
                         scaffoldProps.each { p ->
-                        row {
-                            def tag = getTagFromType(p.type)
-                            label(value:"${p.naturalName}:")
-                            def editor
-                            if(tag!="checkbox") {
-                                editor = "$tag"(id: "fd${p.name}", cols: 25)
-                                binder.addBinding(editor, "value", "selected.${p.name}")
-                            } else {
-                                editor = "$tag"(id: "fd${p.name}")
-                                binder.addBinding(editor, "checked", "selected.${p.name}")
-                            }
-                        }}
+                        if(p.name!="id") {
+                            def cp = dc.constrainedProperties[p.name]
+                            if(cp?.display)
+                            row {
+                                label(value:"${p.naturalName}:")
+                                renderEditor(delegate, it, p, cp)
+                            }}
+                        }
                     }
                 }
             }
@@ -149,6 +222,6 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
 
         scaffoldPaging.totalSize = scaffold.count()
         redraw()
-    }        
+    }
 
 }
