@@ -4,6 +4,7 @@ import org.zkoss.zkplus.databind.BindingListModelList
 import org.zkoss.spring.web.servlet.view.ZkResourceViewResolver
 import grails.util.Environment
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -69,11 +70,21 @@ support to Grails applications.
                 bean.autowire = "byName"
             }
         }
+
+        if(!parentCtx?.containsBean("zkgrailsScaffoldingTemplate")) {
+            zkgrailsScaffoldingTemplate(DefaultScaffoldingTemplate.class) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "byName"
+            }
+        }
     }
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
     }
+
+    static final String GOSIV_CLASS =
+        "org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter"
 
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
@@ -84,13 +95,13 @@ support to Grails applications.
             'welcome-file'('index.zul')
         }
 
-        // optional adding GrailsOpenSessionInView
+        // adding GrailsOpenSessionInView
         if(manager?.hasGrailsPlugin("hibernate")) {
             def filterElements = xml.'filter'[0]
             filterElements + {
                 'filter' {
                     'filter-name' ("GOSIVFilter")
-                    'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+                    'filter-class' (GOSIV_CLASS)
                 }
             }
             // filter for each ZK urls
@@ -104,7 +115,6 @@ support to Grails applications.
                 }
             }
         }
-
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name' == 'sitemesh'}
         pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter')
@@ -172,7 +182,7 @@ support to Grails applications.
 
         org.zkoss.zk.ui.AbstractComponent.metaClass.append = { closure ->
             closure.delegate = new ZkBuilder(parent: delegate)
-            closure.resolveStrategy = Closure.DELEGATE_FIRST
+            closure.resolveStrategy = Closure.OWNER_FIRST
             closure.call()
         }
 

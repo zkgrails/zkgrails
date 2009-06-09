@@ -10,20 +10,12 @@
 
 <window apply="${@artifact.name@Composer}">
 
-    <vbox>
+    <hbox>
         <image src="images/grails_logo.jpg"/>
-    </vbox>
+    </hbox>
+    
+    <vbox id="scaffoldingBox"/>
 
-    <grid id="gdMain">
-        <rows>
-            <row>
-                Name: <textbox id="txtName" />
-                <button id="btnHello" label="Hello"/>
-            </row>
-        </rows>
-    </grid>
-
-    <listbox id="lstResult" mold="paging"/>
 </window>
 
 </zk>

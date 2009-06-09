@@ -1,3 +1,14 @@
+
+eventSetClasspath = { classLoader ->
+    if(new File("${basedir}/zk-themes/").exists()) {
+        println "Adding theme jars to class loader"
+        def themeJars = resolveResources("file:${basedir}/zk-themes/*.jar")
+        for(jar in themeJars) {
+            classLoader.addURL(jar.URL)
+        }
+    }
+}
+
 eventCreateWarStart = { warLocation, stagingDir ->
     def appVersion = metadata.'app.version'
     def appName = config.google.appengine.application ?: grailsAppName

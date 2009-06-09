@@ -1,4 +1,6 @@
+.classpath
 .settings
+*.launch
 .eprj
 TODO.txt
 *.zip

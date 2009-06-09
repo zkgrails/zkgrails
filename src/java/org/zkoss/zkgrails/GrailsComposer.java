@@ -26,21 +26,40 @@ import groovy.lang.Closure;
 import java.util.*;
 import org.zkoss.zk.ui.Component;
 import org.springframework.beans.*;
+import org.zkoss.zkgrails.scaffolding.*;
+import org.codehaus.groovy.grails.commons.GrailsApplication;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
-    
+
     public GrailsComposer() {
         super('_');
     }
-    
+
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+
         try {
           Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
           if(c instanceof Closure) {
               ((Closure)c).call(comp);
           }
         } catch(BeansException e) {}
+
+        try {
+            Object scaffold =
+                GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
+            if(scaffold != null) {
+                ApplicationContext ctx = SpringUtil.getApplicationContext();
+                GrailsApplication app = (GrailsApplication) ctx.getBean(
+                        GrailsApplication.APPLICATION_ID,
+                        GrailsApplication.class);
+
+               ScaffoldingTemplate template = (ScaffoldingTemplate) ctx.getBean(
+                        "zkgrailsScaffoldingTemplate",
+                        ScaffoldingTemplate.class);
+                template.initComponents((Class<?>)scaffold, (Component)comp, app);
+            }
+        } catch(BeansException e) {}
     }
-    
+
 }
