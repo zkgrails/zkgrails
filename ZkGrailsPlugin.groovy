@@ -71,15 +71,20 @@ support to Grails applications.
             }
         }
 
-        zkgrailsScaffoldingTemplate(DefaultScaffoldingTemplate.class) { bean ->
-            bean.scope = "prototype"
-            bean.autowire = "byName"
+        if(!parentCtx?.containsBean("zkgrailsScaffoldingTemplate")) {
+            zkgrailsScaffoldingTemplate(DefaultScaffoldingTemplate.class) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "byName"
+            }
         }
     }
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
     }
+
+    static final String GOSIV_CLASS =
+        "org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter"
 
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
@@ -91,25 +96,25 @@ support to Grails applications.
         }
 
         // adding GrailsOpenSessionInView
-        // TODO: if(manager?.hasGrailsPlugin("hibernate"))
-        def filterElements = xml.'filter'[0]
-        filterElements + {
-            'filter' {
-                'filter-name' ("GOSIVFilter")
-                'filter-class' ("org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter")
+        if(manager?.hasGrailsPlugin("hibernate")) {
+            def filterElements = xml.'filter'[0]
+            filterElements + {
+                'filter' {
+                    'filter-name' ("GOSIVFilter")
+                    'filter-class' (GOSIV_CLASS)
+                }
             }
-        }
-        // filter for each ZK urls
-        def filterMappingElements = xml.'filter-mapping'[0]
-        ["*.zul", "/zkau/*"].each {p ->
-            filterMappingElements + {
-                'filter-mapping' {
-                    'filter-name'("GOSIVFilter")
-                    'url-pattern'("${p}")
+            // filter for each ZK urls
+            def filterMappingElements = xml.'filter-mapping'[0]
+            ["*.zul", "/zkau/*"].each {p ->
+                filterMappingElements + {
+                    'filter-mapping' {
+                        'filter-name'("GOSIVFilter")
+                        'url-pattern'("${p}")
+                    }
                 }
             }
         }
-
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name' == 'sitemesh'}
         pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter')
