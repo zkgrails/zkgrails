@@ -6,7 +6,6 @@ import org.zkoss.zkplus.databind.DataBinder
 import org.zkoss.zk.ui.event.ForwardEvent
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.zkoss.zk.ui.Component
-import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor as Events
 
 class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
 
@@ -138,10 +137,16 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
         placeHolder = window.getFellowIfAny("scaffoldingBox")
 
         def excludedProps = ['version',
-                               Events.ONLOAD_EVENT,
-                               Events.BEFORE_DELETE_EVENT,
-                               Events.BEFORE_INSERT_EVENT,
-                               Events.BEFORE_UPDATE_EVENT]
+                                'onSave',
+                                'beforeLoad',
+                                'beforeInsert',
+                                'afterInsert',
+                                'beforeUpdate',
+                                'afterUpdate',
+                                'beforeDelete',
+                                'afterDelete',
+                                'afterLoad']
+                                
         scaffoldProps = (dc.properties as Object[]).findAll {
             !excludedProps.contains(it.name)
         }
