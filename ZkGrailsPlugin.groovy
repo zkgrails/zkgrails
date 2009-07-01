@@ -89,11 +89,13 @@ support to Grails applications.
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
 
+        /*
         def welcomeFileLists = xml.'welcome-file-list'[0]
         def wf = welcomeFileLists.'welcome-file'[0]
         wf + {
             'welcome-file'('index.zul')
         }
+        */
 
         // adding GrailsOpenSessionInView
         if(manager?.hasGrailsPlugin("hibernate")) {
