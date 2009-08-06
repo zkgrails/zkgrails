@@ -1,9 +1,6 @@
 import org.zkoss.zkgrails.*
 import org.zkoss.zk.ui.event.EventListener
-import org.zkoss.zkplus.databind.BindingListModelList
-import org.zkoss.spring.web.servlet.view.ZkResourceViewResolver
 import grails.util.Environment
-import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
 
 class ZkGrailsPlugin {
@@ -168,11 +165,40 @@ support to Grails applications.
     }
 
     def doWithDynamicMethods = { ctx ->
-        org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
-            if(name.startsWith("on") && handler instanceof Closure) {
-                delegate.addEventListener(name, handler as EventListener)
+        // Issue 39 - Simpler way to add and remove event
+        AbstractComponent.metaClass.methodMissing = {String name, args ->
+            // converts OnXxxx to onXxxx
+            name.metaClass.toEventName {return substring(indexOf("On"), length()).replace("On", "on")}
+
+            if(name.startsWith("on") && args[0] instanceof Closure) {
+                // register the new method to avoid methodMissing overhead
+                org.zkoss.zk.ui.AbstractComponent.metaClass."${name}" { Closure listener ->
+                    delegate.addEventListener(name, listener as EventListener)
+                }
+                delegate.addEventListener(name, args[0] as EventListener)
+                return
+            } else if (name.startsWith("addOn") && (args[0] instanceof Closure || args[0] instanceof EventListener)) {
+                def eventName = name.toEventName()
+                def listener = args[0] instanceof Closure ? args[0] as EventListener : args[0]
+                org.zkoss.zk.ui.AbstractComponent.metaClass."${name}" { Closure handler ->
+                    delegate.addEventListener(eventName, handler as EventListener)
+                    handler as EventListener
+                }
+                // an overload version o add an EventListener directly
+                org.zkoss.zk.ui.AbstractComponent.metaClass."${name}" << { EventListener evtListener ->
+                    delegate.addEventListener(eventName, evtListener)
+                    evtListener
+                }
+                delegate.addEventListener(eventName, listener)
+                return listener
+            } else if (name.startsWith("removeOn") && args[0] instanceof EventListener) {
+                def eventName = name.toEventName()
+                org.zkoss.zk.ui.AbstractComponent.metaClass."${name}" { EventListener listener ->
+                    delegate.removeEventListener(eventName, listener)
+                }
+                return delegate.removeEventListener(eventName, args[0])
             } else {
-                throw new MissingPropertyException(name, delegate.class)
+                throw new MissingMethodException(name, delegate.class, args)
             }
         }
 
