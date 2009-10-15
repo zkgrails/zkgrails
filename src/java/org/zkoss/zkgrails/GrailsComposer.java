@@ -62,4 +62,36 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         } catch(BeansException e) {}
     }
 
+    /**
+     * <p>Overrides GenericEventListener to use InvokerHelper to call methods. Because of this the events are now
+     * part of groovy's dynamic methods, e.g. metaClass.invokeMethod works for event methods. Without this the default java code
+	 * don't call the overriden invokeMethod</p>
+	 *
+     * @param evt
+     * @throws Exception
+     */
+    @Override
+	public void onEvent(Event evt) throws Exception {
+		final Object controller = getController();
+		final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
+		if (mtd != null) {
+			if (mtd.getParameterTypes().length == 0) {
+                InvokerHelper.invokeMethod(controller, mtd.getName(), null);
+            } else if (evt instanceof ForwardEvent) { //ForwardEvent
+				final Class paramcls = (Class) mtd.getParameterTypes()[0];
+				//paramcls is ForwardEvent || Event
+				if (ForwardEvent.class.isAssignableFrom(paramcls)
+					|| Event.class.equals(paramcls)) {
+                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+				} else {
+					do {
+						evt = ((ForwardEvent)evt).getOrigin();
+					} while(evt instanceof ForwardEvent);
+                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+				}
+			} else {
+                InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+            }
+		}
+	}	
 }
