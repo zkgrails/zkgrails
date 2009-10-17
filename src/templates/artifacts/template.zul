@@ -11,7 +11,7 @@
 <window apply="${@artifact.name@Composer}">
 
     <hbox>
-        <image src="images/grails_logo.jpg"/>
+        <image src="images/grails_logo.png"/>        
     </hbox>
     
     <vbox id="scaffoldingBox"/>
