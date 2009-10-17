@@ -27,7 +27,10 @@ import java.util.*;
 import org.zkoss.zk.ui.Component;
 import org.springframework.beans.*;
 import org.zkoss.zkgrails.scaffolding.*;
+import org.zkoss.zk.ui.event.*;
+import org.zkoss.zk.ui.sys.*;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.codehaus.groovy.runtime.InvokerHelper;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
 
