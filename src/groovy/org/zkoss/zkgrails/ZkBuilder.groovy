@@ -23,6 +23,17 @@ class ZkBuilder {
     }
 
     boolean getTag(String tag) {
+
+//
+//  TODO: use this code for looking up without using HashMap
+// 
+//            Page page = this._roottag.getPage();
+//            ComponentDefinition compdef = page.getComponentDefinition(tagName, true);
+//            if(compdef==null)
+//                throw new Exception("can't find this Component's definition:"+tagName);
+//            _comp = (Component) compdef.resolveImplementationClass(page, null).newInstance();
+//
+
         if(ZKNODES.containsKey(tag)) return true
 
             if(tag.endsWith("Event")) {
