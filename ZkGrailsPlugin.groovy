@@ -166,7 +166,7 @@ support to Grails applications.
 
     def doWithDynamicMethods = { ctx ->
         // Issue 39 - Simpler way to add and remove event
-        AbstractComponent.metaClass.methodMissing = {String name, args ->
+       org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = {String name, args ->
             // converts OnXxxx to onXxxx
             name.metaClass.toEventName {return substring(indexOf("On"), length()).replace("On", "on")}
 
