@@ -147,10 +147,11 @@ class ZkBuilder {
     }
 
     void addAttributeEvents(zkObject, java.util.Map args) {
-        args.each {key, value ->
-            if (createEventListener(zkObject, key, value)) {
-                args.remove(key)
-            }
+        def iter = args.keySet().iterator()
+        while(iter.hasNext()) {
+            def key = iter.next()
+            if (createEventListener(zkObject, key, args[key]))
+                iter.remove()
         }
     }
 }
