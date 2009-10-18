@@ -11,21 +11,28 @@ class ZkBuilder {
     def parent
     def idComponents =[:]
 
-    boolean resolveTag(String pack, String tag) {
-        try {
-            def name = tag[0].toUpperCase() + tag[1..-1];
-            def c = "${pack}.${name}" as Class
-            ZKNODES[tag] = c;
-            return true;
-        } catch(e) {
-            return false;
-        }
-    }
+//    boolean resolveTag(String pack, String tag) {
+//        try {
+//            def name = tag[0].toUpperCase() + tag[1..-1];
+//            def c = "${pack}.${name}" as Class
+//            ZKNODES[tag] = c;
+//            return true;
+//        } catch(e) {
+//            return false;
+//        }
+//    }
 
     boolean getTag(String tag) {
-
-//
-//  TODO: use this code for looking up without using HashMap
+        if(ZKNODES.containsKey(tag)) return true
+        def page   = parent.page
+        def comdef = page.getComponentDefinition(tag, true)
+        def cls    = comdef.resolveImplementationClass(page, null)
+        if(cls == null) return false
+        ZKNODES[tag] = cls
+        return true
+    }
+//      
+//  DONE: use this code for looking up without using HashMap
 // 
 //            Page page = this._roottag.getPage();
 //            ComponentDefinition compdef = page.getComponentDefinition(tagName, true);
@@ -34,21 +41,21 @@ class ZkBuilder {
 //            _comp = (Component) compdef.resolveImplementationClass(page, null).newInstance();
 //
 
-        if(ZKNODES.containsKey(tag)) return true
-
-            if(tag.endsWith("Event")) {
-            if(resolveTag("org.zkoss.zk.ui.event", tag)) return true
-                if(resolveTag("org.zkoss.zul.event", tag)) return true
-                if(resolveTag("org.zkoss.zkmax.event", tag)) return true
-        } else {
-            if(resolveTag("org.zkoss.zul", tag)) return true
-                if(resolveTag("org.zkoss.zhtml", tag)) return true
-                if(resolveTag("org.zkoss.zkex.zul", tag)) return true
-                if(resolveTag("org.zkoss.zkmax.zul", tag)) return true
-        }
-
-        return false
-    }
+//        if(ZKNODES.containsKey(tag)) return true
+//
+//            if(tag.endsWith("Event")) {
+//            if(resolveTag("org.zkoss.zk.ui.event", tag)) return true
+//                if(resolveTag("org.zkoss.zul.event", tag)) return true
+//                if(resolveTag("org.zkoss.zkmax.event", tag)) return true
+//        } else {
+//            if(resolveTag("org.zkoss.zul", tag)) return true
+//                if(resolveTag("org.zkoss.zhtml", tag)) return true
+//                if(resolveTag("org.zkoss.zkex.zul", tag)) return true
+//                if(resolveTag("org.zkoss.zkmax.zul", tag)) return true
+//        }
+//
+//        return false
+//  }
 
     def methodMissing(String name, args) {
         if (getTag(name)) {
