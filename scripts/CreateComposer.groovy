@@ -34,10 +34,26 @@ target ('default': "Creates a new composer") {
     promptForName(type: type)
 
     def name = argsMap["params"][0]
-    def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
-    def filename = GrailsNameUtils.getClassName(name, type)
-
     createArtifact(name: name, suffix: type, type: type, path: "grails-app/composers")
+
+    // check if input contains package
+    def pkg = null
+    def pos = name.lastIndexOf('.')
+    if (pos != -1) {
+        pkg = name[0..<pos]
+        name = name[(pos + 1)..-1]
+    }
+
+    // Convert the package into a file path.
+    def pkgPath = ''
+    if (pkg) {
+        pkgPath = pkg.replace('.' as char, '/' as char)
+        // Future use of 'pkgPath' requires a trailing slash.
+        pkgPath += '/'
+    }
+
+    def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
+    def filename = pkgPath + GrailsNameUtils.getClassName(name, type)
 
     // create a facade property for the composer
     ant.replace(
