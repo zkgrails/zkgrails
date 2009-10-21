@@ -165,11 +165,17 @@ support to Grails applications.
     }
 
     def doWithDynamicMethods = { ctx ->
-        org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, val ->
-            
-        }
+
+        // Simpler way to add and remove event        
+        org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
+            if(name.startsWith("on") && handler instanceof Closure) {
+                delegate.addEventListener(name, handler as EventListener)
+            } else {
+                throw new MissingPropertyException(name, delegate.class)
+            }
+        } 
         
-        // Issue 39 - Simpler way to add and remove event
+        // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = {String name, args ->
             // converts OnXxxx to onXxxx
             name.metaClass.toEventName {return substring(indexOf("On"), length()).replace("On", "on")}
