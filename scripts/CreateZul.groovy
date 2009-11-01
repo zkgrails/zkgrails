@@ -23,6 +23,7 @@
  */
 
 import grails.util.GrailsNameUtils
+import org.codehaus.groovy.grails.commons.GrailsResourceUtils
 
 includeTargets << grailsScript("_GrailsInit")
 includeTargets << grailsScript("_GrailsCreateArtifacts")
@@ -48,15 +49,38 @@ target ('default': "Creates a new zul page") {
         value: propName
     )
 
+    def suffix = "Composer"
+    def artifactPath = "grails-app/composers"
     // following by creating composer for it
-    createArtifact(name: name, suffix: "Composer", type: "Composer", path: "grails-app/composers")
+    createArtifact(name: name, suffix: suffix, type: suffix, path: artifactPath)
 
-    // create a facade property for the composer
-    def filename = GrailsNameUtils.getClassName(name, "Composer")
+
+    def pkg = null
+    def pos = name.lastIndexOf('.')
+    if (pos != -1) {
+        pkg = name[0..<pos]
+        name = name[(pos + 1)..-1]
+    }
+
+    // Convert the package into a file path.
+    def pkgPath = ''
+    if (pkg) {
+        pkgPath = pkg.replace('.' as char, '/' as char)
+        pkgPath += '/'
+    }
+
+    // Convert the given name into class name and property name
+    // representations.
+    className = GrailsNameUtils.getClassNameRepresentation(name)
+    propertyName = GrailsNameUtils.getPropertyNameRepresentation(name)
+    artifactFile = "${basedir}/${artifactPath}/${pkgPath}${className}${suffix}.groovy"
+
+
     ant.replace(
-        file: "${basedir}/grails-app/composers/${filename}.groovy",
+        file: "${artifactFile}",
         token: "@artifact.name.prop@",
         value: propName
     )
 
 }
+
