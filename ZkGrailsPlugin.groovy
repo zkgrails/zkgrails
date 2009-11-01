@@ -39,7 +39,7 @@ support to Grails applications.
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/Zk+Plugin"
+    def documentation = "http://grails.org/plugin/zk"
 
     def doWithSpring = {
 
