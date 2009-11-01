@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2005 the original author or authors.
+ * Copyright 2007-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 
 /**
- * Gant script that creates a new Grails controller
+ * Gant script that creates a new ZUL page with an associated Grails composer
  *
- * @author Chanwit
+ * @author Chanwit Kaewkasi
  *
  * @since 0.7
  */
