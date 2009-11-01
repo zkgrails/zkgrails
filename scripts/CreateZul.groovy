@@ -35,8 +35,9 @@ target ('default': "Creates a new zul page") {
     promptForName(type: type)
     def name = argsMap["params"][0]
 
+    def suffix = "Composer"
     def artifactPath = "grails-app/composers"
-    createArtifact(name: name, suffix: "Composer", type: "Composer", path: artifactPath)
+    createArtifact(name: name, suffix: suffix, type: suffix, path: artifactPath)
 
     def pkg = null
     def pos = name.lastIndexOf('.')
