@@ -11,32 +11,14 @@ class ZkBuilder {
     def parent
     def idComponents =[:]
 
-    boolean resolveTag(String pack, String tag) {
-        try {
-            def name = tag[0].toUpperCase() + tag[1..-1];
-            def c = "${pack}.${name}" as Class
-            ZKNODES[tag] = c;
-            return true;
-        } catch(e) {
-            return false;
-        }
-    }
-
     boolean getTag(String tag) {
         if(ZKNODES.containsKey(tag)) return true
-
-            if(tag.endsWith("Event")) {
-            if(resolveTag("org.zkoss.zk.ui.event", tag)) return true
-                if(resolveTag("org.zkoss.zul.event", tag)) return true
-                if(resolveTag("org.zkoss.zkmax.event", tag)) return true
-        } else {
-            if(resolveTag("org.zkoss.zul", tag)) return true
-                if(resolveTag("org.zkoss.zhtml", tag)) return true
-                if(resolveTag("org.zkoss.zkex.zul", tag)) return true
-                if(resolveTag("org.zkoss.zkmax.zul", tag)) return true
-        }
-
-        return false
+        def page   = parent.page
+        def comdef = page.getComponentDefinition(tag, true)
+        def cls    = comdef.resolveImplementationClass(page, null)
+        if(cls == null) return false
+        ZKNODES[tag] = cls
+        return true
     }
 
     def methodMissing(String name, args) {
@@ -147,10 +129,11 @@ class ZkBuilder {
     }
 
     void addAttributeEvents(zkObject, java.util.Map args) {
-        args.each {key, value ->
-            if (createEventListener(zkObject, key, value)) {
-                args.remove(key)
-            }
+        def iter = args.keySet().iterator()
+        while(iter.hasNext()) {
+            def key = iter.next()
+            if (createEventListener(zkObject, key, args[key]))
+                iter.remove()
         }
     }
 }
