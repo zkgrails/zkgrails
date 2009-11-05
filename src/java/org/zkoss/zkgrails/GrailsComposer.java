@@ -26,6 +26,10 @@ import groovy.lang.Closure;
 import java.util.*;
 import org.zkoss.zk.ui.Component;
 import org.springframework.beans.*;
+import org.codehaus.groovy.runtime.InvokerHelper;
+import org.zkoss.zk.ui.event.*;
+import org.zkoss.zk.ui.sys.*;
+
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
     
