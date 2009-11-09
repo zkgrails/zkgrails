@@ -1,0 +1,1 @@
+ZKGrails 0.7.x is released under GPL.
