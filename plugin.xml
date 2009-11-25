@@ -1,4 +1,4 @@
-<plugin name='zk' version='1.0-M1' grailsVersion='1.1 &gt; *'>
+<plugin name='zk' version='1.0-M2' grailsVersion='1.1 &gt; *'>
   <author>chanwit</author>
   <authorEmail>chanwit@gmail.com</authorEmail>
   <title>ZK for Grails</title>
@@ -7,13 +7,17 @@ Derived from Flyisland ZK Grails Plugin,
 this plugin adds ZK Ajax framework (www.zkoss.org)
 support to Grails applications.
 </description>
-  <documentation>http://grails.org/Zk+Plugin</documentation>
+  <documentation>http://grails.org/plugin/zk</documentation>
   <resources>
     <resource>DataSource</resource>
     <resource>UrlMappings</resource>
   </resources>
   <dependencies>
-    <resolvers />
+    <resolvers>
+      <resolver type='grailsPlugins' name='grailsPlugins' />
+      <resolver type='mavenLocal' />
+      <resolver type='mavenCentral' />
+    </resolvers>
   </dependencies>
   <behavior />
 </plugin>
