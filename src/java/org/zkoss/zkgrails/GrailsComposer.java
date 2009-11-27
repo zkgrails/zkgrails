@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import groovy.lang.Closure;
 import java.util.*;
-import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.*;
 import org.springframework.beans.*;
 import org.zkoss.zkgrails.scaffolding.*;
 import org.zkoss.zk.ui.event.*;
@@ -33,12 +33,21 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
-
+  
+    private Page page = null;    
+    
     public GrailsComposer() {
         super('_');
     }
+    
+    public ZkBuilder getBuild() {
+        ZkBuilder builder = new ZkBuilder();
+        builder.setPage(page);
+        return builder;
+    }
 
     public void doAfterCompose(Component comp) throws Exception {
+        this.page = comp.getPage();
         super.doAfterCompose(comp);
 
         try {

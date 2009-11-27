@@ -8,6 +8,7 @@ class ZkBuilder {
 
     private static ZKNODES = new ConcurrentHashMap();
 
+    def page
     def parent
     def idComponents =[:]
 
@@ -24,7 +25,9 @@ class ZkBuilder {
 
     boolean getTag(String tag) {
         if(ZKNODES.containsKey(tag)) return true
-        def page   = parent.page
+        if(page == null) {
+            page = parent.page
+        }
         def comdef = page.getComponentDefinition(tag, true)
         def cls    = comdef.resolveImplementationClass(page, null)
         if(cls == null) return false
