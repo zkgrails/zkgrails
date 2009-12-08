@@ -32,8 +32,6 @@ import org.zkoss.zk.ui.sys.*;
 
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
-  
-    private Page page = null;    
     
     public GrailsComposer() {
         super('_');
@@ -46,7 +44,6 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
     }
     
     public void doAfterCompose(Component comp) throws Exception {
-        this.page = comp.getPage();
         super.doAfterCompose(comp);
         try {
           Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
