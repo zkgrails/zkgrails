@@ -13,12 +13,5 @@ support to Grails applications.
     <resource>UrlMappings</resource>
     <resource>ZkTagLib</resource>
   </resources>
-  <dependencies>
-    <resolvers>
-      <resolver type='grailsPlugins' name='grailsPlugins' />
-      <resolver type='mavenLocal' />
-      <resolver type='mavenCentral' />
-    </resolvers>
-  </dependencies>
-  <behavior />
+  <dependencies />
 </plugin>
