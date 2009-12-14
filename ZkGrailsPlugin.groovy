@@ -4,7 +4,7 @@ import org.zkoss.zkplus.databind.BindingListModelList
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "0.7.6"
+    def version = "0.7.7"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
@@ -45,7 +45,11 @@ support to Grails applications.
 
     def doWithSpring = {
 		application.composerClasses.each { composerClass ->
-            "${composerClass.propertyName}"(composerClass.clazz) { bean ->
+			def composerBeanName = composerClass.propertyName
+			if(composerClass.packageName) {
+				composerBeanName = composerClass.packageName + "." + composerBeanName
+			}
+            "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
