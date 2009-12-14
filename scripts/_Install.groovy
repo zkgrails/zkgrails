@@ -9,15 +9,7 @@
 //    ant.mkdir(dir:"${basedir}/grails-app/jobs")
 //
 def targetFile = "${basedir}/web-app/WEB-INF/zk.xml"
-def proceed = true
-if(new File(targetFile).exists()) {
-    proceed = false
-    ant.input(message: "Overwrite the existing zk.xml?", addproperty: "overwrite.zk", validargs: "y,n")
-    proceed = ant.antProject.properties["overwrite.zk"] == 'y'
-}
 
-if(proceed == true) {
+if(! (new File(targetFile).exists())) {
     ant.copy(file:"${zkPluginDir}/scripts/zk.xml", todir:"${basedir}/web-app/WEB-INF/", overwrite: true)
 }
-
-// ant.mkdir(dir:"${basedir}/web-app/WEB-INF/")
