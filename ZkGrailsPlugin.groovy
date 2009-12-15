@@ -220,8 +220,12 @@ support to Grails applications.
                 return
             }
             def composerClass = application.addArtefact(ComposerArtefactHandler.TYPE, event.source)
+			def composerBeanName = composerClass.propertyName
+			if(composerClass.packageName) {
+				composerBeanName = composerClass.packageName + "." + composerBeanName
+			}            
             def beanDefinitions = beans {
-                "${composerClass.propertyName}"(composerClass.clazz) { bean ->
+                "${composerBeanName}"(composerClass.clazz) { bean ->
                     bean.scope = "prototype"
                     bean.autowire = "byName"
                 }
@@ -241,7 +245,7 @@ support to Grails applications.
                 return
             }
             def facadeClass = application.addArtefact(FacadeArtefactHandler.TYPE, event.source)
-            def beanDefinitions = beans {
+            def beanDefinitions = beans {            	
                 "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                     bean.scope = "session"
                     bean.autowire = "byName"
