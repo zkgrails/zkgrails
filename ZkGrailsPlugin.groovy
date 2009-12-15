@@ -25,7 +25,7 @@ class ZkGrailsPlugin {
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/composers/**",
-            "grails-app/facades/**",            
+            "grails-app/facades/**",
             "grails-app/views/error.gsp",
             "web-app/**"
     ]
@@ -49,6 +49,9 @@ support to Grails applications.
 			if(composerClass.packageName) {
 				composerBeanName = composerClass.packageName + "." + composerBeanName
 			}
+			println composerClass
+			println " >> composerBeanName: $composerBeanName"
+			composerBeanName = composerBeanName.replace('.', '_')
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
@@ -198,7 +201,7 @@ support to Grails applications.
             }
         }
 
-        org.zkoss.zul.Listbox.metaClass.setModel = { list ->            
+        org.zkoss.zul.Listbox.metaClass.setModel = { list ->
             ListboxModelDynamicMethods.setModel(delegate, list)
         }
 
@@ -223,7 +226,10 @@ support to Grails applications.
 			def composerBeanName = composerClass.propertyName
 			if(composerClass.packageName) {
 				composerBeanName = composerClass.packageName + "." + composerBeanName
-			}            
+			}
+			println composerClass
+			println " >> composerBeanName: $composerBeanName"
+			composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
                 "${composerBeanName}"(composerClass.clazz) { bean ->
                     bean.scope = "prototype"
@@ -245,7 +251,7 @@ support to Grails applications.
                 return
             }
             def facadeClass = application.addArtefact(FacadeArtefactHandler.TYPE, event.source)
-            def beanDefinitions = beans {            	
+            def beanDefinitions = beans {
                 "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                     bean.scope = "session"
                     bean.autowire = "byName"
