@@ -25,17 +25,19 @@ class ZkGrailsPlugin {
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
-            "grails-app/views/error.gsp"
+            "grails-app/composers/**",
+            "grails-app/facades/**",
+            "grails-app/views/error.gsp",
+            "web-app/**"
     ]
 
     // TODO Fill in these fields
     def author = "chanwit"
     def authorEmail = "chanwit@gmail.com"
-    def title = "ZK for Grails"
+    def title = "ZKGrails: ZK plugin for Grails"
     def description = '''\\
-Derived from Flyisland ZK Grails Plugin,
-this plugin adds ZK Ajax framework (www.zkoss.org)
-support to Grails applications.
+Originated from Flyisland ZK Grails Plugin,
+this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails applications.
 '''
 
     // URL to the plugin's documentation
@@ -55,7 +57,14 @@ support to Grails applications.
         //}
 
         application.composerClasses.each { composerClass ->
-            "${composerClass.propertyName}"(composerClass.clazz) { bean ->
+            def composerBeanName = composerClass.propertyName
+            if(composerClass.packageName) {
+                composerBeanName = composerClass.packageName + "." + composerBeanName
+            }
+            println composerClass
+            println " >> composerBeanName: $composerBeanName"
+            composerBeanName = composerBeanName.replace('.', '_')
+            "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
@@ -235,6 +244,23 @@ support to Grails applications.
         org.zkoss.zul.AbstractListModel.metaClass.getAt = { Integer i ->
             return delegate.getElementAt(i)
         }
+
+        // simple session
+        org.zkoss.zk.ui.http.SimpleSession.metaClass.getAt = { String name ->
+            delegate.getAttribute(name)
+        }
+        org.zkoss.zk.ui.http.SimpleSession.metaClass.putAt = { String name, value ->
+            delegate.setAttribute(name, value)
+        }
+
+        // simple session
+        org.zkoss.zk.ui.http.SimpleSession.metaClass.getAt = { String name ->
+            delegate.getAttribute(name)
+        }
+        org.zkoss.zk.ui.http.SimpleSession.metaClass.putAt = { String name, value ->
+            delegate.setAttribute(name, value)
+        }
+
     }
 
     def onChange = { event ->
@@ -246,8 +272,15 @@ support to Grails applications.
                 return
             }
             def composerClass = application.addArtefact(ComposerArtefactHandler.TYPE, event.source)
+            def composerBeanName = composerClass.propertyName
+            if(composerClass.packageName) {
+                composerBeanName = composerClass.packageName + "." + composerBeanName
+            }
+            println composerClass
+            println " >> composerBeanName: $composerBeanName"
+            composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
-                "${composerClass.propertyName}"(composerClass.clazz) { bean ->
+                "${composerBeanName}"(composerClass.clazz) { bean ->
                     bean.scope = "prototype"
                     bean.autowire = "byName"
                 }
