@@ -50,20 +50,12 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload == true || (developmentMode && env == Environment.DEVELOPMENT)
         boolean warDeployedWithReload = application.warDeployed && enableReload
 
-        //zkViewResolver(ZkResourceViewResolver) {
-        //    prefix = GrailsApplicationAttributes.PATH_TO_VIEWS
-        //    suffix = ".zul"
-        //    order = 1
-        //}
-
         application.composerClasses.each { composerClass ->
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
                 composerBeanName = composerClass.packageName + "." + composerBeanName
             }
-            println composerClass
-            println " >> composerBeanName: $composerBeanName"
-            composerBeanName = composerBeanName.replace('.', '_')
+            // composerBeanName = composerBeanName.replace('.', '_')
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
@@ -276,9 +268,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             if(composerClass.packageName) {
                 composerBeanName = composerClass.packageName + "." + composerBeanName
             }
-            println composerClass
-            println " >> composerBeanName: $composerBeanName"
-            composerBeanName = composerBeanName.replace('.', '_')
+            // composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
                 "${composerBeanName}"(composerClass.clazz) { bean ->
                     bean.scope = "prototype"
