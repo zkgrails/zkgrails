@@ -4,7 +4,7 @@ import org.zkoss.zkplus.databind.BindingListModelList
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "0.7.7"
+    def version = "0.8"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
@@ -27,7 +27,8 @@ class ZkGrailsPlugin {
             "grails-app/composers/**",
             "grails-app/facades/**",
             "grails-app/views/error.gsp",
-            "web-app/**"
+            "web-app/**",
+            "todo/**"
     ]
 
     // TODO Fill in these fields
