@@ -1,4 +1,5 @@
 import org.zkoss.zkgrails.ZulResponse
+import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 
 class ZkTagLib {
 
@@ -32,4 +33,20 @@ class ZkTagLib {
             // do nothing
         }
     }
+    
+    def iframeSupport = { attrs, body ->
+        def name = attrs['name']
+        def contextPath = SCH.servletContext.contextPath
+        def path = request.getRequestURI().replace(contextPath,"")
+
+        out << "<script>"
+        out << "if(parent.onIframeURLChange) {"
+        out << "  parent.onIframeURLChange( "        
+        out << "    parent.document.getElementsByName('${name}')[0].id,"
+        out << "    '${path}'"
+        out << "    );"
+        out << "}"
+        out << "</script>"
+    }
+
 }
