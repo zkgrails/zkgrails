@@ -1,0 +1,152 @@
+implemented new 'replaceBookmark' command
+
+From: Chanwit Kaewkasi <chanwit@gmail.com>
+
+
+---
+
+ zk/src/archive/web/js/zk/html/au.js               |    3 ++
+ zk/src/archive/web/js/zk/html/common.js           |   15 ++++++++-
+ zk/src/org/zkoss/zk/au/out/AuBookmark.java        |    0 
+ zk/src/org/zkoss/zk/au/out/AuReplaceBookmark.java |   36 +++++++++++++++++++++
+ zk/src/org/zkoss/zk/ui/impl/DesktopImpl.java      |   15 +++++++++
+ 5 files changed, 67 insertions(+), 2 deletions(-)
+ mode change 100644 => 100755 zk/src/archive/web/js/zk/html/au.js
+ mode change 100644 => 100755 zk/src/archive/web/js/zk/html/common.js
+ mode change 100644 => 100755 zk/src/org/zkoss/zk/au/out/AuBookmark.java
+ create mode 100755 zk/src/org/zkoss/zk/au/out/AuReplaceBookmark.java
+ mode change 100644 => 100755 zk/src/org/zkoss/zk/ui/impl/DesktopImpl.java
+
+
+diff --git a/zk/src/archive/web/js/zk/html/au.js b/zk/src/archive/web/js/zk/html/au.js
+old mode 100644
+new mode 100755
+index 8ab9b13..81fd2f1
+--- a/zk/src/archive/web/js/zk/html/au.js
++++ b/zk/src/archive/web/js/zk/html/au.js
+@@ -2336,6 +2336,9 @@ zkau.history = new zk.History();
+ 
+ //Commands//
+ zkau.cmd0 = { //no uuid at all
++	replaceBookmark: function (dt0) {
++		zkau.history.replaceBookmark(dt0);
++	},	
+ 	bookmark: function (dt0) {
+ 		zkau.history.bookmark(dt0);
+ 	},
+diff --git a/zk/src/archive/web/js/zk/html/common.js b/zk/src/archive/web/js/zk/html/common.js
+old mode 100644
+new mode 100755
+index c2df929..928ce16
+--- a/zk/src/archive/web/js/zk/html/common.js
++++ b/zk/src/archive/web/js/zk/html/common.js
+@@ -2614,16 +2614,27 @@ zk.History.prototype = {
+ 			//Though IE use history.html, timer is still required
+ 			//because user might specify URL directly
+ 	},
++	/** New version of setting a bookmark, use replace rather than creating a new history */	
++	replaceBookmark: function (nm) {
++		if (this.curbk != nm) {
++			this.curbk = nm; //to avoid loop back the server
++			var encnm = nm;
++			var _hash = zk.safari || !encnm ? encnm: '#' + encnm;
++			location.replace(location.href.replace(/#.*/, "") + _hash);
++			this._bkIframe(nm);
++			zkau.onURLChange();
++		}
++	},
+ 	/** Sets a bookmark that user can use forward and back buttons */
+ 	bookmark: function (nm) {
+ 		if (this.curbk != nm) {
+ 			this.curbk = nm; //to avoid loop back the server
+-			var encnm = encodeURIComponent(nm);
++			var encnm = nm;
+ 			location.hash = zk.safari || !encnm ? encnm: '#' + encnm;
+ 			this._bkIframe(nm);
+ 			zkau.onURLChange();
+ 		}
+-	},
++	},	
+ 	/** Checks whether the bookmark is changed. */
+ 	checkBookmark: function() {
+ 		var nm = this.getBookmark();
+diff --git a/zk/src/org/zkoss/zk/au/out/AuBookmark.java b/zk/src/org/zkoss/zk/au/out/AuBookmark.java
+old mode 100644
+new mode 100755
+diff --git a/zk/src/org/zkoss/zk/au/out/AuReplaceBookmark.java b/zk/src/org/zkoss/zk/au/out/AuReplaceBookmark.java
+new file mode 100755
+index 0000000..7a2e7e9
+--- /dev/null
++++ b/zk/src/org/zkoss/zk/au/out/AuReplaceBookmark.java
+@@ -0,0 +1,36 @@
++/* AuBookmark.java
++
++{{IS_NOTE
++	Purpose:
++		
++	Description:
++		
++	History:
++		Mon May 29 18:50:13     2006, Created by tomyeh
++}}IS_NOTE
++
++Copyright (C) 2006 Potix Corporation. All Rights Reserved.
++
++{{IS_RIGHT
++}}IS_RIGHT
++*/
++package org.zkoss.zk.au.out;
++
++import org.zkoss.zk.au.AuResponse;
++
++/**
++ * A response to ask the client to bookmark the desktop.
++ *
++ * <p>data[0]: the name of the bookmark.
++ * 
++ * @author tomyeh
++ * @since 3.0.0
++ */
++public class AuReplaceBookmark extends AuResponse {
++	/**
++	 * @param name the bookmark name.
++	 */
++	public AuReplaceBookmark(String name) {
++		super("replaceBookmark", name); //component-independent
++	}
++}
+diff --git a/zk/src/org/zkoss/zk/ui/impl/DesktopImpl.java b/zk/src/org/zkoss/zk/ui/impl/DesktopImpl.java
+old mode 100644
+new mode 100755
+index 3e4e469..a680b8b
+--- a/zk/src/org/zkoss/zk/ui/impl/DesktopImpl.java
++++ b/zk/src/org/zkoss/zk/ui/impl/DesktopImpl.java
+@@ -76,6 +76,7 @@ import org.zkoss.zk.ui.sys.UiEngine;
+ import org.zkoss.zk.ui.sys.Visualizer;
+ import org.zkoss.zk.ui.impl.EventInterceptors;
+ import org.zkoss.zk.au.out.AuBookmark;
++import org.zkoss.zk.au.out.AuReplaceBookmark;
+ import org.zkoss.zk.device.Device;
+ import org.zkoss.zk.device.Devices;
+ import org.zkoss.zk.device.DeviceNotFoundException;
+@@ -403,6 +404,20 @@ public class DesktopImpl implements Desktop, DesktopCtrl, java.io.Serializable {
+ 		((WebAppCtrl)_wapp).getUiEngine()
+ 			.addResponse("bookmark", new AuBookmark(name));
+ 	}
++	public void setBookmark(String name, boolean replace) {
++		if (_exec == null)
++			throw new IllegalStateException("Not the current desktop: "+this);
++		if (name.indexOf('#') >= 0 || name.indexOf('?') >= 0)
++			throw new IllegalArgumentException("Illegal character: # ?");
++		_bookmark = name;
++		if(replace == true) {
++			((WebAppCtrl)_wapp).getUiEngine()
++				.addResponse("replaceBookmark", new AuReplaceBookmark(name));
++		} else {
++			((WebAppCtrl)_wapp).getUiEngine()
++				.addResponse("bookmark", new AuBookmark(name));			
++		}
++	}	
+ 
+ 	public Collection getComponents() {
+ 		return _comps.values();
