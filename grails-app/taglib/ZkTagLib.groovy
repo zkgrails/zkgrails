@@ -39,14 +39,17 @@ class ZkTagLib {
         def contextPath = SCH.servletContext.contextPath
         def path = request.getRequestURI().replace(contextPath,"")
 
-        out << "<script>"
-        out << "if(parent.onIframeURLChange) {"
-        out << "  parent.onIframeURLChange( "        
-        out << "    parent.document.getElementsByName('${name}')[0].id,"
-        out << "    '${path}'"
-        out << "    );"
-        out << "}"
-        out << "</script>"
+        out << """
+        <script>
+        	if(parent.onIframeURLChange && (window.zkGrailsOnIframeURLChanged == null)) {
+        		parent.onIframeURLChange(     
+        			parent.document.getElementsByName('${name}')[0].id,
+        			'${path}'
+        		);
+        		history.go(1);
+        		window.zkGrailsOnIframeURLChanged = true; 
+    		}
+        </script>\n"""
     }
 
 }
