@@ -41,13 +41,11 @@ class ZkTagLib {
 
         out << """
         <script>
-        	if(parent.onIframeURLChange && (window.zkGrailsOnIframeURLChanged == null)) {
+        	if(parent.onIframeURLChange) {
         		parent.onIframeURLChange(     
         			parent.document.getElementsByName('${name}')[0].id,
         			'${path}'
         		);
-        		history.go(1);
-        		window.zkGrailsOnIframeURLChanged = true; 
     		}
         </script>\n"""
     }
