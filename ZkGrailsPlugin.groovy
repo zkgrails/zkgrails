@@ -28,7 +28,8 @@ class ZkGrailsPlugin {
             "grails-app/facades/**",
             "grails-app/views/error.gsp",
             "web-app/**",
-            "todo/**"
+            "todo/**",
+            "patches-zk/**"
     ]
 
     // TODO Fill in these fields
