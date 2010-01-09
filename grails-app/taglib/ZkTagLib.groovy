@@ -38,13 +38,19 @@ class ZkTagLib {
         def name = attrs['name']
         def contextPath = SCH.servletContext.contextPath
         def path = request.getRequestURI().replace(contextPath,"")
+        def queryString = request.queryString
+        if(queryString != null && queryString != "") {
+        	queryString = "?" + queryString 
+        } else {
+        	queryString = ""
+        }
 
         out << """
         <script>
         	if(parent.onIframeURLChange) {
         		parent.onIframeURLChange(     
         			parent.document.getElementsByName('${name}')[0].id,
-        			'${path}'
+        			'${path}${queryString}'
         		);
     		}
         </script>\n"""
