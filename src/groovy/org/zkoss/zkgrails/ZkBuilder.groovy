@@ -61,7 +61,7 @@ class ZkBuilder {
 //  }
 
     def methodMissing(String name, args) {
-        if (getTag(name)) {
+        if (!name.startsWith('on') && getTag(name)) {
             def zkObject = null
             Closure closure = null
             switch (args.length) {
