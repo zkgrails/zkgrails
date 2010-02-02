@@ -78,7 +78,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     }
 
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
     }
 
     static final String GOSIV_CLASS =
@@ -166,6 +165,8 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     }
 
     def doWithDynamicMethods = { ctx ->
+
+        org.zkoss.web.util.resource.CustomContentLoader.init()
 
         // Simpler way to add and remove event        
         org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
