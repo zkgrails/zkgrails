@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.zkoss.zk.ui.metainfo.PageDefinition;
+import org.zkoss.zkgrails.TemplateHashMap;
 
 public class CustomContentLoader extends ResourceLoader {
 
@@ -43,7 +44,7 @@ public class CustomContentLoader extends ResourceLoader {
 
 		GroovyPagesTemplateEngine gsp = (GroovyPagesTemplateEngine)_ctx.getBean("groovyPagesTemplateEngine");
 		Template template = gsp.createTemplate(new FileSystemResource(file));
-		HashMap model = new HashMap();
+		TemplateHashMap model = new TemplateHashMap();
 		Writable w = template.make(model);
 		StringWriter sw = new StringWriter();
 		w.writeTo(new PrintWriter(sw));
