@@ -1,11 +1,10 @@
 <plugin name='zk' version='1.0-M2' grailsVersion='1.1 &gt; *'>
   <author>chanwit</author>
   <authorEmail>chanwit@gmail.com</authorEmail>
-  <title>ZK for Grails</title>
+  <title>ZKGrails: ZK plugin for Grails</title>
   <description>\
-Derived from Flyisland ZK Grails Plugin,
-this plugin adds ZK Ajax framework (www.zkoss.org)
-support to Grails applications.
+Originated from Flyisland ZK Grails Plugin,
+this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails applications.
 </description>
   <documentation>http://grails.org/plugin/zk</documentation>
   <resources>
@@ -13,5 +12,10 @@ support to Grails applications.
     <resource>UrlMappings</resource>
     <resource>ZkTagLib</resource>
   </resources>
-  <dependencies />
+  <dependencies>
+    <resolvers>
+      <resolver type='grailsPlugins' name='grailsPlugins' />
+    </resolvers>
+  </dependencies>
+  <behavior />
 </plugin>
