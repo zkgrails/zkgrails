@@ -79,6 +79,9 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         if(!(application.config?.grails.zk.taglib.disabled == true)) {
             org.zkoss.web.util.resource.CustomContentLoader.init()
         }
+
+        // composer resolver which directly resolves Spring Beans
+        org.zkoss.zkgrails.ComposerResolver.init()
     }
 
     def doWithApplicationContext = { applicationContext ->
