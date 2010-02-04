@@ -75,6 +75,10 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 bean.autowire = "byName"
             }
         }
+
+        if(!(application.config?.grails.zk.taglib.disabled == true)) {
+            org.zkoss.web.util.resource.CustomContentLoader.init()
+        }
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -165,8 +169,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     }
 
     def doWithDynamicMethods = { ctx ->
-
-        org.zkoss.web.util.resource.CustomContentLoader.init()
 
         // Simpler way to add and remove event        
         org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
