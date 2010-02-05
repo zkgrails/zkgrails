@@ -7,6 +7,8 @@ class ZkTagLib {
 
     def head = { attrs, b ->
         cacheZul(attrs['zul'])
+        out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />"
+		out << "<meta http-equiv=\"Expires\" content=\"-1\" />"
         out << pageScope.model['head']
     }
 
