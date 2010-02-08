@@ -18,6 +18,7 @@ import groovy.lang.Writable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.zkoss.zk.ui.metainfo.PageDefinition;
 
 public class CustomContentLoader extends ResourceLoader {
@@ -42,7 +43,19 @@ public class CustomContentLoader extends ResourceLoader {
 			locator = PageDefinitions.getLocator(_wapp, path);
 
 		GroovyPagesTemplateEngine gsp = (GroovyPagesTemplateEngine)_ctx.getBean("groovyPagesTemplateEngine");
-		Template template = gsp.createTemplate(new FileSystemResource(file));
+		
+		byte[] buffer = new byte[(int)file.length()];
+    	BufferedInputStream f = new BufferedInputStream(new FileInputStream(file));
+    	f.read(buffer);
+    	String bufferStr = new String(buffer);
+    	bufferStr = bufferStr.replaceAll("@\\{", "\\$\\{'@'\\}\\{");
+    	// debug
+    	//
+		// System.out.println("============== buffer str ================");
+		// System.out.println(bufferStr);
+		// System.out.println("============== buffer str ================");
+		//
+		Template template = gsp.createTemplate(new ByteArrayResource(bufferStr.getBytes("UTF-8")));
 		Writable w = template.make();
 		StringWriter sw = new StringWriter();
 		w.writeTo(new PrintWriter(sw));
