@@ -7,14 +7,25 @@ class ZkTagLib {
 
     def head = { attrs, b ->
         cacheZul(attrs['zul'])
-        out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />"
-		out << "<meta http-equiv=\"Expires\" content=\"-1\" />"
+        out << "<head>\n"
+        out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n"
+        out << "<meta http-equiv=\"Expires\" content=\"-1\" />\n"
+        out	<< b()
         out << pageScope.model['head']
+        out << "</head>\n"
     }
 
     def body = { attrs, b ->
         cacheZul(attrs['zul'])
+        out << "<body>\n"
+        out << b()
         out << pageScope.model['body']
+        out << "</body>\n"
+    }
+
+    def div = { attrs, b ->
+        cacheZul(attrs['zul'])
+        out << pageScope.model[attrs['part']]
     }
 
     def l = { attrs, b ->
@@ -28,13 +39,13 @@ class ZkTagLib {
             throwTagError("Attribute [key] is obrigatory")
         }
         if(required != null && !(required instanceof Boolean)) {
-            throwTagError("Attribute [required] has to be a boolean value [true|false]")            
+            throwTagError("Attribute [required] has to be a boolean value [true|false]")
         }
         if(args && !(args instanceof List)) {
             throwTagError("Attribute [args] has to be a list")
         }
         if(defValue && !(defValue instanceof String)) {
-            throwTagError("Attribute [default] has to be a String")            
+            throwTagError("Attribute [default] has to be a String")
         }
 
         if(! required) {
@@ -62,7 +73,7 @@ class ZkTagLib {
         out << label
     }
 
-    private cacheZul(url) {            
+    private cacheZul(url) {
         if(pageScope.variables.containsKey("cached")==false) {
             if(url==null) {
                 url = "/${controllerName}/${actionName}.zul"
