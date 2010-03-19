@@ -10,6 +10,11 @@ class ZkTagLib {
         out << "<head>\n"
         out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n"
         out << "<meta http-equiv=\"Expires\" content=\"-1\" />\n"
+        out << "<style>\n"
+        out << "body > div:first-child {\n"
+        out << "    height:100%;\n"
+        out	<< "}\n"
+        out << "</style>\n"
         out	<< b()
         out << pageScope.model['head']
         out << "</head>\n"
