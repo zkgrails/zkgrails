@@ -28,15 +28,25 @@ class ZkBuilder {
         if(page == null) {
             page = parent.page
         }
-        def comdef = page.getComponentDefinition(tag, true)
-        def cls    = comdef.resolveImplementationClass(page, null)
+        def comdef
+
+        //
+        // first try on LanguageDefinition (might have custom/macro components on lang-addon.xml)
+        //
+        comdef = page.getLanguageDefinition().getComponentDefinitionIfAny(tag)
+
+        //
+        // if nothing on LanguageDefinition then go via Page (zk default components)
+        //
+        comdef = comdef ?: page.getComponentDefinition(tag, true)
+        def cls = comdef.resolveImplementationClass(page, null)
         if(cls == null) return false
         ZKNODES[tag] = cls
         return true
     }
-//      
+//
 //  DONE: use this code for looking up without using HashMap
-// 
+//
 //            Page page = this._roottag.getPage();
 //            ComponentDefinition compdef = page.getComponentDefinition(tagName, true);
 //            if(compdef==null)
@@ -126,8 +136,14 @@ class ZkBuilder {
             zkBuilder.idComponents = idComponents
             cls.delegate = zkBuilder
         }
-        if (name =~ /on[A-Z]\w+/) {
+        if(name =~ /on[A-Z]\w+/) {
             zkObject.addEventListener(name, listener as EventListener)
+            return true
+        }
+        if((name =~ /won[A-Z]\w+/ || name =~ /wOn[A-Z]\w+/) && listener instanceof String) {
+            name = name.substring(1, name.length()) // removes w from start
+            name = name.substring(0,2).toLowerCase() + name.substring(2, name.length()) // lower case for utilization wOnClick
+            zkObject.setWidgetListener(name, listener /* script */)
             return true
         }
         return false
