@@ -1,0 +1,17 @@
+SRC=../zk-3.6.4/dist/lib
+DST=./lib
+LIST=`ls lib/*.jar`
+for i in $LIST ;
+do
+  FILE=`basename $i`
+  cp -vf $SRC/$FILE $DST/$FILE
+done
+
+LIST=`ls lib/*.jar`
+for i in $LIST ;
+do
+  FILE=`basename $i`
+  cp -vf $SRC/ext/$FILE $DST/$FILE
+done
+
+cp -vf $SRC/zk.jar ./org-lib/zk.jar

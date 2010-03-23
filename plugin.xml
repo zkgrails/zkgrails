@@ -1,4 +1,4 @@
-<plugin name='zk' version='0.7.7' grailsVersion='1.1 &gt; *'>
+<plugin name='zk' version='0.7.8' grailsVersion='1.1 &gt; *'>
   <author>chanwit</author>
   <authorEmail>chanwit@gmail.com</authorEmail>
   <title>ZKGrails: ZK plugin for Grails</title>
@@ -12,5 +12,63 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>UrlMappings</resource>
     <resource>ZkTagLib</resource>
   </resources>
-  <dependencies />
+  <dependencies>
+    <resolvers>
+      <resolver type='grailsPlugins' name='grailsPlugins' />
+    </resolvers>
+  </dependencies>
+  <behavior>
+    <method name='propertyMissing' artefact='Domain' type='org.zkoss.zk.ui.AbstractComponent'>
+      <description />
+      <argument type='java.lang.String' />
+      <argument type='java.lang.Object' />
+    </method>
+    <method name='methodMissing' artefact='Domain' type='org.zkoss.zk.ui.AbstractComponent'>
+      <description />
+      <argument type='java.lang.String' />
+      <argument type='java.lang.Object' />
+    </method>
+    <method name='append' artefact='Domain' type='org.zkoss.zk.ui.AbstractComponent'>
+      <description />
+      <argument type='java.lang.Object' />
+    </method>
+    <method name='clear' artefact='Domain' type='org.zkoss.zul.Listbox'>
+      <description />
+    </method>
+    <method name='setModel' artefact='Domain' type='org.zkoss.zul.Listbox'>
+      <description />
+      <argument type='java.lang.Object' />
+    </method>
+    <method name='getModel' artefact='Domain' type='org.zkoss.zul.Listbox'>
+      <description />
+    </method>
+    <method name='getAt' artefact='Domain' type='org.zkoss.zul.AbstractListModel'>
+      <description />
+      <argument type='java.lang.Integer' />
+    </method>
+    <method name='getAt' artefact='Domain' type='org.zkoss.zk.ui.http.SimpleSession'>
+      <description />
+      <argument type='java.lang.String' />
+    </method>
+    <method name='putAt' artefact='Domain' type='org.zkoss.zk.ui.http.SimpleSession'>
+      <description />
+      <argument type='java.lang.String' />
+      <argument type='java.lang.Object' />
+    </method>
+    <method name='propertyMissing' artefact='Domain' type='org.zkoss.zk.ui.http.SimpleSession'>
+      <description />
+      <argument type='java.lang.String' />
+    </method>
+    <method name='propertyMissing' artefact='Domain' type='org.zkoss.zk.ui.http.SimpleSession'>
+      <description />
+      <argument type='java.lang.String' />
+      <argument type='java.lang.Object' />
+    </method>
+    <property name='model' type='org.zkoss.zul.Listbox' artefact='Domain'>
+      <description />
+    </property>
+    <property name='model' type='org.zkoss.zul.Listbox' artefact='Domain'>
+      <description />
+    </property>
+  </behavior>
 </plugin>
