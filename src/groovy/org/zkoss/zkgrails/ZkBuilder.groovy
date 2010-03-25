@@ -3,6 +3,7 @@ package org.zkoss.zkgrails
 import java.util.concurrent.ConcurrentHashMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.zkoss.zk.ui.event.EventListener
+import org.zkoss.zk.ui.sys.ComponentsCtrl
 
 class ZkBuilder {
 
@@ -107,13 +108,32 @@ class ZkBuilder {
             cls.delegate = zkBuilder
         }
         if(name =~ /on[A-Z]\w+/) {
-            zkObject.addEventListener(name, listener as EventListener)
-            return true
+            //
+            // If listener is a closure then it's a server side listener
+            // e.g. onClick { event -> doSomethingWithEvent }
+            //
+            if(listener instanceof Closure) {
+                zkObject.addEventListener(name, listener as EventListener)
+                return true
+            }
+
+            //
+            // If listener is a String then it's a client side listener
+            // e.g. onClick: "alert('Say hi from JS');"
+            //
+            else if(listener instanceof String) {
+                zkObject.setWidgetListener(name, listener)
+                return true
+            }
         }
-        if((name =~ /won[A-Z]\w+/ || name =~ /wOn[A-Z]\w+/) && listener instanceof String) {
-            name = name.substring(1, name.length()) // removes w from start
-            name = name.substring(0,2).toLowerCase() + name.substring(2, name.length()) // lower case for utilization wOnClick
-            zkObject.setWidgetListener(name, listener /* script */)
+
+        //
+        // Added support for attribute forward, which works exactly
+        // like in the .zul pages, just follow ZK spec to use it
+        // e.g. intbox(forward: "onChange=onEventA")
+        //
+        if(name == "forward" && listener instanceof String) {
+            ComponentsCtrl.applyForward(listener)
             return true
         }
         return false
