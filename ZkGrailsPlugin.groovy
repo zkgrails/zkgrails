@@ -228,6 +228,13 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         org.zkoss.zk.ui.http.SimpleSession.metaClass.propertyMissing = { String name, value ->
             delegate.setAttribute(name, value)
         }
+
+        // Load specific components. Issue #103
+        org.zkoss.zkplus.databind.DataBinder.metaClass.loadComponents = { List comps ->
+            comps.each {
+                delegate.loadComponent(it) 
+            }
+        }
     }
 
     def onChange = { event ->
