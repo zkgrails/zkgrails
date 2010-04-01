@@ -3,6 +3,7 @@ package org.zkoss.zkgrails
 import java.util.concurrent.ConcurrentHashMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.zkoss.zk.ui.event.EventListener
+import org.zkoss.zk.ui.sys.ComponentsCtrl
 
 class ZkBuilder {
 
@@ -12,53 +13,33 @@ class ZkBuilder {
     def parent
     def idComponents =[:]
 
-//    boolean resolveTag(String pack, String tag) {
-//        try {
-//            def name = tag[0].toUpperCase() + tag[1..-1];
-//            def c = "${pack}.${name}" as Class
-//            ZKNODES[tag] = c;
-//            return true;
-//        } catch(e) {
-//            return false;
-//        }
-//    }
-
     boolean getTag(String tag) {
-        if(ZKNODES.containsKey(tag)) return true
-        if(page == null) {
+        if(ZKNODES.containsKey(tag))
+            return true
+
+        if(page == null)
             page = parent.page
-        }
-        def comdef = page.getComponentDefinition(tag, true)
-        def cls    = comdef.resolveImplementationClass(page, null)
-        if(cls == null) return false
+
+        //
+        // first try on LanguageDefinition
+        // (might have custom/macro components on lang-addon.xml)
+        //
+        def comdef = page.getLanguageDefinition().getComponentDefinitionIfAny(tag)
+
+        //
+        // if nothing on LanguageDefinition
+        // then go via Page (zk default components)
+        //
+        if(!comdef) 
+            comdef = page.getComponentDefinition(tag, true)
+
+        def cls = comdef.resolveImplementationClass(page, null)
+        if(cls == null)
+            return false
+
         ZKNODES[tag] = cls
         return true
     }
-//      
-//  DONE: use this code for looking up without using HashMap
-// 
-//            Page page = this._roottag.getPage();
-//            ComponentDefinition compdef = page.getComponentDefinition(tagName, true);
-//            if(compdef==null)
-//                throw new Exception("can't find this Component's definition:"+tagName);
-//            _comp = (Component) compdef.resolveImplementationClass(page, null).newInstance();
-//
-
-//        if(ZKNODES.containsKey(tag)) return true
-//
-//            if(tag.endsWith("Event")) {
-//            if(resolveTag("org.zkoss.zk.ui.event", tag)) return true
-//                if(resolveTag("org.zkoss.zul.event", tag)) return true
-//                if(resolveTag("org.zkoss.zkmax.event", tag)) return true
-//        } else {
-//            if(resolveTag("org.zkoss.zul", tag)) return true
-//                if(resolveTag("org.zkoss.zhtml", tag)) return true
-//                if(resolveTag("org.zkoss.zkex.zul", tag)) return true
-//                if(resolveTag("org.zkoss.zkmax.zul", tag)) return true
-//        }
-//
-//        return false
-//  }
 
     def methodMissing(String name, args) {
         if (!name.startsWith('on') && getTag(name)) {
@@ -126,8 +107,45 @@ class ZkBuilder {
             zkBuilder.idComponents = idComponents
             cls.delegate = zkBuilder
         }
-        if (name =~ /on[A-Z]\w+/) {
-            zkObject.addEventListener(name, listener as EventListener)
+        if(name =~ /on[A-Z]\w+/) {
+            //
+            // If listener is a closure then it's a server side listener
+            // e.g. onClick { event -> doSomethingWithEvent }
+            //
+            if(listener instanceof Closure) {
+                zkObject.addEventListener(name, listener as EventListener)
+                return true
+            }
+
+            //
+            // If listener is a String then it's a client side listener
+            // e.g. onClick: "alert('Say hi from JS');"
+            //
+            else if(listener instanceof String) {
+                zkObject.setWidgetListener(name, listener)
+                return true
+            }
+        }
+
+        //
+        // Issue #100, Added support for attribute forward, which works 
+        // exactly like in the .zul pages, just follow ZK spec to use it
+        // e.g. intbox(forward: "onChange=onEventA")
+        //
+        if(name == "forward" && listener instanceof String) {
+            ComponentsCtrl.applyForward(listener)
+            return true
+        }
+
+        //
+        // Issue #102, support the above format with a Map
+        // e.g. intbox(forward:[onChange:"onEventA,onEventB"])
+        //
+        else if(name == "forward" && listener instanceof Map) {
+            def forwardString = listener.collect { k, v ->
+                k + "=" + v
+            }.join(",")
+            ComponentsCtrl.applyForward(forwardString)
             return true
         }
         return false
