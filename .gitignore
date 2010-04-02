@@ -9,3 +9,7 @@ web-app/
 .svn
 docs
 
+# IntelliJ IDEA project files
+.idea
+*.iml
+/out/
