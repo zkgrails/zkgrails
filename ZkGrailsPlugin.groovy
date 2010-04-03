@@ -55,7 +55,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             if(composerClass.packageName) {
                 composerBeanName = composerClass.packageName + "." + composerBeanName
             }
-            // composerBeanName = composerBeanName.replace('.', '_')
+
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
@@ -92,14 +92,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
-
-        /*
-        def welcomeFileLists = xml.'welcome-file-list'[0]
-        def wf = welcomeFileLists.'welcome-file'[0]
-        wf + {
-            'welcome-file'('index.zul')
-        }
-        */
 
         // adding GrailsOpenSessionInView
         if(manager?.hasGrailsPlugin("hibernate")) {
