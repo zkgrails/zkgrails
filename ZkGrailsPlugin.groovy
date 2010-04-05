@@ -5,7 +5,7 @@ import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.0-M3"
+    def version = "1.0-M4"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
@@ -55,7 +55,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             if(composerClass.packageName) {
                 composerBeanName = composerClass.packageName + "." + composerBeanName
             }
-            // composerBeanName = composerBeanName.replace('.', '_')
+
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
@@ -92,14 +92,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
     def doWithWebDescriptor = { xml ->
         def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
-
-        /*
-        def welcomeFileLists = xml.'welcome-file-list'[0]
-        def wf = welcomeFileLists.'welcome-file'[0]
-        wf + {
-            'welcome-file'('index.zul')
-        }
-        */
 
         // adding GrailsOpenSessionInView
         if(manager?.hasGrailsPlugin("hibernate")) {

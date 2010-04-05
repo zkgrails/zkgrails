@@ -31,6 +31,8 @@ import org.zkoss.zk.ui.event.*;
 import org.zkoss.zk.ui.sys.*;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.springframework.transaction.support.*;
+import org.springframework.transaction.*;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
     
@@ -44,6 +46,8 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         return builder;
     }
 
+    private PlatformTransactionManager transactionManager;
+
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
 
@@ -55,52 +59,72 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         } catch(BeansException e) {}
 
         try {
+            ApplicationContext ctx = SpringUtil.getApplicationContext();
+
             Object scaffold =
                 GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
             if(scaffold != null) {
-                ApplicationContext ctx = SpringUtil.getApplicationContext();
                 GrailsApplication app = (GrailsApplication) ctx.getBean(
                         GrailsApplication.APPLICATION_ID,
                         GrailsApplication.class);
 
-               ScaffoldingTemplate template = (ScaffoldingTemplate) ctx.getBean(
+                ScaffoldingTemplate template = (ScaffoldingTemplate) ctx.getBean(
                         "zkgrailsScaffoldingTemplate",
                         ScaffoldingTemplate.class);
                 template.initComponents((Class<?>)scaffold, (Component)comp, app);
             }
         } catch(BeansException e) {}
     }
+    
+    @Override
+    public void onEvent(Event evt) throws Exception {
+        ApplicationContext ctx = SpringUtil.getApplicationContext();
+        transactionManager = (PlatformTransactionManager) ctx.getBean(
+            "transactionManager",
+            PlatformTransactionManager.class
+        );
+        TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+        final Event _evt = evt;
+        txTemplate.execute(new TransactionCallbackWithoutResult() {
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    _onEvent(_evt);
+                } catch (Exception ex) {
+                    status.setRollbackOnly();
+                }
+        }});
+    }    
 
     /**
      * <p>Overrides GenericEventListener to use InvokerHelper to call methods. Because of this the events are now
      * part of groovy's dynamic methods, e.g. metaClass.invokeMethod works for event methods. Without this the default java code
-	 * don't call the overriden invokeMethod</p>
-	 *
+     * don't call the overriden invokeMethod</p>
+     *
      * @param evt
      * @throws Exception
      */
-    @Override
-	public void onEvent(Event evt) throws Exception {
-		final Object controller = getController();
-		final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
-		if (mtd != null) {
-			if (mtd.getParameterTypes().length == 0) {
+    // @Override
+    private void _onEvent(Event evt) throws Exception {
+        final Object controller = getController();
+        final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
+        if (mtd != null) {
+            if (mtd.getParameterTypes().length == 0) {
                 InvokerHelper.invokeMethod(controller, mtd.getName(), null);
             } else if (evt instanceof ForwardEvent) { //ForwardEvent
-				final Class paramcls = (Class) mtd.getParameterTypes()[0];
-				//paramcls is ForwardEvent || Event
-				if (ForwardEvent.class.isAssignableFrom(paramcls)
-					|| Event.class.equals(paramcls)) {
+                final Class paramcls = (Class) mtd.getParameterTypes()[0];
+                //paramcls is ForwardEvent || Event
+                if (ForwardEvent.class.isAssignableFrom(paramcls)
+                    || Event.class.equals(paramcls)) {
                     InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
-				} else {
-					do {
-						evt = ((ForwardEvent)evt).getOrigin();
-					} while(evt instanceof ForwardEvent);
+                } else {
+                    do {
+                        evt = ((ForwardEvent)evt).getOrigin();
+                    } while(evt instanceof ForwardEvent);
                     InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
-				}
-			} else {
+                }
+            } else {
                 InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
             }
-		}
-	}	
+        }
+    }
 }
