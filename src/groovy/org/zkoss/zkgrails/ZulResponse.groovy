@@ -13,7 +13,6 @@ public class ZulResponse {
 
     static head  = /(?m)(?s)(?i)(.*)<!-- ZK 5\.\d\.\d \d+ -->/
     static body  = /(?m)(?s)(?i)<!-- ZK 5\.\d\.\d \d+ -->(.*)/
-    static kd = /<script>zkopt\(\{kd:1\}\);<\/script>/
 
     public ZulResponse(String urlStr, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext) {
         def respBuffer = new ResponseBuffer(response) as HttpServletResponse
@@ -52,7 +51,13 @@ public class ZulResponse {
         def bodyResult = (model.source =~ body)
         if(bodyResult?.groupCount()==1) {
         	// model['body'] = bodyResult[0][1]
-            model['body'] = bodyResult[0][1].replaceAll(kd, "")
+            
+            //
+            // Issue #96 - Forces the 1st div to have 100% of height and width
+            //
+            def javaScriptFirstDivOriginal = "{style:'width:100%;',contained:true}"
+            def javaScriptFirstDivHacked = "{style:'width:100%;height:100%',contained:true}"
+            model['body'] = bodyResult[0][1].replace(javaScriptFirstDivOriginal, javaScriptFirstDivHacked)
         } else {
             // println ">> not match body"
             status.ok = false
