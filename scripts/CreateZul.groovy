@@ -62,6 +62,15 @@ target ('default': "Creates a new zul page") {
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
     def zulFile = "${basedir}/web-app/${pkgPath}${propName}.zul"
 
+    //
+    // #111 - template.zul up to date with composer bean definition
+    //
+    if(pkg) {
+        propName = "${pkg}.${propName}Composer"
+    } else {
+        propName = "#{${propName}Composer}"
+    }
+
     ant.copy(
         file:"${zkPluginDir}/src/templates/artifacts/template.zul",
         tofile: zulFile,
