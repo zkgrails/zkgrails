@@ -83,16 +83,18 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
             "transactionManager",
             PlatformTransactionManager.class
         );
-        TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
-        final Event _evt = evt;
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    _onEvent(_evt);
-                } catch (Exception ex) {
-                    status.setRollbackOnly();
-                }
-        }});
+
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            _onEvent(evt);
+        } catch (Exception ex) {
+            transactionManager.rollback(status);
+            throw ex;
+        }
+        transactionManager.commit(status);
     }    
 
     /**
