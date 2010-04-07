@@ -36,6 +36,13 @@ target ('default': "Creates a new model facade") {
     promptForName(type: type)
 
     def name = argsMap["params"][0]
+
+    //
+    // #110 - Removes the last Facade if user accidentally inputted
+    //
+    if(name.endsWith("Facade"))
+        name = name.substring(0, name.indexOf("Facade"))
+
     def domainToFacade = argsMap["params"][1]
     // println "0: " + argsMap["params"][0]
     // println "1: " + argsMap["params"][1]

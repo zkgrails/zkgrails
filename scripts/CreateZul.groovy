@@ -35,6 +35,12 @@ target ('default': "Creates a new zul page") {
     promptForName(type: type)
     def name = argsMap["params"][0]
 
+    //
+    // #110 - Removes the last Composer if user accidentally inputted
+    //
+    if(name.endsWith("Composer"))
+        name = name.substring(0, name.indexOf("Composer"))
+
     def suffix = "Composer"
     def artifactPath = "grails-app/composers"
     createArtifact(name: name, suffix: suffix, type: suffix, path: artifactPath)

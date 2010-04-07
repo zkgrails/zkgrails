@@ -34,6 +34,13 @@ target ('default': "Creates a new composer") {
     promptForName(type: type)
 
     def name = argsMap["params"][0]
+
+    //
+    // #110 - Removes the last Composer if user accidentally inputted
+    //
+    if(name.endsWith("Composer"))
+        name = name.substring(0, name.indexOf("Composer"))
+
     createArtifact(name: name, suffix: type, type: type, path: "grails-app/composers")
 
     // check if input contains package
