@@ -58,18 +58,17 @@ target ('default': "Creates a new zul page") {
         pkgPath = pkg.replace('.' as char, '/' as char)
         pkgPath += '/'
     }
+    //
+    // #109 - Grails enforces use of package, we have to go along then
+    //
+    else {
+        pkgPath = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/"
+    }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
     def zulFile = "${basedir}/web-app/${pkgPath}${propName}.zul"
 
-    //
-    // #111 - template.zul up to date with composer bean definition
-    //
-    if(pkg) {
-        propName = "${pkg}.${propName}Composer"
-    } else {
-        propName = "#{${propName}Composer}"
-    }
+    propName = "${pkgPath.replace('/', '.')}${propName}Composer"
 
     ant.copy(
         file:"${zkPluginDir}/src/templates/artifacts/template.zul",
@@ -94,6 +93,4 @@ target ('default': "Creates a new zul page") {
         token: "@artifact.name.prop@",
         value: propName
     )
-
 }
-

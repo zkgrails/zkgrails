@@ -60,7 +60,15 @@ target ('default': "Creates a new composer") {
     }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
-    def filename = pkgPath + GrailsNameUtils.getClassName(name, type)
+    def filename
+
+    //
+    // #109 - Grails enforces use of package, we have to go along then
+    //
+    if(pkg)
+        filename = pkgPath + GrailsNameUtils.getClassName(name, type)
+    else
+        filename = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/" + GrailsNameUtils.getClassName(name, type)
 
     // create a facade property for the composer
     ant.replace(
@@ -68,5 +76,4 @@ target ('default': "Creates a new composer") {
         token: "@artifact.name.prop@",
         value: propName
     )
-
 }
