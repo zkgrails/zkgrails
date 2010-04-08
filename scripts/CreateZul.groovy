@@ -36,6 +36,11 @@ target ('default': "Creates a new zul page") {
     def name = argsMap["params"][0]
 
     //
+    // #75 - Replaces "/" and "\" with "."
+    //
+    name = name.replace('/', '.').replace('\\', '.')
+
+    //
     // #110 - Removes the last Composer if user accidentally inputted
     //
     if(name.endsWith("Composer"))

@@ -37,6 +37,11 @@ target ('default': "Creates a new model facade") {
 
     def name = argsMap["params"][0]
 
+    //
+    // #75 - Replaces "/" and "\" with "."
+    //
+    name = name.replace('/', '.').replace('\\', '.')
+
 	createArtifact(name: name, suffix: type, type: type, path: "grails-app/facade")
 
     def pkg = null
