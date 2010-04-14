@@ -3,70 +3,64 @@ package org.zkoss.zkgrails
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import java.io.Writer
 import javax.servlet.http.HttpServletResponseWrapper
+import org.apache.log4j.Logger
 
 public class ZulResponse {
+    private static Logger LOG = Logger.getLogger(ZulResponse)
 
     def model = [:]
     def status = [:]
 
-    static head  = /(?m)(?s)(?i)(.*)<!-- ZK 5\.\d\.\d \d+ -->/
-    static body  = /(?m)(?s)(?i)<!-- ZK 5\.\d\.\d \d+ -->(.*)/
+    static sliceDefs = [
+        ['head', ~/(?m)(?s)(?i)\A.*\Q<div id="z_\E/, '<div id="z_'],
+        ['body', ~/(?m)(?s)(?i)\Q<div id="z_\E.*>.*/, null]
+    ]
 
     public ZulResponse(String urlStr, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext) {
+        //long start = System.currentTimeMillis()
         def respBuffer = new ResponseBuffer(response) as HttpServletResponse
         try {
             servletContext.getRequestDispatcher(urlStr).include(request, respBuffer)
         } catch (Exception ex) {
-            // println "ZulResponse('$urlStr') got err: $ex.message"
             status.ok = false
             status.exception = ex
             return
         }
         status.ok = true
         model.source = respBuffer.toString()
-        // println ("-" * 50)
-        // println model.source
-        def headResult = (model.source =~ head)
-        // println ("-" * 50)
-        // println headResult
-        // println ("-" * 50)
-        // println headResult[0]
-        // println ("-" * 50)
-        // println headResult[0][1]
-        // println ("-" * 50)
-        if(headResult?.groupCount()==1) {
-            // remove title, so that we can customise it in GSP
-            model['head'] = headResult[0][1]
-            // .replaceAll(title, "")
-        } else{
-            // println ">> not match head"
-            status.ok = false
-        }
+        def err=false
+        sliceDefs.each{ name, regexp, cutoff ->
+            def matchr = (model.source =~ regexp)
 
-        // performance improvement, no further match if error occurred.
-        if(status.ok == false) return
+            if (matchr) {
+                def part = matchr[0]
 
-        def bodyResult = (model.source =~ body)
-        if(bodyResult?.groupCount()==1) {
-        	// model['body'] = bodyResult[0][1]
-            
-            //
-            // Issue #96 - Forces the 1st div to have 100% of height and width
-            //
-            def javaScriptFirstDivOriginal = "{style:'width:100%;',contained:true}"
-            def javaScriptFirstDivHacked = "{style:'width:100%;height:100%',contained:true}"
-            model['body'] = bodyResult[0][1].replace(javaScriptFirstDivOriginal, javaScriptFirstDivHacked)
-        } else {
-            // println ">> not match body"
-            status.ok = false
+                if (cutoff && part.endsWith(cutoff)) {
+                    int end = part.size() - cutoff.size() - 1
+                    part = part[0..end]?.trim()
+                }
+
+                if(name == 'head') {
+                    model[name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
+                } else {
+                    def javaScriptFirstDivOriginal = "{style:'width:100%;',contained:true}"
+                    def javaScriptFirstDivHacked = "{style:'width:100%;height:100%',contained:true}"
+                    part = part.replace(javaScriptFirstDivOriginal, javaScriptFirstDivHacked)
+                    model[name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
+                }
+            } else {
+                model[name] = "regexp $regexp not found\n\n\n$model.source"
+                err = true
+                LOG.error model[name]
+            }
         }
+        //long end = System.currentTimeMillis()
+        //println "Took ${end-start} ms to process"
     }
 }
 
 public class ResponseBuffer extends HttpServletResponseWrapper {
-
     StringWriter sw = new StringWriter()
     PrintWriter writer = new PrintWriter(sw)
 
@@ -76,5 +70,4 @@ public class ResponseBuffer extends HttpServletResponseWrapper {
     public ResponseBuffer(HttpServletResponse response) {
         super(response)
     }
-
 }
