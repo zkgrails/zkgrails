@@ -34,6 +34,18 @@ target ('default': "Creates a new composer") {
     promptForName(type: type)
 
     def name = argsMap["params"][0]
+
+    //
+    // #75 - Replaces "/" and "\" with "."
+    //
+    name = name.replace('/', '.').replace('\\', '.')
+
+    //
+    // #110 - Removes the last Composer if user accidentally inputted
+    //
+    if(name.endsWith("Composer"))
+        name = name.substring(0, name.indexOf("Composer"))
+
     createArtifact(name: name, suffix: type, type: type, path: "grails-app/composers")
 
     // check if input contains package
@@ -53,7 +65,15 @@ target ('default': "Creates a new composer") {
     }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
-    def filename = pkgPath + GrailsNameUtils.getClassName(name, type)
+    def filename
+
+    //
+    // #109 - Grails enforces use of package, we have to go along then
+    //
+    if(pkg)
+        filename = pkgPath + GrailsNameUtils.getClassName(name, type)
+    else
+        filename = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/" + GrailsNameUtils.getClassName(name, type)
 
     // create a facade property for the composer
     ant.replace(
@@ -61,5 +81,4 @@ target ('default': "Creates a new composer") {
         token: "@artifact.name.prop@",
         value: propName
     )
-
 }

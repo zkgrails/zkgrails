@@ -35,6 +35,17 @@ target ('default': "Creates a new zul page") {
     promptForName(type: type)
     def name = argsMap["params"][0]
 
+    //
+    // #75 - Replaces "/" and "\" with "."
+    //
+    name = name.replace('/', '.').replace('\\', '.')
+
+    //
+    // #110 - Removes the last Composer if user accidentally inputted
+    //
+    if(name.endsWith("Composer"))
+        name = name.substring(0, name.indexOf("Composer"))
+
     def suffix = "Composer"
     def artifactPath = "grails-app/composers"
     createArtifact(name: name, suffix: suffix, type: suffix, path: artifactPath)
@@ -52,9 +63,17 @@ target ('default': "Creates a new zul page") {
         pkgPath = pkg.replace('.' as char, '/' as char)
         pkgPath += '/'
     }
+    //
+    // #109 - Grails enforces use of package, we have to go along then
+    //
+    else {
+        pkgPath = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/"
+    }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
     def zulFile = "${basedir}/web-app/${pkgPath}${propName}.zul"
+
+    propName = "${pkgPath.replace('/', '.')}${propName}Composer"
 
     ant.copy(
         file:"${zkPluginDir}/src/templates/artifacts/template.zul",
@@ -79,6 +98,4 @@ target ('default': "Creates a new zul page") {
         token: "@artifact.name.prop@",
         value: propName
     )
-
 }
-

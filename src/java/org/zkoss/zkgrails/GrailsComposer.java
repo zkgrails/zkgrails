@@ -75,25 +75,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
             }
         } catch(BeansException e) {}
     }
-    
-    @Override
-    public void onEvent(Event evt) throws Exception {
-        ApplicationContext ctx = SpringUtil.getApplicationContext();
-        transactionManager = (PlatformTransactionManager) ctx.getBean(
-            "transactionManager",
-            PlatformTransactionManager.class
-        );
-        TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
-        final Event _evt = evt;
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    _onEvent(_evt);
-                } catch (Exception ex) {
-                    status.setRollbackOnly();
-                }
-        }});
-    }    
+
 
     /**
      * <p>Overrides GenericEventListener to use InvokerHelper to call methods. Because of this the events are now
@@ -103,8 +85,8 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
      * @param evt
      * @throws Exception
      */
-    // @Override
-    private void _onEvent(Event evt) throws Exception {
+    @Override
+    public void onEvent(Event evt) throws Exception {
         final Object controller = getController();
         final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
         if (mtd != null) {

@@ -131,21 +131,23 @@ class ZkBuilder {
         // Issue #100, Added support for attribute forward, which works 
         // exactly like in the .zul pages, just follow ZK spec to use it
         // e.g. intbox(forward: "onChange=onEventA")
+        // Issue #108, MissingMethodException on applyForward(listener)
         //
         if(name == "forward" && listener instanceof String) {
-            ComponentsCtrl.applyForward(listener)
+            ComponentsCtrl.applyForward(zkObject, listener)
             return true
         }
 
         //
         // Issue #102, support the above format with a Map
         // e.g. intbox(forward:[onChange:"onEventA,onEventB"])
+        // Issue #108, MissingMethodException on applyForward(listener)
         //
         else if(name == "forward" && listener instanceof Map) {
             def forwardString = listener.collect { k, v ->
                 k + "=" + v
             }.join(",")
-            ComponentsCtrl.applyForward(forwardString)
+            ComponentsCtrl.applyForward(zkObject, forwardString)
             return true
         }
         return false

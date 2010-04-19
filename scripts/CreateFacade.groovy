@@ -36,6 +36,34 @@ target ('default': "Creates a new model facade") {
     promptForName(type: type)
 
     def name = argsMap["params"][0]
+
+    //
+    // #75 - Replaces "/" and "\" with "."
+    //
+    name = name.replace('/', '.').replace('\\', '.')
+
+	createArtifact(name: name, suffix: type, type: type, path: "grails-app/facade")
+
+    def pkg = null
+    def pos = name.lastIndexOf('.')
+    if (pos != -1) {
+        pkg = name[0..<pos]
+        name = name[(pos + 1)..-1]
+    }
+
+    // Convert the package into a file path.
+    def pkgPath = ''
+    if (pkg) {
+        pkgPath = pkg.replace('.' as char, '/' as char)
+        pkgPath += '/'
+    }
+
+    //
+    // #110 - Removes the last Facade if user accidentally inputted
+    //
+    if(name.endsWith("Facade"))
+        name = name.substring(0, name.indexOf("Facade"))
+
     def domainToFacade = argsMap["params"][1]
     // println "0: " + argsMap["params"][0]
     // println "1: " + argsMap["params"][1]
@@ -45,9 +73,15 @@ target ('default': "Creates a new model facade") {
     }
     def domainName = GrailsNameUtils.getClassName(domainToFacade, null)
     // println "Domain name : $domainName"
-    def filename = GrailsNameUtils.getClassName(name, type)
 
-	createArtifact(name: name, suffix: type, type: type, path: "grails-app/facade")
+    def filename
+    //
+    // #109 - Grails enforces use of package, we have to go along then
+    //
+    if(pkg)
+        filename = pkgPath + GrailsNameUtils.getClassName(name, type)
+    else
+        filename = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/" + GrailsNameUtils.getClassName(name, type)
 
     ant.replace(
         file: "${basedir}/grails-app/facade/${filename}.groovy",
@@ -60,5 +94,4 @@ target ('default': "Creates a new model facade") {
         token: "@artifact.domain.plural@",
         value: pluralOf(domainName, ENGLISH)
     )
-
 }
