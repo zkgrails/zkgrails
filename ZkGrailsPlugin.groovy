@@ -91,7 +91,21 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         "org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter"
 
     def doWithWebDescriptor = { xml ->
-        def urls = ["*.zul", "*.zhtml", "*.svg", "*.xml2html"]
+        //
+        // e.g. ["zul"]
+        //
+        def supportExts = ZkConfigHelper.supportExtensions
+
+        //
+        // e.g. ["*.zul", "/zkau/*"]
+        //
+        def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
+        
+        //
+        // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
+        //
+        def urls = supportExts.collect{ "*." + it } + 
+                   ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
         // adding GrailsOpenSessionInView
         if(manager?.hasGrailsPlugin("hibernate")) {
@@ -104,7 +118,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             }
             // filter for each ZK urls
             def filterMappingElements = xml.'filter-mapping'[0]
-            ["*.zul", "/zkau/*"].each {p ->
+            filterUrls.each {p ->
                 filterMappingElements + {
                     'filter-mapping' {
                         'filter-name'("GOSIVFilter")

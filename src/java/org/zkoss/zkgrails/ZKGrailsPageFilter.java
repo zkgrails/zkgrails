@@ -84,12 +84,23 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
     }    
 
     private boolean isZK(HttpServletRequest request) {
-        String path = extractRequestPath(request);
-        final String[] ext = new String[]{".zul",".dsp","*.zhtml", "*.svg", "*.xml2html"};
-        for(int i=0;i < ext.length; i++) {
-            if(path.lastIndexOf(ext[i])!=-1) return true;
+        if(path.indexOf("/zkau") != -1) return true;
+
+        //
+        // Extend checking in custom url mapping in custom url mapping
+        // By default, ["zul"] will be checked here
+        //
+        ArrayList<String> arrExtensions = ZkConfigHelper.getSupportExtensions();
+        for(String sExt : arrExtensions) {
+            if(path.lastIndexOf("." + sExt) != -1) return true;
         }
-        if(path.indexOf("/zkau")!=-1) return true;
+
+        String path = extractRequestPath(request);
+        final String[] ext = new String[]{".dsp",".zhtml", ".svg", ".xml2html"};
+        for(int i=0;i < ext.length; i++) {
+            if(path.lastIndexOf(ext[i]) != -1) return true;
+        }
+
         return false;
     }
 
