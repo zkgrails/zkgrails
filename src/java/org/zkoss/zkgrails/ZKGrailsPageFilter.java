@@ -39,6 +39,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.*;
 
 import org.codehaus.groovy.grails.web.sitemesh.*;
 
@@ -84,6 +85,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
     }    
 
     private boolean isZK(HttpServletRequest request) {
+        String path = extractRequestPath(request);
         if(path.indexOf("/zkau") != -1) return true;
 
         //
@@ -95,7 +97,6 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
             if(path.lastIndexOf("." + sExt) != -1) return true;
         }
 
-        String path = extractRequestPath(request);
         final String[] ext = new String[]{".dsp",".zhtml", ".svg", ".xml2html"};
         for(int i=0;i < ext.length; i++) {
             if(path.lastIndexOf(ext[i]) != -1) return true;
