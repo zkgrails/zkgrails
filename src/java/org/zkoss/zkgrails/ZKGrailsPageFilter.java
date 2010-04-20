@@ -89,7 +89,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
         if(path.indexOf("/zkau") != -1) return true;
 
         //
-        // Extend checking in custom url mapping in custom url mapping
+        // Extended checking in support extension configuration
         // By default, ["zul"] will be checked here
         //
         ArrayList<String> arrExtensions = ZkConfigHelper.getSupportExtensions();
