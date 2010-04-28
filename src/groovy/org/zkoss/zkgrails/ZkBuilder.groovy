@@ -107,7 +107,7 @@ class ZkBuilder {
             zkBuilder.idComponents = idComponents
             cls.delegate = zkBuilder
         }
-        if(name =~ /on[A-Z]\w+/) {
+        if(name =~ /^on[A-Z]\w+/) {
             //
             // If listener is a closure then it's a server side listener
             // e.g. onClick { event -> doSomethingWithEvent }
