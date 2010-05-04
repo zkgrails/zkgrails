@@ -25,10 +25,13 @@ class ZkGrailsPlugin {
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
-            "grails-app/composers/**",
-            "grails-app/facades/**",
-            "grails-app/views/error.gsp",
-            "web-app/**"
+        "grails-app/composers/**",
+        "grails-app/facades/**",
+        "grails-app/views/error.gsp",
+        "lib/selenium/*.jar",
+        "web-app/**",
+        "src/java/org/zkoss/zkgrails/test/**",
+        "test/**"
     ]
 
     // TODO Fill in these fields
