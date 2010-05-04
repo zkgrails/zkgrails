@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk>
     <system-config>
-        <id-generator-class>rg.zkoss.zkgrails.test.TestIdGenerator</id-generator-class>
+        <disable-event-thread/>
+        <id-generator-class>org.zkoss.zkgrails.test.TestIdGenerator</id-generator-class>
     </system-config>    
     <listener>
         <description>ThreadLocal Synchronization Listener</description>
