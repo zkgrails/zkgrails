@@ -1,11 +1,32 @@
 final ZK_THEMES_DIR = "${basedir}/zk-themes/"
 
 eventSetClasspath = { classLoader ->
+
+    //
+    // support themes
+    //
     if(new File(ZK_THEMES_DIR).exists()) {
         println "Adding theme jars to class loader"
         def themeJars = resolveResources("file:${ZK_THEMES_DIR}*.jar")
         for(jar in themeJars) {
             classLoader.addURL(jar.URL)
+        }
+    }
+
+    //
+    // Support ZK-EE.
+    // Adding all jars from different plugins into the same class loader.
+    //
+    // To check which variables are available to use:
+    //   println delegate.variables.each { k, v -> println k }
+    //
+    if(metadata['plugins.zk-ee']) {
+        if(new File("${zkEePluginDir}/lib/").exists()) {
+            println "Adding ZK-EE jars to the class loader"
+            def eeJars = resolveResources("${zkEePluginDir}/lib/*.jar")
+            for(jar in eeJars) {
+                classLoader.addURL(jar.URL)
+            }
         }
     }
 }
