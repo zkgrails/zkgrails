@@ -9,7 +9,7 @@ class SimpleWebTests extends GroovyTestCase {
 
     void testNonPackageComposer() {
         selenium.with {
-            setSpeed "250"
+            setSpeed "1000"
             open "/zk/non_package_composer_tests.zul"
             click "zk_comp_3"
             assertEquals "clicked", getText("zk_comp_3")
@@ -18,7 +18,7 @@ class SimpleWebTests extends GroovyTestCase {
 
     void testPackageComposer() {
         selenium.with {
-            setSpeed("500")
+            setSpeed("1000")
             open("/zk/test/index.zul")
             focus("zk_comp_9")
             type("zk_comp_9", "test")
