@@ -31,7 +31,6 @@ class ZkGrailsPlugin {
         "grails-app/facades/**",
         "grails-app/views/error.gsp",
         "web-app/**",
-        "src/java/org/zkoss/zkgrails/test/**",
         "test/**"
     ]
 
