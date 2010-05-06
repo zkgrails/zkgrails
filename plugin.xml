@@ -11,6 +11,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>NonPackageComposer</resource>
     <resource>test.IndexComposer</resource>
     <resource>BuildConfig</resource>
+    <resource>Config</resource>
     <resource>DataSource</resource>
     <resource>SeleniumConfig</resource>
     <resource>UrlMappings</resource>
