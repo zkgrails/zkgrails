@@ -25,6 +25,7 @@ class ZkGrailsPlugin {
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
+        "grails-app/conf/Config.groovy",    
         "grails-app/conf/BuildConfig.groovy",
         "grails-app/conf/SeleniumConfig.groovy",        
         "grails-app/composers/**",
