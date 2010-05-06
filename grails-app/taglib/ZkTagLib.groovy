@@ -77,6 +77,10 @@ class ZkTagLib {
 
         out << label
     }
+    
+    def resource = { attrs, b ->
+
+    }
 
     private cacheZul(url) {
         if(pageScope.variables.containsKey("cached")==false) {
