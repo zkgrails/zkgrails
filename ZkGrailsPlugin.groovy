@@ -31,6 +31,7 @@ class ZkGrailsPlugin {
         "grails-app/composers/**",
         "grails-app/facades/**",
         "grails-app/views/error.gsp",
+        "grails-app/taglib/MyTagLib.groovy",
         "web-app/**",
         "test/**"
     ]
