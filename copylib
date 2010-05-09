@@ -5,18 +5,5 @@ for i in $LIST ;
 do
   FILE=`basename $i`
   cp -vf $SRC/$FILE $DST/$FILE
-done
-
-LIST=`ls lib/ext/*.jar`
-for i in $LIST ;
-do
-  FILE=`basename $i`
-  cp -vf $SRC/ext/$FILE $DST/ext/$FILE
-done
-
-LIST=`ls lib/zkforge/*.jar`
-for i in $LIST ;
-do
-  FILE=`basename $i`
-  cp -vf $SRC/$FILE $DST/zkforge/$FILE
+  cp -vf $SRC/ext/$FILE $DST/$FILE
 done
