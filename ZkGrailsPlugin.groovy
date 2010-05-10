@@ -1,4 +1,5 @@
 import org.zkoss.zkgrails.*
+import org.zkoss.zkgrails.artefacts.*
 import org.zkoss.zk.ui.event.EventListener
 import grails.util.Environment
 import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
@@ -14,8 +15,8 @@ class ZkGrailsPlugin {
     def loadAfter = ['hibernate']
 
     def artefacts = [
-        org.zkoss.zkgrails.ComposerArtefactHandler,
-        org.zkoss.zkgrails.FacadeArtefactHandler
+        org.zkoss.zkgrails.artefacts.ComposerArtefactHandler,
+        org.zkoss.zkgrails.artefacts.FacadeArtefactHandler
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
@@ -25,9 +26,9 @@ class ZkGrailsPlugin {
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
-        "grails-app/conf/Config.groovy",    
+        "grails-app/conf/Config.groovy",
         "grails-app/conf/BuildConfig.groovy",
-        "grails-app/conf/SeleniumConfig.groovy",        
+        "grails-app/conf/SeleniumConfig.groovy",
         "grails-app/composers/**",
         "grails-app/facades/**",
         "grails-app/views/error.gsp",
@@ -105,11 +106,11 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         // e.g. ["*.zul", "/zkau/*"]
         //
         def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
-        
+
         //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
         //
-        def urls = supportExts.collect{ "*." + it } + 
+        def urls = supportExts.collect{ "*." + it } +
                    ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
         // adding GrailsOpenSessionInView
@@ -184,15 +185,15 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
     def doWithDynamicMethods = { ctx ->
 
-        // Simpler way to add and remove event        
+        // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
             if(name.startsWith("on") && handler instanceof Closure) {
                 delegate.addEventListener(name, handler as EventListener)
             } else {
                 throw new MissingPropertyException(name, delegate.class)
             }
-        } 
-        
+        }
+
         // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = {String name, args ->
             // converts OnXxxx to onXxxx
