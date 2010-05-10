@@ -18,26 +18,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.zkoss.zkgrails;
 
-import org.zkoss.zkplus.spring.SpringUtil;
-import java.lang.reflect.Method;
-import org.springframework.context.ApplicationContext;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import groovy.lang.Closure;
-import java.util.*;
-import org.zkoss.zk.ui.*;
-import org.springframework.beans.*;
-import org.zkoss.zkgrails.scaffolding.*;
-import org.zkoss.zk.ui.event.*;
-import org.zkoss.zk.ui.sys.*;
+
+import java.lang.reflect.Method;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
+import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.springframework.transaction.support.*;
-import org.springframework.transaction.*;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.ForwardEvent;
+import org.zkoss.zk.ui.sys.ComponentsCtrl;
+import org.zkoss.zkgrails.scaffolding.ScaffoldingTemplate;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
-    
-    public GrailsComposer() {
+
+	private static final long serialVersionUID = -5307023773234300419L;
+
+	public GrailsComposer() {
         super('_');
     }
     
@@ -46,8 +48,6 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         builder.setPage(page);
         return builder;
     }
-
-    private PlatformTransactionManager transactionManager;
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -114,7 +114,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
             if (mtd.getParameterTypes().length == 0) {
                 InvokerHelper.invokeMethod(controller, mtd.getName(), null);
             } else if (evt instanceof ForwardEvent) { //ForwardEvent
-                final Class paramcls = (Class) mtd.getParameterTypes()[0];
+                final Class<?> paramcls = (Class<?>) mtd.getParameterTypes()[0];
                 //paramcls is ForwardEvent || Event
                 if (ForwardEvent.class.isAssignableFrom(paramcls)
                     || Event.class.equals(paramcls)) {

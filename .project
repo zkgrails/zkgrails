@@ -10,14 +10,17 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>org.codehaus.groovy.eclipse.groovyBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>com.springsource.sts.grails.core.nature</nature>
+		<nature>org.eclipse.jdt.groovy.core.groovyNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.codehaus.groovy.eclipse.groovyNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>tomcat-1.2.2-src-groovy</name>
+			<type>2</type>
+			<location>C:/Documents and Settings/1/.grails/1.2.2/projects/zkgrails/plugins/tomcat-1.2.2/src/groovy</location>
+		</link>
+	</linkedResources>
 </projectDescription>
