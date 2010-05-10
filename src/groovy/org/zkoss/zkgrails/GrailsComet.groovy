@@ -41,8 +41,11 @@ class GrailsComet {
             Thread.sleep(startDelay)
             while(!stop) {
                 Executions.activate(desktop)
-                executeClosure.call(desktop, page)
-                Executions.deactivate(desktop)
+                try {
+                    executeClosure.call(desktop, page)
+                } finally {
+                    Executions.deactivate(desktop)
+                }
                 Thread.sleep(delay)
             }
         }
