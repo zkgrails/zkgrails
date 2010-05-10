@@ -60,22 +60,38 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload == true || (developmentMode && env == Environment.DEVELOPMENT)
         boolean warDeployedWithReload = application.warDeployed && enableReload
 
+        //
+        // Registering Composer Beans
+        //
         application.composerClasses.each { composerClass ->
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
                 composerBeanName = composerClass.packageName + "." + composerBeanName
             }
-
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
+
         }
 
+        //
+        // Registering Facade Beans
+        //
         application.facadeClasses.each { facadeClass ->
             "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                 bean.scope = "session"
                 bean.autowire = "byName"
+            }
+        }
+
+        //
+        // Registering Comet classes
+        //
+        application.cometClasses.each { cometClass ->
+            "${cometClass.propertyName}"(cometClass.clazz) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "none"
             }
         }
 

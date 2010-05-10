@@ -1,8 +1,8 @@
 package org.zkoss.zkgrails.artefacts;
 
-import org.codehaus.groovy.grails.commons.AbstractInjectableGrailsClass;
+import org.codehaus.groovy.grails.commons.AbstractGrailsClass;
 
-public class DefaultGrailsCometClass extends AbstractInjectableGrailsClass
+public class DefaultGrailsCometClass extends AbstractGrailsClass
     implements GrailsCometClass {
 
     public static final String COMET = "Comet";

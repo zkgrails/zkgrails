@@ -20,6 +20,7 @@ package org.zkoss.zkgrails;
 
 import groovy.lang.Closure;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
@@ -29,6 +30,8 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Desktop;
+import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.ForwardEvent;
 import org.zkoss.zk.ui.sys.ComponentsCtrl;
@@ -37,20 +40,39 @@ import org.zkoss.zkplus.spring.SpringUtil;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
 
-	private static final long serialVersionUID = -5307023773234300419L;
+    private static final long serialVersionUID = -5307023773234300419L;
 
-	public GrailsComposer() {
+    public GrailsComposer() {
         super('_');
     }
-    
+
+    public Desktop getDesktop() {
+        return this.desktop;
+    }
+
+    public Page getPage() {
+        return this.page;
+    }
+
     public ZkBuilder getBuild() {
         ZkBuilder builder = new ZkBuilder();
         builder.setPage(page);
         return builder;
     }
 
+    public void injectComet() throws Exception {
+        Field[] fields = this.getClass().getDeclaredFields();
+        for(Field f: fields) {
+            if(f.getName().endsWith("Comet")) {
+                GrailsComet gc = (GrailsComet)InvokerHelper.getProperty(this, f.getName());
+                gc.setGrailsComposer(this);
+            }
+        }
+    }
+
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+        injectComet();
 
         try {
           Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
