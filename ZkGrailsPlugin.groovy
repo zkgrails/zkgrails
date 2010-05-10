@@ -15,12 +15,15 @@ class ZkGrailsPlugin {
     def loadAfter = ['hibernate']
 
     def artefacts = [
+        org.zkoss.zkgrails.artefacts.CometArtefactHandler,
         org.zkoss.zkgrails.artefacts.ComposerArtefactHandler,
         org.zkoss.zkgrails.artefacts.FacadeArtefactHandler
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
                             "file:./plugins/*/grails-app/composers/**/*Composer.groovy",
+                            "file:./grails-app/comets/**/*Comet.groovy",
+                            "file:./plugins/*/grails-app/comets/**/*Comet.groovy",
                             "file:./grails-app/facade/**/*Facade.groovy",
                             "file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
 
@@ -29,8 +32,9 @@ class ZkGrailsPlugin {
         "grails-app/conf/Config.groovy",
         "grails-app/conf/BuildConfig.groovy",
         "grails-app/conf/SeleniumConfig.groovy",
+        "grails-app/comets/**",
         "grails-app/composers/**",
-        "grails-app/facades/**",
+        "grails-app/facade/**",
         "grails-app/views/error.gsp",
         "grails-app/taglib/MyTagLib.groovy",
         "web-app/**",
