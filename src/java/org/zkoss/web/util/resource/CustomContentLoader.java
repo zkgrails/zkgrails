@@ -1,27 +1,33 @@
 package org.zkoss.web.util.resource;
 
-import javax.servlet.ServletContext;
-import org.zkoss.io.Files;
-import java.io.*;
-import java.util.*;
-import java.net.URL;
-import org.zkoss.util.resource.Locator;
-import org.zkoss.zk.ui.metainfo.Parser;
-import org.zkoss.zk.ui.metainfo.PageDefinitions;
-import org.zkoss.zk.ui.WebApp;
-
-import org.codehaus.groovy.grails.web.pages.*;
-
-import groovy.text.Template;
 import groovy.lang.Writable;
+import groovy.text.Template;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URL;
+
+import javax.servlet.ServletContext;
+
+import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.zkoss.util.resource.Locator;
+import org.zkoss.zk.ui.WebApp;
 import org.zkoss.zk.ui.metainfo.PageDefinition;
+import org.zkoss.zk.ui.metainfo.PageDefinitions;
+import org.zkoss.zk.ui.metainfo.Parser;
 
 public class CustomContentLoader extends ResourceLoader {
+	
+    private static final String UTF_8_ENCODING = "UTF-8";
+    private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";	
 
     private final WebApp _wapp;
     private final ApplicationContext _ctx;
@@ -43,16 +49,19 @@ public class CustomContentLoader extends ResourceLoader {
             locator = PageDefinitions.getLocator(_wapp, path);
 
         GroovyPagesTemplateEngine gsp = (GroovyPagesTemplateEngine)_ctx.getBean("groovyPagesTemplateEngine");
-        
-        // checked
+
         byte[] buffer = new byte[(int)file.length()];
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
         bis.read(buffer);
-        String bufferStr = new String(buffer, "UTF-8");
+        
+        String encoding = (String)ConfigurationHolder.getFlatConfig().get(CONFIG_OPTION_GSP_ENCODING);
+        if(encoding == null) encoding = UTF_8_ENCODING;        
+        
+        String bufferStr = new String(buffer, encoding);
         bufferStr = bufferStr.replaceAll("@\\{", "\\$\\{'@'\\}\\{");        
 
         // checked
-        Template template = gsp.createTemplate(new ByteArrayResource(bufferStr.getBytes("UTF-8")));
+        Template template = gsp.createTemplate(new ByteArrayResource(bufferStr.getBytes(encoding)));
 
         //
         // Issue 113 is between here
