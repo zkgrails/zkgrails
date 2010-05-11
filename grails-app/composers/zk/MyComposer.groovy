@@ -7,12 +7,10 @@ class MyComposer extends GrailsComposer {
     def lblTest
     def myComet
 
-    def afterCompose = {
-        myComet.start()
-    }
+    def afterCompose = {    }
 
-    def onClick_btnStop() {
-        myComet.stop()
+    def onClick_btnStart() {
+        myComet.start()
     }
 
 }
