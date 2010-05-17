@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd" >
+    <vbox>
+        <label>版本1.0</label>
+        <label>说明</label>
+    </vbox>
+    <panel collapsible="true" open="false" >
+        <caption label="版本1.0" />
+        <panelchildren>
+
+        </panelchildren>
+    </panel>
+    <panel collapsible="true" >
+        <caption label="说明" />
+        <panelchildren>
+         
+        </panelchildren>
+    </panel>
+
+
+
+
+</zk>

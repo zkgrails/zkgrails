@@ -18,39 +18,61 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.zkoss.zkgrails;
 
-import org.zkoss.zkplus.spring.SpringUtil;
-import java.lang.reflect.Method;
-import org.springframework.context.ApplicationContext;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import groovy.lang.Closure;
-import java.util.*;
-import org.zkoss.zk.ui.*;
-import org.springframework.beans.*;
-import org.zkoss.zkgrails.scaffolding.*;
-import org.zkoss.zk.ui.event.*;
-import org.zkoss.zk.ui.sys.*;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
+import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.springframework.transaction.support.*;
-import org.springframework.transaction.*;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Desktop;
+import org.zkoss.zk.ui.Page;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.ForwardEvent;
+import org.zkoss.zk.ui.sys.ComponentsCtrl;
+import org.zkoss.zkgrails.scaffolding.ScaffoldingTemplate;
+import org.zkoss.zkplus.spring.SpringUtil;
 
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
-    
+
+    private static final long serialVersionUID = -5307023773234300419L;
+
     public GrailsComposer() {
         super('_');
     }
-    
+
+    public Desktop getDesktop() {
+        return this.desktop;
+    }
+
+    public Page getPage() {
+        return this.page;
+    }
+
     public ZkBuilder getBuild() {
         ZkBuilder builder = new ZkBuilder();
         builder.setPage(page);
         return builder;
     }
 
-    private PlatformTransactionManager transactionManager;
+    public void injectComet() throws Exception {
+        Field[] fields = this.getClass().getDeclaredFields();
+        for(Field f: fields) {
+            if(f.getName().endsWith("Comet")) {
+                GrailsComet gc = (GrailsComet)InvokerHelper.getProperty(this, f.getName());
+                gc.setGrailsComposer(this);
+            }
+        }
+    }
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+        injectComet();
 
         try {
           Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
@@ -114,7 +136,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
             if (mtd.getParameterTypes().length == 0) {
                 InvokerHelper.invokeMethod(controller, mtd.getName(), null);
             } else if (evt instanceof ForwardEvent) { //ForwardEvent
-                final Class paramcls = (Class) mtd.getParameterTypes()[0];
+                final Class<?> paramcls = (Class<?>) mtd.getParameterTypes()[0];
                 //paramcls is ForwardEvent || Event
                 if (ForwardEvent.class.isAssignableFrom(paramcls)
                     || Event.class.equals(paramcls)) {

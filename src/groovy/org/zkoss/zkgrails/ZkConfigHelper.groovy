@@ -16,7 +16,7 @@ class ZkConfigHelper {
         if(exts) {
             return exts
         } else {
-            return ["zul"] as String[]
+            return ["zul"]
         }
     }
 }

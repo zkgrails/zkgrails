@@ -23,34 +23,21 @@ History:
 */
 package org.zkoss.zkgrails;
 
-import org.zkoss.zk.ui.Execution;
-import org.zkoss.zk.ui.UiException;
-import org.zkoss.zk.ui.util.ExecutionInit;
-import org.zkoss.zk.ui.util.ExecutionCleanup;
-import org.zkoss.util.logging.Log;
+import java.util.List;
 
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.codehaus.groovy.grails.commons.ApplicationAttributes;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
+import org.zkoss.util.logging.Log;
+import org.zkoss.zk.ui.Execution;
+import org.zkoss.zk.ui.util.ExecutionCleanup;
+import org.zkoss.zk.ui.util.ExecutionInit;
+import org.zkoss.zkplus.hibernate.HibernateUtil;
 import org.zkoss.zkplus.spring.SpringUtil;
-
-import org.hibernate.StaleObjectStateException;
-
-import java.util.List;
 
 /**
  * Listener to init and cleanup the hibernate session automatically, implement
@@ -67,8 +54,10 @@ import java.util.List;
  * </p>
  *
  * @author henrichen
+ * @author chanwit
  */
 public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, ExecutionCleanup {
+
 	private static final Log log = Log.lookup(ZKGrailsOpenSessionInViewListener.class);
 
     private SessionFactory lookupSessionFactory() {        
