@@ -1,54 +1,69 @@
-/* ZKGrailsPageFilter.java
-
-Copyright (C) 2008, 2009 Chanwit Kaewkasi
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.zkoss.zkgrails;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.codehaus.groovy.grails.support.NullPersistentContextInterceptor;
+import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import org.codehaus.groovy.grails.web.sitemesh.FactoryHolder;
+import org.codehaus.groovy.grails.web.sitemesh.GSPSitemeshPage;
+import org.codehaus.groovy.grails.web.sitemesh.GrailsContentBufferingResponse;
+import org.codehaus.groovy.grails.web.sitemesh.GrailsNoDecorator;
+import org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.UrlPathHelper;
 
 import com.opensymphony.module.sitemesh.Config;
 import com.opensymphony.module.sitemesh.Factory;
+import com.opensymphony.module.sitemesh.HTMLPage;
+import com.opensymphony.module.sitemesh.factory.DefaultFactory;
 import com.opensymphony.sitemesh.Content;
 import com.opensymphony.sitemesh.ContentProcessor;
 import com.opensymphony.sitemesh.Decorator;
 import com.opensymphony.sitemesh.DecoratorSelector;
+import com.opensymphony.sitemesh.SiteMeshContext;
+import com.opensymphony.sitemesh.compatability.Content2HTMLPage;
+import com.opensymphony.sitemesh.compatability.DecoratorMapper2DecoratorSelector;
+import com.opensymphony.sitemesh.compatability.OldDecorator2NewDecorator;
 import com.opensymphony.sitemesh.webapp.ContainerTweaks;
-import com.opensymphony.sitemesh.webapp.ContentBufferingResponse;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.opensymphony.sitemesh.webapp.SiteMeshWebAppContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.ConfigurationHolder;
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
-import org.codehaus.groovy.grails.web.util.WebUtils;
-import org.springframework.web.util.UrlPathHelper;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.*;
-
-import org.codehaus.groovy.grails.web.sitemesh.*;
 
 /**
  * Extends the default page filter to overide the apply decorator behaviour
  * if the page is a GSP
  *
  * @author Graeme Rocher
- * @author Chanwit Kaewkasi
  * @since Apr 19, 2006
  */
 public class ZKGrailsPageFilter extends SiteMeshFilter {
@@ -59,22 +74,36 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
     private static final String HTML_EXT = ".html";
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";
+    public static final String GSP_SITEMESH_PAGE = GrailsPageFilter.class.getName() + ".GSP_SITEMESH_PAGE";
+
 
     private FilterConfig filterConfig;
     private ContainerTweaks containerTweaks;
+    private WebApplicationContext applicationContext;
+    private PersistenceContextInterceptor persistenceInterceptor = new NullPersistentContextInterceptor();
 
     public void init(FilterConfig filterConfig) {
         super.init(filterConfig);
         this.filterConfig = filterConfig;
         this.containerTweaks = new ContainerTweaks();
-        FactoryHolder.setFactory(Factory.getInstance(new Config(filterConfig)));
+        Config config = new Config(filterConfig);
+        DefaultFactory defaultFactory = new DefaultFactory(config);
+        config.getServletContext().setAttribute("sitemesh.factory", defaultFactory);
+        defaultFactory.refresh();
+        FactoryHolder.setFactory(defaultFactory);
+
+        this.applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(filterConfig.getServletContext());
+        Map interceptors = applicationContext.getBeansOfType(PersistenceContextInterceptor.class);
+        if(!interceptors.isEmpty()) {
+            persistenceInterceptor = (PersistenceContextInterceptor) interceptors.values().iterator().next();
+        }
     }
 
     public void destroy() {
         super.destroy();
         FactoryHolder.setFactory(null);
     }
-    
+
     private String extractRequestPath(HttpServletRequest request) {
         String servletPath = request.getServletPath();
         String pathInfo = request.getPathInfo();
@@ -82,7 +111,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
         return (servletPath == null ? "" : servletPath)
                 + (pathInfo == null ? "" : pathInfo)
                 + (query == null ? "" : ("?" + query));
-    }    
+    }
 
     private boolean isZK(HttpServletRequest request) {
         String path = extractRequestPath(request);
@@ -130,16 +159,16 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
         }
 
         if (filterAlreadyAppliedForRequest(request)) {
-            // Prior to Servlet 2.4 spec, it was unspecified whether the filter should be called again upon an include().
-            chain.doFilter(request, response);
-            return;
-        }
+             // Prior to Servlet 2.4 spec, it was unspecified whether the filter should be called again upon an include().
+             chain.doFilter(request, response);
+             return;
+         }
 
         if (!contentProcessor.handles(webAppContext)) {
-            // Optimization: If the content doesn't need to be processed, bypass SiteMesh.
-            chain.doFilter(request, response);
-            return;
-        }
+             // Optimization: If the content doesn't need to be processed, bypass SiteMesh.
+             chain.doFilter(request, response);
+             return;
+         }
 
 
         if (containerTweaks.shouldAutoCreateSession()) {
@@ -157,6 +186,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
 
              detectContentTypeFromPage(content, response);
              Decorator decorator = decoratorSelector.selectDecorator(content, webAppContext);
+             persistenceInterceptor.reconnect();
              decorator.render(content, webAppContext);
 
          } catch (IllegalStateException e) {
@@ -175,7 +205,71 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
              request.setAttribute(ALREADY_APPLIED_KEY, null);
              throw e;
          }
+         finally {
+            if(persistenceInterceptor.isOpen()) {
+                persistenceInterceptor.destroy();
+            }
+         }
 
+    }
+
+    private HTMLPage content2htmlPage(Content content) {
+        HTMLPage htmlPage=null;
+        if(content instanceof HTMLPage) {
+            htmlPage=(HTMLPage)content;
+        } else {
+            htmlPage=new Content2HTMLPage(content);
+        }
+        return htmlPage;
+    }
+
+    @Override
+    protected DecoratorSelector initDecoratorSelector(SiteMeshWebAppContext webAppContext) {
+        // TODO: Remove heavy coupling on horrible SM2 Factory
+        final Factory factory = Factory.getInstance(new Config(filterConfig));
+        factory.refresh();
+        return new DecoratorMapper2DecoratorSelector(factory.getDecoratorMapper()) {
+            @Override
+            public Decorator selectDecorator(Content content, SiteMeshContext context) {
+                SiteMeshWebAppContext webAppContext = (SiteMeshWebAppContext) context;
+                final com.opensymphony.module.sitemesh.Decorator decorator =
+                        factory.getDecoratorMapper().getDecorator(webAppContext.getRequest(), content2htmlPage(content));
+                if (decorator == null || decorator.getPage() == null) {
+                    return new GrailsNoDecorator();
+                } else {
+                    return new OldDecorator2NewDecorator(decorator) {
+                        @Override
+                        protected void render(Content content, HttpServletRequest request, HttpServletResponse response,
+                                              ServletContext servletContext, SiteMeshWebAppContext webAppContext)
+                                throws IOException, ServletException {
+
+                            HTMLPage htmlPage = content2htmlPage(content);
+                            request.setAttribute(PAGE, htmlPage);
+
+                            // see if the URI path (webapp) is set
+                            if (decorator.getURIPath() != null) {
+                                // in a security conscious environment, the servlet container
+                                // may return null for a given URL
+                                if (servletContext.getContext(decorator.getURIPath()) != null) {
+                                    servletContext = servletContext.getContext(decorator.getURIPath());
+                                }
+                            }
+                            // get the dispatcher for the decorator
+                            RequestDispatcher dispatcher = servletContext.getRequestDispatcher(decorator.getPage());
+                            if(response.isCommitted()) {
+                                dispatcher.include(request, response);
+                            }
+                            else {
+                                dispatcher.forward(request, response);
+                            }
+
+                            request.removeAttribute(PAGE);
+                        }
+
+                    };
+                }
+            }
+        };
     }
 
     /**
@@ -187,41 +281,29 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
                                    HttpServletRequest request, HttpServletResponse response, FilterChain chain)
              throws IOException, ServletException {
 
-         ContentBufferingResponse contentBufferingResponse = new ContentBufferingResponse(response, contentProcessor, webAppContext) {
-             public void sendError(int sc) throws IOException {
-                 GrailsWebRequest webRequest = WebUtils.retrieveGrailsWebRequest();
-                 try {
-                     super.sendError(sc);
-                 } finally {
-                     WebUtils.storeGrailsWebRequest(webRequest);
-                 }
+         Object oldGspSiteMeshPage=request.getAttribute(GSP_SITEMESH_PAGE);
+         try {
+             request.setAttribute(GSP_SITEMESH_PAGE, new GSPSitemeshPage());
+             GrailsContentBufferingResponse contentBufferingResponse = new GrailsContentBufferingResponse(response, contentProcessor, webAppContext);
+
+             setDefaultConfiguredEncoding(request, contentBufferingResponse);
+             chain.doFilter(request, contentBufferingResponse);
+             // TODO: check if another servlet or filter put a page object in the request
+             //            Content result = request.getAttribute(PAGE);
+             //            if (result == null) {
+             //                // parse the page
+             //                result = pageResponse.getPage();
+             //            }
+             webAppContext.setUsingStream(contentBufferingResponse.isUsingStream());
+             return contentBufferingResponse.getContent();
+         } finally {
+             if(oldGspSiteMeshPage != null) {
+                 request.setAttribute(GSP_SITEMESH_PAGE, oldGspSiteMeshPage);
              }
-
-             public void sendError(int sc, String msg) throws IOException {
-                 GrailsWebRequest webRequest = WebUtils.retrieveGrailsWebRequest();
-                 try {
-                     super.sendError(sc, msg);
-                 } finally {
-                     WebUtils.storeGrailsWebRequest(webRequest);
-                 }
-
-             }
-
-         };
-
-         setDefaultConfiguredEncoding(request, contentBufferingResponse);
-         chain.doFilter(request, contentBufferingResponse);
-         // TODO: check if another servlet or filter put a page object in the request
-         //            Content result = request.getAttribute(PAGE);
-         //            if (result == null) {
-         //                // parse the page
-         //                result = pageResponse.getPage();
-         //            }
-         webAppContext.setUsingStream(contentBufferingResponse.isUsingStream());
-         return contentBufferingResponse.getContent();
+         }
      }
 
-    private void setDefaultConfiguredEncoding(HttpServletRequest request, ContentBufferingResponse contentBufferingResponse) {
+    private void setDefaultConfiguredEncoding(HttpServletRequest request, GrailsContentBufferingResponse contentBufferingResponse) {
         UrlPathHelper urlHelper = new UrlPathHelper();
         String requestURI = urlHelper.getOriginatingRequestUri(request);
         // static content?
@@ -233,14 +315,14 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
 
     }
 
-    private boolean filterAlreadyAppliedForRequest(HttpServletRequest request) {
+     private boolean filterAlreadyAppliedForRequest(HttpServletRequest request) {
         if (request.getAttribute(ALREADY_APPLIED_KEY) == Boolean.TRUE) {
             return true;
         } else {
         request.setAttribute(ALREADY_APPLIED_KEY, Boolean.TRUE);
         return false;
         }
-    }
+     }
 
     private void detectContentTypeFromPage(Content page, HttpServletResponse response) {
          String contentType = page.getProperty("meta.http-equiv.Content-Type");

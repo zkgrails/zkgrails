@@ -16,15 +16,15 @@ class IndexComposer extends GrailsComposer {
                 }
             }
         }
-        txtToDo.value = "done"
+        txtToDo.value = 'done'
     }
-    
+
     def listitemHandler = { e ->
         def src = e.target
         if(src.checked == true) {
-            src.sclass = "strike"
+            src.sclass = 'strike'
         } else {
-            src.sclass = ""
+            src.sclass = ''
         }
     }	
 

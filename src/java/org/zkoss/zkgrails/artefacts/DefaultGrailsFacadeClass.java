@@ -1,4 +1,4 @@
-/* GrailsFacadeClass.java
+/* DefaultGrailsFacadeClass.java
 
 Copyright (C) 2008, 2009 Chanwit Kaewkasi
 
@@ -16,8 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package org.zkoss.zkgrails;
+package org.zkoss.zkgrails.artefacts;
 
-public interface GrailsFacadeClass {
+import org.codehaus.groovy.grails.commons.*;
 
+/**
+ * 
+ * 
+ * @author Chanwit Kaewkasi
+ */
+public class DefaultGrailsFacadeClass extends AbstractInjectableGrailsClass
+		implements GrailsFacadeClass {
+
+	public static final String FACADE = "Facade";
+	
+	public DefaultGrailsFacadeClass(Class clazz) {
+		super(clazz, FACADE);
+	}
 }

@@ -40,7 +40,6 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.context.ApplicationContext;
 import org.zkoss.xel.Function;
-import org.zkoss.zk.scripting.Namespace;
 import org.zkoss.zk.scripting.util.GenericInterpreter;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zkplus.spring.SpringUtil;

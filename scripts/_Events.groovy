@@ -20,14 +20,18 @@ eventSetClasspath = { classLoader ->
     // To check which variables are available to use:
     //   println delegate.variables.each { k, v -> println k }
     //
-    if(metadata['plugins.zk-ee']) {
-        if(new File("${zkEePluginDir}/lib/").exists()) {
-            println "Adding ZK-EE jars to the class loader"
-            def eeJars = resolveResources("${zkEePluginDir}/lib/*.jar")
-            for(jar in eeJars) {
-                classLoader.addURL(jar.URL)
+    try {
+        if(metadata['plugins.zk-ee']) {
+            if(new File("${zkEePluginDir}/lib/").exists()) {
+                println "Adding ZK-EE jars to the class loader"
+                def eeJars = resolveResources("${zkEePluginDir}/lib/*.jar")
+                for(jar in eeJars) {
+                    classLoader.addURL(jar.URL)
+                }
             }
         }
+    }catch(groovy.lang.MissingPropertyException e) {
+        println "ZK-EE jars not added to the class loader."
     }
 }
 

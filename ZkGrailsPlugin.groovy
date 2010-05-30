@@ -1,11 +1,12 @@
 import org.zkoss.zkgrails.*
+import org.zkoss.zkgrails.artefacts.*
 import org.zkoss.zk.ui.event.EventListener
 import grails.util.Environment
 import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.0-M4"
+    def version = "1.0-M5"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.1 > *"
     // the other plugins this plugin depends on
@@ -14,24 +15,29 @@ class ZkGrailsPlugin {
     def loadAfter = ['hibernate']
 
     def artefacts = [
-        org.zkoss.zkgrails.ComposerArtefactHandler,
-        org.zkoss.zkgrails.FacadeArtefactHandler
+        org.zkoss.zkgrails.artefacts.CometArtefactHandler,
+        org.zkoss.zkgrails.artefacts.ComposerArtefactHandler,
+        org.zkoss.zkgrails.artefacts.FacadeArtefactHandler
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
                             "file:./plugins/*/grails-app/composers/**/*Composer.groovy",
+                            "file:./grails-app/comets/**/*Comet.groovy",
+                            "file:./plugins/*/grails-app/comets/**/*Comet.groovy",
                             "file:./grails-app/facade/**/*Facade.groovy",
                             "file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
+        "grails-app/conf/Config.groovy",
         "grails-app/conf/BuildConfig.groovy",
-        "grails-app/conf/SeleniumConfig.groovy",        
+        "grails-app/conf/SeleniumConfig.groovy",
+        "grails-app/comets/**",
         "grails-app/composers/**",
-        "grails-app/facades/**",
+        "grails-app/facade/**",
         "grails-app/views/error.gsp",
+        "grails-app/taglib/MyTagLib.groovy",
         "web-app/**",
-        "src/java/org/zkoss/zkgrails/test/**",
         "test/**"
     ]
 
@@ -54,22 +60,38 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload == true || (developmentMode && env == Environment.DEVELOPMENT)
         boolean warDeployedWithReload = application.warDeployed && enableReload
 
+        //
+        // Registering Composer Beans
+        //
         application.composerClasses.each { composerClass ->
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
                 composerBeanName = composerClass.packageName + "." + composerBeanName
             }
-
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
+
         }
 
+        //
+        // Registering Facade Beans
+        //
         application.facadeClasses.each { facadeClass ->
             "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
                 bean.scope = "session"
                 bean.autowire = "byName"
+            }
+        }
+
+        //
+        // Registering Comet classes
+        //
+        application.cometClasses.each { cometClass ->
+            "${cometClass.propertyName}"(cometClass.clazz) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "none"
             }
         }
 
@@ -104,11 +126,11 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         // e.g. ["*.zul", "/zkau/*"]
         //
         def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
-        
+
         //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
         //
-        def urls = supportExts.collect{ "*." + it } + 
+        def urls = supportExts.collect{ "*." + it } +
                    ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
         // adding GrailsOpenSessionInView
@@ -183,15 +205,15 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
     def doWithDynamicMethods = { ctx ->
 
-        // Simpler way to add and remove event        
+        // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
             if(name.startsWith("on") && handler instanceof Closure) {
                 delegate.addEventListener(name, handler as EventListener)
             } else {
                 throw new MissingPropertyException(name, delegate.class)
             }
-        } 
-        
+        }
+
         // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = {String name, args ->
             // converts OnXxxx to onXxxx

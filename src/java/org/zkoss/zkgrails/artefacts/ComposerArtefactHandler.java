@@ -17,25 +17,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-package org.zkoss.zkgrails;
+package org.zkoss.zkgrails.artefacts;
 
 import org.codehaus.groovy.grails.commons.*;
 
 /**
+ *
  * @author Chanwit Kaewkasi (chanwit@gmail.com)
+ *
 */
 public class ComposerArtefactHandler extends ArtefactHandlerAdapter {
 
     public static final String TYPE = "Composer";
 
     public ComposerArtefactHandler() {
-        super(TYPE, GrailsComposerClass.class, 
-            DefaultGrailsComposerClass.class, 
+        super(TYPE, GrailsComposerClass.class,
+            DefaultGrailsComposerClass.class,
             DefaultGrailsComposerClass.COMPOSER,
             false);
     }
 
     public boolean isArtefactClass(Class clazz) {
-        return super.isArtefactClass(clazz) && !DomainClassArtefactHandler.isDomainClass(clazz);
+        return super.isArtefactClass(clazz) &&
+               !DomainClassArtefactHandler.isDomainClass(clazz);
     }
 }

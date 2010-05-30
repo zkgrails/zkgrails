@@ -8,12 +8,16 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 </description>
   <documentation>http://grails.org/plugin/zk</documentation>
   <resources>
+    <resource>zk.MyComet</resource>
     <resource>NonPackageComposer</resource>
     <resource>test.IndexComposer</resource>
+    <resource>zk.MyComposer</resource>
     <resource>BuildConfig</resource>
+    <resource>Config</resource>
     <resource>DataSource</resource>
     <resource>SeleniumConfig</resource>
     <resource>UrlMappings</resource>
+    <resource>MyTagLib</resource>
     <resource>ZkTagLib</resource>
   </resources>
   <dependencies>

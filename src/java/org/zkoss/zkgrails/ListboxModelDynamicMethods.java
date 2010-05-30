@@ -19,10 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package org.zkoss.zkgrails;
 
-import org.zkoss.zkgrails.*;
 import org.zkoss.zkplus.databind.BindingListModelList;
 import org.zkoss.zul.Listbox;
-import org.zkoss.zul.SimpleListModel;
 
 public class ListboxModelDynamicMethods {
 
@@ -41,7 +39,7 @@ public class ListboxModelDynamicMethods {
                 return;
             }
         }
-            
+
         if (list instanceof org.zkoss.zul.GroupsModel) {
             delegate.setModel((org.zkoss.zul.GroupsModel)list);
         } else {
