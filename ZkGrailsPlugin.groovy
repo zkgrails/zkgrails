@@ -33,10 +33,13 @@ class ZkGrailsPlugin {
         "grails-app/conf/BuildConfig.groovy",
         "grails-app/conf/SeleniumConfig.groovy",
         "grails-app/comets/**",
+        "grails-app/controllers/zk/**",
         "grails-app/composers/**",
         "grails-app/facade/**",
+        "grails-app/views/test/index.gsp",
         "grails-app/views/error.gsp",
         "grails-app/taglib/MyTagLib.groovy",
+        "grails-app/i18n/*.properties",
         "web-app/**",
         "test/**"
     ]
