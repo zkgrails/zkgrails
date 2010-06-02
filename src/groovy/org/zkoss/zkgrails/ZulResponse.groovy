@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletResponseWrapper
 import org.apache.log4j.Logger
 
-public class ZulResponse {
+
+class ZulResponse {
+
     private static Logger LOG = Logger.getLogger(ZulResponse)
 
     def model = [:]
