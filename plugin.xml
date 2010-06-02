@@ -1,4 +1,4 @@
-<plugin name='zk' version='1.0-M4' grailsVersion='1.1 &gt; *'>
+<plugin name='zk' version='1.0-M5' grailsVersion='1.1 &gt; *'>
   <author>chanwit</author>
   <authorEmail>chanwit@gmail.com</authorEmail>
   <title>ZKGrails: ZK plugin for Grails</title>
@@ -11,6 +11,8 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>zk.MyComet</resource>
     <resource>NonPackageComposer</resource>
     <resource>test.IndexComposer</resource>
+    <resource>test.MessageComposer</resource>
+    <resource>test.TestForwardComposer</resource>
     <resource>zk.MyComposer</resource>
     <resource>BuildConfig</resource>
     <resource>Config</resource>
