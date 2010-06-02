@@ -22,6 +22,7 @@ import groovy.lang.Closure;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
@@ -38,9 +39,12 @@ import org.zkoss.zk.ui.sys.ComponentsCtrl;
 import org.zkoss.zkgrails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zkplus.spring.SpringUtil;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
 
     private static final long serialVersionUID = -5307023773234300419L;
+    private MessageHolder messageHolder = null;
 
     public GrailsComposer() {
         super('_');
@@ -60,6 +64,22 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         return builder;
     }
 
+    public MessageHolder getMessage() {
+        if(messageHolder == null) {
+            HttpServletRequest request = (HttpServletRequest)(this.desktop.getExecution().getNativeRequest());
+            messageHolder = new MessageHolder(page, request);
+        }
+        return messageHolder;
+    }
+
+    public String message(String code) {
+        return getMessage().getAt(code);
+    }
+
+    public String message(Map map) {
+        return getMessage().call(map);
+    }
+
     public void injectComet() throws Exception {
         Field[] fields = this.getClass().getDeclaredFields();
         for(Field f: fields) {
@@ -70,6 +90,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         }
     }
 
+    @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         injectComet();

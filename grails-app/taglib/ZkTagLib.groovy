@@ -192,7 +192,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             // do nothing
         }
     }
-    
+
     /**
      * Resolves a message code for a given error or code from the resource bundle
      */
@@ -201,7 +201,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
     }
 
     private messageImpl(attrs) {
-        def messageSource = grailsAttributes.getApplicationContext().getBean("messageSource")
+        def messageSource = applicationContext.getBean("messageSource")
         def locale = attrs.locale ?: RCU.getLocale(request)
 
         def text
@@ -233,7 +233,8 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             }
         }
         if (text) {
-            return (attrs.encodeAs ? text."encodeAs${attrs.encodeAs}"() : text)
+            return text
+            // return (attrs.encodeAs ? text."encodeAs${attrs.encodeAs}"() : text)
         }
         return ''
     }
