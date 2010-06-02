@@ -7,7 +7,7 @@ import grails.plugins.selenium.SeleniumAware
 @Mixin(SeleniumAware)
 class Issue131Tests extends GroovyTestCase {
 
-    void testChineseDisplay() {
+    void testMessage() {
         selenium.with {
             setSpeed "1000"
             open "/zk/issue_131.zul"
