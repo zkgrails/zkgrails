@@ -58,21 +58,25 @@ target ('default': "Creates a new zul page") {
     }
 
     // Convert the package into a file path.
+    
     def pkgPath = ''
+    def zulPkgPath = ''
     if (pkg) {
         pkgPath = pkg.replace('.' as char, '/' as char)
         pkgPath += '/'
+        
+        zulPkgPath = pkgPath
     }
     //
     // #109 - Grails enforces use of package, we have to go along then    
     // #132 - Ignore #109 just for .zul files, to conform Grails' convention
     //
-    // else {
-    //     pkgPath = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/"
-    // }
+    else {
+        pkgPath = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/"
+    }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
-    def zulFile = "${basedir}/web-app/${pkgPath}${propName}.zul"
+    def zulFile = "${basedir}/web-app/${zulPkgPath}${propName}.zul"
 
     propName = "${pkgPath.replace('/', '.')}${propName}Composer"
 
@@ -81,7 +85,6 @@ target ('default': "Creates a new zul page") {
         tofile: zulFile,
         overwrite: true
     )
-
     ant.replace(
         file: zulFile,
         token: "@artifact.name@",
