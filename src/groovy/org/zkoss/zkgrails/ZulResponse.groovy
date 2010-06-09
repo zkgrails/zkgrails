@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletResponseWrapper
 import org.apache.log4j.Logger
 
-public class ZulResponse {
+
+class ZulResponse {
+
     private static Logger LOG = Logger.getLogger(ZulResponse)
 
     def model = [:]
@@ -44,8 +46,8 @@ public class ZulResponse {
                 if(name == 'head') {
                     model[name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
                 } else {
-                    def javaScriptFirstDivOriginal = "{style:'width:100%;',contained:true}"
-                    def javaScriptFirstDivHacked = "{style:'width:100%;height:100%',contained:true}"
+                    def javaScriptFirstDivOriginal = "style:'width:100%;',ct:true"
+                    def javaScriptFirstDivHacked = "style:'width:100%;height:100%',ct:true"
                     part = part.replace(javaScriptFirstDivOriginal, javaScriptFirstDivHacked)
                     model[name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
                 }

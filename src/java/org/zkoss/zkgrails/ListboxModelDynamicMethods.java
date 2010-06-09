@@ -21,10 +21,19 @@ package org.zkoss.zkgrails;
 
 import org.zkoss.zkplus.databind.BindingListModelList;
 import org.zkoss.zul.Listbox;
+import java.util.*;
 
 public class ListboxModelDynamicMethods {
 
     public static void setModel(Listbox delegate, Object list) {
+        if(list instanceof Set) {            
+            ArrayList newList = new ArrayList();
+            for(Object e: (Set)list) {
+                newList.add(e);
+            }
+            list = (java.util.List)newList;
+        }
+
         if(list instanceof java.util.List) {
             Object model = delegate.getModel();
             if(model != null) {
@@ -33,8 +42,11 @@ public class ListboxModelDynamicMethods {
                     blml.clear();
                     blml.addAll((java.util.List)list);
                     return;
+                } else {
+                    delegate.setModel(new BindingListModelList((java.util.List)list, false));
+                    return;
                 }
-            } else {
+            } else {                
                 delegate.setModel(new BindingListModelList((java.util.List)list, false));
                 return;
             }

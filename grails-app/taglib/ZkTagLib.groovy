@@ -13,6 +13,10 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
+import org.springframework.context.MessageSourceResolvable
+import org.springframework.context.NoSuchMessageException
+import org.springframework.web.servlet.support.RequestContextUtils as RCU
+
 import org.zkoss.zkgrails.ZulResponse
 import org.zkoss.util.resource.Labels
 
@@ -35,11 +39,6 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         out << "<head>\n"
         out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n"
         out << "<meta http-equiv=\"Expires\" content=\"-1\" />\n"
-        out << "<style>\n"
-        out << "body > div:first-child {\n"
-        out << "    height:100%;\n"
-        out	<< "}\n"
-        out << "</style>\n"
         out	<< b()
         out << pageScope.model['head']
         out << "</head>\n"
@@ -188,4 +187,51 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             // do nothing
         }
     }
+
+    /**
+     * Resolves a message code for a given error or code from the resource bundle
+     */
+    def message = { attrs ->
+        messageImpl(attrs)
+    }
+
+    private messageImpl(attrs) {
+        def messageSource = applicationContext.getBean("messageSource")
+        def locale = attrs.locale ?: RCU.getLocale(request)
+
+        def text
+        def error = attrs['error'] ?: attrs['message']
+        if(error) {
+            try {
+                text = messageSource.getMessage( error , locale )
+            } catch (NoSuchMessageException e) {
+                if(error instanceof MessageSourceResolvable) {
+                    text = error?.code
+                } else {
+                    text = error?.toString()
+                }
+            }
+        } else if(attrs['code']) {
+            def code = attrs['code']
+            def args = attrs['args']
+            def defaultMessage = ( attrs['default'] != null ? attrs['default'] : code )
+
+            def message = messageSource.getMessage( code,
+                                                    args == null ? null : args.toArray(),
+                                                    defaultMessage,
+                                                    locale )
+            if(message) {
+                text = message
+            }
+            else {
+                text = defaultMessage
+            }
+        }
+        if (text) {
+            return text
+            // return (attrs.encodeAs ? text."encodeAs${attrs.encodeAs}"() : text)
+        }
+        return ''
+    }
+    
 }

@@ -1,5 +1,6 @@
 package org.zkoss.zkgrails.scaffolding
 
+import org.apache.commons.lang.StringUtils as SU
 import org.zkoss.zkgrails.*
 import org.codehaus.groovy.grails.scaffolding.*
 import org.zkoss.zkplus.databind.DataBinder
@@ -7,6 +8,7 @@ import org.zkoss.zk.ui.event.ForwardEvent
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.zkoss.zk.ui.Component
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor as Events
+import org.zkoss.zkplus.databind.BindingListModelList
 
 class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
 
@@ -74,17 +76,73 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                 if(p.isEnum()) {
                     println "enum"
                 } else if(p.manyToOne || p.oneToOne) {
-                    if(property.association) {
-                        b.label(id: "fd_${f.name}", onClick:{
-                            // FIXME: open bandded dialog
-                        })
-                        binder.addBinding(editor, "value", "selected.${p.name}")
+                    if(p.association) {
+                        b.hbox {
+                            editor = bandbox(id: "fd_${p.name}",
+                                               use: org.zkoss.zkgrails.zul.Bandbox,
+                                               cols: colwidth, readonly: true) {
+                                bandpopup(width: "300px") {
+                                vbox {
+                                    listbox(mold: "paging",
+                                            pagingPosition: "top",
+                                            pageSize: 8,
+                                            model: new PageableGormList(p.type, 8),
+                                            onSelect: { ev ->
+                                                editor.rawValue = ev.reference.value
+                                                selected."${p.name}" = ev.reference.value
+                                            }
+                                    )
+                                }}
+                            }
+                            toolbarbutton(label:"null", width:"30px", onClick:{
+                                editor.rawValue = null
+                                selected."${p.name}" = null
+                            })
+                        }
+                        binder.addBinding(editor, "rawValue", "selected.${p.name}")
                     }
-                } else if((p.oneToMany && !p.bidirectional)
-                         || (p.manyToMany && p.isOwningSide())) {
-                    println "relation M-M"
-                } else if(p.oneToMany) {
-                    println "relation 1-M"
+                } else if(   (p.oneToMany  && !p.bidirectional)
+                          || (p.manyToMany &&  p.isOwningSide())) {
+                    if(p.association) {
+                        def bb = null
+                        def lst = null
+                        b.vbox {
+                            hbox {
+                                bb = bandbox(id:"fd_${p.name}_bb",
+                                        use: org.zkoss.zkgrails.zul.Bandbox,
+                                        cols: colwidth, readonly: true) {
+                                    bandpopup(width: "300px" ) {
+                                        vbox {
+                                            listbox(mold: "paging",
+                                                    pagingPosition: "top",
+                                                    pageSize: 8,
+                                                    model: new PageableGormList(p.referencedPropertyType, 8),
+                                                    onSelect: { ev ->
+                                                        bb.rawValue = ev.reference.value
+                                                    }
+                                            )
+                                        }
+                                    }
+                                }
+                                toolbarbutton(label:"+", width:"24px", onClick:{
+                                    selected."addTo${SU.capitalize(p.name)}"(bb.rawValue)
+                                    lst.model = selected."${p.name}"
+                                })
+                                toolbarbutton(label:"-", width:"24px", onClick:{
+                                    selected."removeFrom${SU.capitalize(p.name)}"(lst.selectedItem.value)
+                                    lst.model = selected."${p.name}"
+                                })
+                            }
+                            lst = listbox(id: "fd_${p.name}",
+                                mold: "paging",
+                                pagingPosition: "top",
+                                pageSize: 8,
+                                height:"155px",
+                                width: "250px"
+                            )
+                        }
+                        binder.addBinding(lst, "model", "selected.${p.name}")
+                    }
                 }
         }
         b.parent = old
@@ -110,7 +168,14 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                         def cp = dc.constrainedProperties[p.name]
                         if(cp?.display==true && count < 6) {
                             count++
-                            listcell(label: e[p.name])
+                            def toDisplay=""
+                            if(!p.isAssociation() || p.oneToOne || p.manyToOne) {
+                                toDisplay = e[p.name]
+                            } else {
+                                if(e[p.name])
+                                    toDisplay = "#${e[p.name].size()}"
+                            }
+                            listcell(label: toDisplay)
                         }
                     }
                 }
@@ -125,9 +190,13 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
     // x. refactor it to another class,
     //    probably in to org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
     // x. name to Name, createdDate to Created Date
-    // 6. i18n
     // x. type mapping
-    // 8. handle relations
+    // x. handle relations
+    //    1. 1-1
+    //    2. 1-M
+    // 6. i18n
+    // 9. enable sorting
+
     public void initComponents(Class<?> scaffold,
                                 Component window,
                                 GrailsApplication grailsApplication) {
@@ -149,7 +218,9 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
         scaffoldProps = scaffoldProps.sort(new DomainClassPropertyComparator(dc))
 
         placeHolder.append {
-            scaffoldListbox = listbox(id: "lst${scaffold.name}", multiple:true, rows: 10) {
+            scaffoldListbox = listbox(id: "lst${scaffold.name}",
+                height: "150px",
+                multiple: true, rows: 8) {
                 listhead {
                     def count = 0
                     scaffoldProps.each{ p ->
@@ -167,10 +238,11 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                 }
             }
             scaffoldListbox.onSelect = { e ->
-                selected = scaffoldListbox.selectedItem.value
+                def id = scaffoldListbox?.selectedItem?.value.id
+                selected = scaffold.get(id)
                 redrawForm()
             }
-            scaffoldPaging = paging(id:"pag${scaffold.name}", pageSize: 10, onPaging:{ e ->
+            scaffoldPaging = paging(id:"pag${scaffold.name}", pageSize: 8, onPaging:{ e ->
                 redraw(e.activePage)
             })
             groupbox {
@@ -203,11 +275,10 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                         redraw(scaffoldPaging.activePage)
                     })
                 }
-                separator(bar: true)
                 grid {
                     rows {
                         scaffoldProps.each { p ->
-                        if(p.name!="id") {
+                        if(p.name != "id") {
                             def cp = dc.constrainedProperties[p.name]
                             if(cp?.display)
                             row {

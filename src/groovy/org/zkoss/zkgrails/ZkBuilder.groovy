@@ -56,7 +56,7 @@ class ZkBuilder {
                         zkObject = newInstance(name)
                     } else if (arg instanceof String) {
                         zkObject = newInstance(name,[:], arg)
-                    } else if (arg instanceof Map) {
+                    } else if (arg instanceof Map) {                        
                         zkObject = newInstance(name, arg)
                     } else {
                         throw new MissingMethodException(name, getClass(), args, false);
@@ -161,8 +161,14 @@ class ZkBuilder {
     }
 
     Object newInstance(String name, def args =[:], String id = null) {
-        def zkObject = ZKNODES[name].newInstance()
+        def use = args.remove("use")
 
+        def zkObject = null
+        if(use) {
+            zkObject = (use as Class).newInstance()
+        } else {
+            zkObject = ZKNODES[name].newInstance()
+        }
         attachId(id, zkObject)
 
         addAttributeEvents(zkObject, args)
