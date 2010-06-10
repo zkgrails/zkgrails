@@ -55,29 +55,43 @@ class GrailsComet {
             afterExecuteClosure.resolveStrategy = Closure.DELEGATE_FIRST
         }
 
-        th = Thread.start {
-            if(beforeExecuteClosure)
-                beforeExecuteClosure.call(desktop, page)
-            Thread.sleep(startDelay)
-            while(!stop) {
+        th = Thread.start {            
+            if(beforeExecuteClosure) {
                 Executions.activate(desktop)
                 try {
-                    if(executeClosure)
-                        executeClosure.call(desktop, page)
+                    beforeExecuteClosure.call(desktop, page)
                 } finally {
                     Executions.deactivate(desktop)
                 }
+            }
+
+            Thread.sleep(startDelay)
+            while(!stop) {
+                if(executeClosure) {
+                    Executions.activate(desktop)
+                    try {
+                        executeClosure.call(desktop, page)
+                    } finally {
+                        Executions.deactivate(desktop)
+                    }
+                }
                 Thread.sleep(delay)
             }
-            if(afterExecuteClosure)
-                afterExecuteClosure.call(desktop, page)
+            if(afterExecuteClosure) {
+                Executions.activate(desktop)
+                try {
+                    afterExecuteClosure.call(desktop, page)
+                } finally {
+                    Executions.deactivate(desktop)
+                }
+            }
+
+            desktop.enableServerPush(false)                
         }
     }
 
     public void stop() {
         stop = true
-        final desktop = grailsComposer.desktop
-        desktop.enableServerPush(false)
     }
 
 }
