@@ -13,12 +13,15 @@ class ZkBuilder {
     def page
     def parent
     def idComponents =[:]
+    def z = null
     
     def resource(dir, file) {
-        def p = page
-        if(!p) p = parent.page        
-        def ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(p.desktop.webApp.nativeContext)
-        def z = ctx.getBean('ZkTagLib')
+        if(z == null) {
+            def p = page
+            if(!p) p = parent.page
+            def ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(p.desktop.webApp.nativeContext)
+            z = ctx.getBean('ZkTagLib')
+        }        
         return z.resourceImpl(dir:dir, file: file)
     }
 
