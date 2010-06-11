@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.ui.sys.ComponentsCtrl
+import org.springframework.web.context.support.WebApplicationContextUtils
 
 class ZkBuilder {
 
@@ -12,6 +13,14 @@ class ZkBuilder {
     def page
     def parent
     def idComponents =[:]
+    
+    def resource(dir, file) {
+        def p = page
+        if(!p) p = parent.page        
+        def ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(p.desktop.webApp.nativeContext)
+        def z = ctx.getBean('ZkTagLib')
+        return z.resourceImpl(dir:dir, file: file)
+    }
 
     boolean getTag(String tag) {
         if(ZKNODES.containsKey(tag))

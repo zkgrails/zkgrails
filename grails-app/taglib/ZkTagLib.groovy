@@ -142,22 +142,30 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             }
         }
     }
+    
+    def resource = { attrs, body ->
+        def result = resourceImpl(attrs)
+        out << result
+    }
 
-    def resource = { attrs ->
-        def writer = out
+    def resourceImpl(attrs) {
+        def writer = new StringBuffer("")
         writer << handleAbsolute(attrs)
         def dir = attrs['dir']
         if(attrs.plugin) {
-            writer << pluginManager.getPluginPath(attrs.plugin) ?: ''
+            def pp = pluginManager.getPluginPath(attrs.plugin)
+            writer << (pp ?: '')
         }
         else {
-            if(attrs.contextPath != null) {
+            if(attrs.contextPath) {
                 writer << attrs.contextPath.toString() 
             }
             else {
                 def pluginContextPath = pageScope.pluginContextPath
-                if(dir != pluginContextPath)
-                    writer << pluginContextPath ?: ''
+                if(dir != pluginContextPath) {
+                    def pcp = pluginContextPath
+                    writer << (pcp ?: '')
+                }
             }
         }
         if(dir) {
@@ -167,6 +175,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         if(file) {
            writer << (file.startsWith("/") || dir?.endsWith('/') ?  file : "/${file}")
         }
+        return writer.toString()
     }
 
     private cacheZul(url) {
