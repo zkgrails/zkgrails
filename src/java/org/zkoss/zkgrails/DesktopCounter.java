@@ -38,19 +38,23 @@ public class DesktopCounter {
     }
 
     public void activate(Desktop d) throws java.lang.InterruptedException {
-        AtomicInteger i = getOrCreate(d);
-        int v = i.incrementAndGet();
-        if(v == 1) {
-            Executions.activate(d);
+        synchronized(d) {
+            AtomicInteger i = getOrCreate(d);
+            int v = i.incrementAndGet();
+            if(v == 1) {
+                Executions.activate(d);
+            }
         }
     }
     
     public void deactivate(Desktop d) throws java.lang.InterruptedException {
-        AtomicInteger i = getOrCreate(d);
-        int v = i.decrementAndGet();
-        if(v == 0) {
-            map.remove(d);
-            Executions.deactivate(d);
+        synchronized(d) {
+            AtomicInteger i = getOrCreate(d);
+            int v = i.decrementAndGet();
+            if(v == 0) {
+                map.remove(d);
+                Executions.deactivate(d);
+            }
         }
     }
     

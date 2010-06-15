@@ -53,34 +53,40 @@ class GrailsComet {
             afterExecuteClosure.resolveStrategy = Closure.DELEGATE_FIRST
         }
 
-        th = Thread.start {            
-            if(beforeExecuteClosure) {
-                grailsComposer.activateDesktop()
-                try {
-                    beforeExecuteClosure.call(desktop, page)
-                } finally {
-                    grailsComposer.deactivateDesktop()
+        th = Thread.start {
+            synchronized (desktop) {
+                if(beforeExecuteClosure) {
+                    grailsComposer.activateDesktop()
+                    try {
+                        beforeExecuteClosure.call(desktop, page)
+                    } finally {
+                        grailsComposer.deactivateDesktop()
+                    }
                 }
             }
 
             Thread.sleep(startDelay)
             while(!stop) {
-                if(executeClosure) {
-                    grailsComposer.activateDesktop()
-                    try {
-                        executeClosure.call(desktop, page)
-                    } finally {
-                        grailsComposer.deactivateDesktop()
+                synchronized (desktop) {
+                    if(executeClosure) {
+                        grailsComposer.activateDesktop()
+                        try {
+                            executeClosure.call(desktop, page)
+                        } finally {
+                            grailsComposer.deactivateDesktop()
+                        }
                     }
                 }
                 Thread.sleep(delay)
             }
-            if(afterExecuteClosure) {
-                grailsComposer.activateDesktop()
-                try {
-                    afterExecuteClosure.call(desktop, page)
-                } finally {
-                    grailsComposer.deactivateDesktop()
+            synchronized (desktop) {
+                if(afterExecuteClosure) {
+                    grailsComposer.activateDesktop()
+                    try {
+                        afterExecuteClosure.call(desktop, page)
+                    } finally {
+                        grailsComposer.deactivateDesktop()
+                    }
                 }
             }
             grailsComposer.disablePush()
