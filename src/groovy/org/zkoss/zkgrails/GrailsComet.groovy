@@ -34,9 +34,7 @@ class GrailsComet {
                 d = trigger['every']
             delay = d
         }
-        if (desktop.isServerPushEnabled() == false) {
-            desktop.enableServerPush(true)
-        }
+        grailsComposer.enablePush()
         final executeClosure = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "execute")
         if(executeClosure) {
             executeClosure.delegate = grailsComposer
@@ -57,36 +55,35 @@ class GrailsComet {
 
         th = Thread.start {            
             if(beforeExecuteClosure) {
-                Executions.activate(desktop)
+                grailsComposer.activateDesktop()
                 try {
                     beforeExecuteClosure.call(desktop, page)
                 } finally {
-                    Executions.deactivate(desktop)
+                    grailsComposer.deactivateDesktop()
                 }
             }
 
             Thread.sleep(startDelay)
             while(!stop) {
                 if(executeClosure) {
-                    Executions.activate(desktop)
+                    grailsComposer.activateDesktop()
                     try {
                         executeClosure.call(desktop, page)
                     } finally {
-                        Executions.deactivate(desktop)
+                        grailsComposer.deactivateDesktop()
                     }
                 }
                 Thread.sleep(delay)
             }
             if(afterExecuteClosure) {
-                Executions.activate(desktop)
+                grailsComposer.activateDesktop()
                 try {
                     afterExecuteClosure.call(desktop, page)
                 } finally {
-                    Executions.deactivate(desktop)
+                    grailsComposer.deactivateDesktop()
                 }
             }
-
-            desktop.enableServerPush(false)                
+            grailsComposer.disablePush()
         }
     }
 

@@ -45,9 +45,36 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
 
     private static final long serialVersionUID = -5307023773234300419L;
     private MessageHolder messageHolder = null;
-
+    
+    // inject
+    private DesktopCounter desktopCounter;
+    
     public GrailsComposer() {
         super('_');
+    }
+
+    public void setDesktopCounter(DesktopCounter dc) {
+        this.desktopCounter = dc;
+    }
+
+    public DesktopCounter getDesktopCounter() {
+        return this.desktopCounter;
+    }
+
+    public void activateDesktop() throws java.lang.InterruptedException {
+        desktopCounter.activate(this.desktop);
+    }
+
+    public void deactivateDesktop() throws java.lang.InterruptedException {
+        desktopCounter.deactivate(this.desktop);
+    }
+
+    public void enablePush() {
+        desktopCounter.enablePush(this.desktop);
+    }
+    
+    public void disablePush() {
+        desktopCounter.disablePush(this.desktop);
     }
 
     public Desktop getDesktop() {
