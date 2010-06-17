@@ -15,6 +15,7 @@ class GrailsComet {
     Boolean stop = false
 
     public void start() {
+        stop = false
         final desktop = grailsComposer.desktop
         final page    = grailsComposer.page
 
