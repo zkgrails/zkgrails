@@ -12,6 +12,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>zk.Issue139_1Comet</resource>
     <resource>zk.Issue139_2Comet</resource>
     <resource>zk.Issue139_3Comet</resource>
+    <resource>zk.Issue142Comet</resource>
     <resource>zk.MyComet</resource>
     <resource>NonPackageComposer</resource>
     <resource>test.IndexComposer</resource>
@@ -19,6 +20,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>test.TestForwardComposer</resource>
     <resource>zk.Issue137Composer</resource>
     <resource>zk.Issue139Composer</resource>
+    <resource>zk.Issue142Composer</resource>
     <resource>zk.Issue47Composer</resource>
     <resource>zk.MyComposer</resource>
     <resource>BuildConfig</resource>
