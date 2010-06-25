@@ -1,4 +1,4 @@
-SRC=../zk-aspect/injar
+SRC=../zk-aspect/injar/zk-bin-5.0.3-FL-2010-06-24/dist/lib
 DST=./lib
 LIST=`ls lib/*.jar`
 for i in $LIST ;
