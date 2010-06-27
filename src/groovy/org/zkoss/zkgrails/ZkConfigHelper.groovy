@@ -19,4 +19,18 @@ class ZkConfigHelper {
             return ["zul"]
         }
     }
+
+    //
+    // Issue #146 - Support for skip zscript auto wiring for better performance.
+    // Default to false to maintan backward compatibility.
+    //
+    static boolean skipZscriptWiring() {
+        def skipZscriptWiring = ConfigurationHolder.config?.grails.zk.skipZscriptWiring
+
+        if(skipZscriptWiring != null) {
+            return skipZscriptWiring
+        }
+        
+        return false
+    }
 }
