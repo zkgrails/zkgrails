@@ -50,7 +50,10 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
     private DesktopCounter desktopCounter;
     
     public GrailsComposer() {
-        super('_', shallSkipZscriptWiring(), shallSkipZscriptWiring());
+        super('_');
+        if(shallSkipZscriptWiring()) {
+            this.skipZscriptWiring();
+        }
     }
 
     public void setDesktopCounter(DesktopCounter dc) {
@@ -212,19 +215,19 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
      * 2nd look at global config skipZscriptWiring on Config.
      * If none specified default to true (wire zscript variables) maintaining backward compatibility
      */
-    private static boolean shallSkipZscriptWiring() {
+    private boolean shallSkipZscriptWiring() {
         boolean shallSkipZscriptWiring;
         Object skipZscriptWiringFromComposer =
-                GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(GrailsComposer.class, "skipZscriptWiring");
-        Object skipZscriptWiringFromComposer1 =
-                GrailsClassUtils.getStaticPropertyValue(GrailsComposer.class, "skipZscriptWiring");
+                GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
+        // Object skipZscriptWiringFromComposer1 =
+        //        GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "zscript");
 
         //TODO debug purposes only - remove when done
         System.out.println("skip from composer (propOrStaticOrField): " + skipZscriptWiringFromComposer);
-        System.out.println("skip from composer (staticProp): " + skipZscriptWiringFromComposer1);
+        // System.out.println("skip from composer (staticProp): " + skipZscriptWiringFromComposer1);
 
-        if(skipZscriptWiringFromComposer != null
-                && skipZscriptWiringFromComposer instanceof Boolean) {
+        if(skipZscriptWiringFromComposer != null && 
+           skipZscriptWiringFromComposer instanceof Boolean) {
             shallSkipZscriptWiring = (Boolean)skipZscriptWiringFromComposer;
         } else {
             shallSkipZscriptWiring = ZkConfigHelper.skipZscriptWiring();
