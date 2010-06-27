@@ -36,6 +36,11 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>MyTagLib</resource>
     <resource>ZkTagLib</resource>
   </resources>
-  <dependencies />
+  <dependencies>
+    <resolvers>
+      <resolver type='grailsPlugins' name='grailsPlugins' />
+      <resolver type='mavenCentral' />
+    </resolvers>
+  </dependencies>
   <behavior />
 </plugin>
