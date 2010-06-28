@@ -219,14 +219,8 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         boolean shallSkipZscriptWiring;
         Object skipZscriptWiringFromComposer =
                 GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
-        // Object skipZscriptWiringFromComposer1 =
-        //        GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "zscript");
 
-        //TODO debug purposes only - remove when done
-        System.out.println("skip from composer (propOrStaticOrField): " + skipZscriptWiringFromComposer);
-        // System.out.println("skip from composer (staticProp): " + skipZscriptWiringFromComposer1);
-
-        if(skipZscriptWiringFromComposer != null && 
+        if(skipZscriptWiringFromComposer != null &&
            skipZscriptWiringFromComposer instanceof Boolean) {
             shallSkipZscriptWiring = (Boolean)skipZscriptWiringFromComposer;
         } else {
