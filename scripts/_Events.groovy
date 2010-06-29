@@ -35,10 +35,10 @@ eventSetClasspath = { classLoader ->
                 for(jar in eeJars) {
                     classLoader.addURL(jar.URL)
                 }
-            }            
-        }        
+            }
+        }
     }catch(groovy.lang.MissingPropertyException e) {
-        println "ZK-EE jars not added to the class loader."
+        println "Sub-plugin's jars not added to the class loader properly."
     }
 }
 
