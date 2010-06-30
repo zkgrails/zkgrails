@@ -14,24 +14,31 @@ eventSetClasspath = { classLoader ->
     }
 
     //
-    // Support ZK-EE.
+    // Issue #140 - Support sub-plugins for every plugin with 'zk' prefix.
     // Adding all jars from different plugins into the same class loader.
     //
     // To check which variables are available to use:
     //   println delegate.variables.each { k, v -> println k }
     //
     try {
-        if(metadata['plugins.zk-ee']) {
-            if(new File("${zkEePluginDir}/lib/").exists()) {
-                println "Adding ZK-EE jars to the class loader"
-                def eeJars = resolveResources("${zkEePluginDir}/lib/*.jar")
+        def subPluginDirs = delegate.variables.collect { k, v -> 
+            if(k.startsWith("zk")      && 
+               k.endsWith("PluginDir") &&
+               k != "zkPluginDir")
+                return v
+        }
+
+        subPluginDirs.each { dir ->
+            if(new File("${dir}/lib/").exists()) {
+                println "Adding jars from ${dir} to the class loader"
+                def eeJars = resolveResources("${dir}/lib/*.jar")
                 for(jar in eeJars) {
                     classLoader.addURL(jar.URL)
                 }
             }
         }
     }catch(groovy.lang.MissingPropertyException e) {
-        println "ZK-EE jars not added to the class loader."
+        println "Sub-plugin's jars not added to the class loader properly."
     }
 }
 

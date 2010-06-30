@@ -2,7 +2,10 @@
 
 class @artifact.name@ extends GrailsComet {
 
-    static trigger = [startDelay: 0L, delay: 1000L]
+    static trigger = [startDelay: 0L, every: 1000L]
+
+    def beforeExecute = { desktop, page ->
+    }
 
     def execute = { desktop, page ->
         //
@@ -10,5 +13,8 @@ class @artifact.name@ extends GrailsComet {
         // So, you can directly use components (and properties)
         // defined in the composer.
         //
+    }
+
+    def afterExecute = { desktop, page ->
     }
 }

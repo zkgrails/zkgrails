@@ -32,12 +32,12 @@ class ZkGrailsPlugin {
         "grails-app/conf/Config.groovy",
         "grails-app/conf/BuildConfig.groovy",
         "grails-app/conf/SeleniumConfig.groovy",
+        "grails-app/domain/zk/**",
         "grails-app/comets/**",
         "grails-app/controllers/zk/**",
         "grails-app/composers/**",
         "grails-app/facade/**",
-        "grails-app/views/test/index.gsp",
-        "grails-app/views/error.gsp",
+        "grails-app/views/**",
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
         "web-app/**",
@@ -62,6 +62,12 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         Environment env = Environment.current
         boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload == true || (developmentMode && env == Environment.DEVELOPMENT)
         boolean warDeployedWithReload = application.warDeployed && enableReload
+
+        // Registering desktopCounter
+        desktopCounter(DesktopCounter.class) { bean ->
+            bean.scope = "singleton"
+            bean.autowire = "byName"
+        }
 
         //
         // Registering Composer Beans

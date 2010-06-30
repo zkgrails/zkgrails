@@ -245,15 +245,18 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
             scaffoldPaging = paging(id:"pag${scaffold.name}", pageSize: 8, onPaging:{ e ->
                 redraw(e.activePage)
             })
+            separator()
             groupbox {
                 caption(label: "${scaffold.name}")
-                hbox {
-                    def w="65px"
-                    button(id:"btnAdd",     label:"New",     width: w, onClick: { e ->
+                toolbar {
+                    def w="75px"                    
+                    toolbarbutton(id:"btnAdd",     label:"New",
+                        image: resource('images', 'skin/database_add.png') , width: w, onClick: { e ->
                         selected = scaffold.newInstance()
                         redrawForm()
                     })
-                    button(id:"btnUpdate",  label:"Update",  width: w, onClick: { e ->
+                    toolbarbutton(id:"btnUpdate",  label:"Update",  
+                        image: resource('images', 'skin/database_save.png'), width: w, onClick: { e ->
                         binder.saveAll()
                         selected = selected?.merge(flush: true)
                         if(selected.version==0) { // newly inserted
@@ -262,7 +265,8 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                         }
                         redraw(scaffoldPaging.activePage)
                     })
-                    button(id:"btnDelete",  label:"Delete",  width: w, onClick: { e ->
+                    toolbarbutton(id:"btnDelete",  label:"Delete",
+                        image: resource('images', 'skin/database_delete.png'), width: w, onClick: { e ->
                         selected?.delete(flush:true)
                         selected = null
 
@@ -271,11 +275,17 @@ class DefaultScaffoldingTemplate implements ScaffoldingTemplate {
                         scaffoldPaging.totalSize = scaffold.count()
                         redraw(scaffoldPaging.activePage)
                     })
-                    button(id:"btnRefresh", label:"Refresh", width: w, onClick: { e ->
+                    toolbarbutton(id:"btnRefresh", label:"Refresh",
+                        image: resource('images', 'skin/database_table.png'), width: w, onClick: { e ->
                         redraw(scaffoldPaging.activePage)
                     })
                 }
+                separator()
                 grid {
+                    columns(visible: false) {
+                        column(label:"Column", width:"150px")
+                        column(label:"Value")
+                    }
                     rows {
                         scaffoldProps.each { p ->
                         if(p.name != "id") {

@@ -45,9 +45,39 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
 
     private static final long serialVersionUID = -5307023773234300419L;
     private MessageHolder messageHolder = null;
-
+    
+    // inject
+    private DesktopCounter desktopCounter;
+    
     public GrailsComposer() {
         super('_');
+        if(shallSkipZscriptWiring()) {
+            this.skipZscriptWiring();
+        }
+    }
+
+    public void setDesktopCounter(DesktopCounter dc) {
+        this.desktopCounter = dc;
+    }
+
+    public DesktopCounter getDesktopCounter() {
+        return this.desktopCounter;
+    }
+
+    public void activateDesktop() throws java.lang.InterruptedException {
+        desktopCounter.activate(this.desktop);
+    }
+
+    public void deactivateDesktop() throws java.lang.InterruptedException {
+        desktopCounter.deactivate(this.desktop);
+    }
+
+    public void enablePush() {
+        desktopCounter.enablePush(this.desktop);
+    }
+    
+    public void disablePush() {
+        desktopCounter.disablePush(this.desktop);
     }
 
     public Desktop getDesktop() {
@@ -94,14 +124,53 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         injectComet();
+        handleAfterComposeClosure(comp);
+        handleScaffold(comp);
+    }
 
+    /**
+     * <p>Overrides GenericEventListener to use InvokerHelper to call methods. Because of this the events are now
+     * part of groovy's dynamic methods, e.g. metaClass.invokeMethod works for event methods. Without this the default java code
+     * don't call the overriden invokeMethod</p>
+     *
+     * @param evt
+     * @throws Exception
+     */
+    @Override
+    public void onEvent(Event evt) throws Exception {
+        final Object controller = getController();
+        final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
+        if (mtd != null) {
+            if (mtd.getParameterTypes().length == 0) {
+                InvokerHelper.invokeMethod(controller, mtd.getName(), null);
+            } else if (evt instanceof ForwardEvent) { //ForwardEvent
+                final Class<?> paramcls = (Class<?>) mtd.getParameterTypes()[0];
+                //paramcls is ForwardEvent || Event
+                if (ForwardEvent.class.isAssignableFrom(paramcls)
+                    || Event.class.equals(paramcls)) {
+                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+                } else {
+                    do {
+                        evt = ((ForwardEvent)evt).getOrigin();
+                    } while(evt instanceof ForwardEvent);
+                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+                }
+            } else {
+                InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+            }
+        }
+    }
+
+    private void handleAfterComposeClosure(Component comp) {
         try {
           Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
           if(c instanceof Closure) {
               ((Closure)c).call(comp);
           }
         } catch(BeansException e) { /* do nothing */ }
+    }
 
+    private void handleScaffold(Component comp) {
         try {
             ApplicationContext ctx = SpringUtil.getApplicationContext();
 
@@ -140,37 +209,27 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         } catch(BeansException e) { /* do nothing */}
     }
 
-
     /**
-     * <p>Overrides GenericEventListener to use InvokerHelper to call methods. Because of this the events are now
-     * part of groovy's dynamic methods, e.g. metaClass.invokeMethod works for event methods. Without this the default java code
-     * don't call the overriden invokeMethod</p>
-     *
-     * @param evt
-     * @throws Exception
+     * Issue #146 - Support for skip zscript wiring for better performance.
+     * 1st look at variable skipZscriptWiring on composer
+     * 2nd look at global config skipZscriptWiring on Config.
+     * If none specified default to true (wire zscript variables) maintaining backward compatibility
      */
-    @Override
-    public void onEvent(Event evt) throws Exception {
-        final Object controller = getController();
-        final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
-        if (mtd != null) {
-            if (mtd.getParameterTypes().length == 0) {
-                InvokerHelper.invokeMethod(controller, mtd.getName(), null);
-            } else if (evt instanceof ForwardEvent) { //ForwardEvent
-                final Class<?> paramcls = (Class<?>) mtd.getParameterTypes()[0];
-                //paramcls is ForwardEvent || Event
-                if (ForwardEvent.class.isAssignableFrom(paramcls)
-                    || Event.class.equals(paramcls)) {
-                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
-                } else {
-                    do {
-                        evt = ((ForwardEvent)evt).getOrigin();
-                    } while(evt instanceof ForwardEvent);
-                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
-                }
-            } else {
-                InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
-            }
+    private boolean shallSkipZscriptWiring() {
+        boolean shallSkipZscriptWiring;
+        Object skipZscriptWiringFromComposer =
+                GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
+
+        if(skipZscriptWiringFromComposer != null &&
+           skipZscriptWiringFromComposer instanceof Boolean) {
+            shallSkipZscriptWiring = (Boolean)skipZscriptWiringFromComposer;
+        } else {
+            shallSkipZscriptWiring = ZkConfigHelper.skipZscriptWiring();
         }
+
+        if(shallSkipZscriptWiring) {
+            return true;
+        }
+        return false;
     }
 }

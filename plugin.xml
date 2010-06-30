@@ -8,11 +8,24 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 </description>
   <documentation>http://grails.org/plugin/zk</documentation>
   <resources>
+    <resource>zk.Issue137Comet</resource>
+    <resource>zk.Issue139_1Comet</resource>
+    <resource>zk.Issue139_2Comet</resource>
+    <resource>zk.Issue139_3Comet</resource>
+    <resource>zk.Issue142Comet</resource>
     <resource>zk.MyComet</resource>
     <resource>NonPackageComposer</resource>
     <resource>test.IndexComposer</resource>
     <resource>test.MessageComposer</resource>
     <resource>test.TestForwardComposer</resource>
+    <resource>zk.Issue137Composer</resource>
+    <resource>zk.Issue139Composer</resource>
+    <resource>zk.Issue142Composer</resource>
+    <resource>zk.Issue146_1Composer</resource>
+    <resource>zk.Issue146_2Composer</resource>
+    <resource>zk.Issue146_3Composer</resource>
+    <resource>zk.Issue146_4Composer</resource>
+    <resource>zk.Issue47Composer</resource>
     <resource>zk.MyComposer</resource>
     <resource>BuildConfig</resource>
     <resource>Config</resource>
@@ -21,6 +34,9 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>UrlMappings</resource>
     <resource>zk.Issue96Controller</resource>
     <resource>zk.TestController</resource>
+    <resource>zk.Comment</resource>
+    <resource>zk.Issue47</resource>
+    <resource>zk.User</resource>
     <resource>MyTagLib</resource>
     <resource>ZkTagLib</resource>
   </resources>

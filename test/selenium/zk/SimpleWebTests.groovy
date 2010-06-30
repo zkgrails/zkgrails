@@ -23,11 +23,11 @@ class SimpleWebTests extends GroovyTestCase {
             focus("zk_comp_9")
             type("zk_comp_9", "test")
             fireEvent("zk_comp_9", "blur")
-            assertEquals("test", getAttribute("zk_comp_9@value"))
-
             focus("zk_comp_10")
+            assertEquals("test", getValue("zk_comp_9"))
+            
             click("zk_comp_10")
-            assertEquals("done", getAttribute("zk_comp_9@value"))
+            assertEquals("done", getValue("zk_comp_9"))
 
             click("zk_comp_14-real")
             assertEquals("strike z-checkbox", getAttribute("zk_comp_14@class"))
