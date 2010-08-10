@@ -11,6 +11,8 @@
             <label id="lblTest1">Ready</label>
             <label id="lblTest2">Ready</label>
             <label id="lblTest3">Ready</label>
+            <label id="lblTest4">Ready</label>
+            <label id="lblTest5">Ready</label>
         </vbox>
     </window>
 
