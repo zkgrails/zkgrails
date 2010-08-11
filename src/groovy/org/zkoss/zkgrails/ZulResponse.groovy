@@ -27,6 +27,7 @@ class ZulResponse {
         } catch (Exception ex) {
             status.ok = false
             status.exception = ex
+            LOG.error "Failed to process url $urlStr. Exception: $ex"
             return
         }
         status.ok = true
