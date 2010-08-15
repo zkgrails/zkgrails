@@ -40,7 +40,18 @@ class ZkGrailsPlugin {
         "grails-app/views/**",
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
-        "web-app/**",
+        "web-app/css/**",
+        "web-app/issue96/**",
+        "web-app/js/**",
+        "web-app/META-INF/**",
+        "web-app/test/**",
+        "web-app/WEB-INF/**",
+        "web-app/images/skin/**",
+        "web-app/images/*.ico",
+        "web-app/images/grails_*",
+        "web-app/images/leftnav_*",
+        "web-app/images/sp*",
+        "web-app/*.zul",
         "test/**"
     ]
 
