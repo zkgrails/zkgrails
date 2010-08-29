@@ -8,8 +8,24 @@
 //
 //    ant.mkdir(dir:"${basedir}/grails-app/jobs")
 //
+
+//
+// Copy zk.xml, if not exist
+//
 def targetFile = "${basedir}/web-app/WEB-INF/zk.xml"
 
 if(! (new File(targetFile).exists())) {
-    ant.copy(file:"${zkPluginDir}/scripts/zk.xml", todir:"${basedir}/web-app/WEB-INF/", overwrite: true)
+    ant.copy(file:"${zkPluginDir}/scripts/zk.xml",
+             todir:"${basedir}/web-app/WEB-INF/",
+             overwrite: true)
+}
+
+//
+// Copy ZK's logos - always overwrite
+//
+["zkpowered_l.png", "zkpowered_s.png"].each { f ->
+  ant.copy(file:"${zkPluginDir}/web-app/images/${f}",
+           todir:"${basedir}/web-app/images/",
+           overwrite: true
+  )
 }
