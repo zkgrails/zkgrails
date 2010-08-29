@@ -72,7 +72,8 @@ target ('default': "Creates a new zul page") {
     // #132 - Ignore #109 just for .zul files, to conform Grails' convention
     //
     else {
-        pkgPath = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/"
+        pkgPath = config.grails.project.groupId ? config.grails.project.groupId: grailsAppName
+        pkgPath = pkgPath.replace('-' as char,'/' as char).toLowerCase() + "/"
     }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
