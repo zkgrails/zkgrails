@@ -73,7 +73,7 @@ target ('default': "Creates a new zul page") {
     //
     else {
         pkgPath = config.grails.project.groupId ? config.grails.project.groupId: grailsAppName
-        pkgPath = pkgPath.replace('-' as char,'/' as char).toLowerCase() + "/"
+        pkgPath = pkgPath.replace('-' as char,'/' as char).replace('.' as char,'/' as char).toLowerCase() + "/"
     }
 
     def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
