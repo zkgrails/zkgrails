@@ -46,7 +46,7 @@ public class CustomContentLoader extends ResourceLoader {
         Boolean disable = (Boolean)ConfigurationHolder.getFlatConfig().get(CONFIG_ZKGRAILS_TAGLIB_DISABLE);        
         if(disable != null) {
             if(disable) {
-                final Locator locator = extra != null ? (Locator)extra: getLocator(_wapp, path);
+                final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
                 return new Parser(_wapp, locator).parse(file, path);
             }
         }
