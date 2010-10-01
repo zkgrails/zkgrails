@@ -25,14 +25,15 @@ import org.zkoss.zk.ui.metainfo.PageDefinitions;
 import org.zkoss.zk.ui.metainfo.Parser;
 
 public class CustomContentLoader extends ResourceLoader {
-	
+    
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";	
+    private static final String CONFIG_ZKGRAILS_TAGLIB_DISABLE = "grails.zk.taglib.disabled";
 
     private final WebApp _wapp;
     private final ApplicationContext _ctx;
 
-    public CustomContentLoader(WebApp wapp) {
+    public CustomContentLoader(WebApp wapp) {        
         _wapp = wapp;
         _ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(
             (ServletContext)wapp.getNativeContext()
@@ -42,6 +43,14 @@ public class CustomContentLoader extends ResourceLoader {
     //-- super --//
     protected Object parse(String path, File file, Object extra)
     throws Exception {
+        Boolean disable = (Boolean)ConfigurationHolder.getFlatConfig().get(CONFIG_ZKGRAILS_TAGLIB_DISABLE);        
+        if(disable != null) {
+            if(disable) {
+                final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
+                return new Parser(_wapp, locator).parse(file, path);
+            }
+        }
+
         Locator locator = null;
         if(extra !=null)
             locator = (Locator)extra;
@@ -81,14 +90,10 @@ public class CustomContentLoader extends ResourceLoader {
         return pgdef;
     }
 
-    protected Object parse(String path, URL url, Object extra)
-    throws Exception {
+    protected Object parse(String path, URL url, Object extra) throws Exception {
         final Locator locator =
             extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
         return new Parser(_wapp, locator).parse(url, path);		
     }
-    
-    public static void init() {
-        PageDefinitions.setResourceLoaderClass(CustomContentLoader.class);
-    }
+
 }
