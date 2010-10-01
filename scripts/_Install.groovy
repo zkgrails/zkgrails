@@ -29,3 +29,9 @@ if(! (new File(targetFile).exists())) {
            overwrite: true
   )
 }
+
+// Issue #154 - create "zk-themes" dir
+def themesDir = "${basedir}/zk-themes/"
+if(new File(themesDir).exists()==false) {
+    ant.mkdir(dir: themesDir)
+}
