@@ -15,8 +15,8 @@ class ZulResponse {
     def status = [:]
 
     static sliceDefs = [
-        ['head', ~/(?m)(?s)(?i)\A.*\Q<div id="z_\E/, '<div id="z_'],
-        ['body', ~/(?m)(?s)(?i)\Q<div id="z_\E.*>.*/, null]
+        ['head', ~/(?m)(?s)(?i)\A.*\Q<!-- ZK 5\E/, '<!-- ZK 5'],
+        ['body', ~/(?m)(?s)(?i)\Q<!-- ZK 5\E.*>.*/, null]
     ]
 
     public ZulResponse(String urlStr, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext) {
