@@ -34,6 +34,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     <resource>DataSource</resource>
     <resource>SeleniumConfig</resource>
     <resource>UrlMappings</resource>
+    <resource>zk.Issue136Controller</resource>
     <resource>zk.Issue96Controller</resource>
     <resource>zk.TestController</resource>
     <resource>zk.Comment</resource>
