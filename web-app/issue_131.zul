@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd" >
 
     <window id="wndMain" apply="test.messageComposer">
-        <button id="btnMessage" label="${g.message(code:'my.message.test')}"/>
-        <button id="btnMessage2" label="${g.message(code:'my.message.test')}"/>
+        <button id="btnMessage" label="${z.message(code:'my.message.test')}"/>
+        <button id="btnMessage2" label="${z.message(code:'my.message.test')}"/>
     </window>
 </zk>

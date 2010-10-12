@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 import org.zkoss.zkgrails.ZulResponse
 import org.zkoss.util.resource.Labels
+import org.zkoss.util.Locales
 
 class ZkTagLib implements ApplicationContextAware, InitializingBean {
 
@@ -201,12 +202,13 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
      * Resolves a message code for a given error or code from the resource bundle
      */
     def message = { attrs ->
-        messageImpl(attrs)
+        out << messageImpl(attrs)
     }
 
     private messageImpl(attrs) {
         def messageSource = applicationContext.getBean("messageSource")
-        def locale = attrs.locale ?: RCU.getLocale(request)
+        def locale = attrs.locale ?: Locales.getCurrent()// RCU.getLocale(request)
+        // println locale
 
         def text
         def error = attrs['error'] ?: attrs['message']
