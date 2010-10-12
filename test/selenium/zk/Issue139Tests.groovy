@@ -10,7 +10,7 @@ class Issue139Tests extends GroovyTestCase {
     void testComet() {
         selenium.with {
             setSpeed("800")
-            setTimeout("80000")
+            setTimeout("100000")
             open "/zk/issue_139.zul"
             assertEquals "Ready", getText("zk_comp_4")
             assertEquals "Ready", getText("zk_comp_5")
@@ -20,11 +20,11 @@ class Issue139Tests extends GroovyTestCase {
 
             click "zk_comp_2"
 
-            waitForText("zk_comp_4", "begin")
-            waitForText("zk_comp_5", "begin")
-            waitForText("zk_comp_6", "begin")
-            waitForText("zk_comp_7", "begin")
-            waitForText("zk_comp_8", "begin")
+            // waitForText("zk_comp_4", "begin")
+            // waitForText("zk_comp_5", "begin")
+            // waitForText("zk_comp_6", "begin")
+            // waitForText("zk_comp_7", "begin")
+            // waitForText("zk_comp_8", "begin")
 
             // waitForText("zk_comp_4", "time1 : 5")
             // waitForText("zk_comp_5", "time2 : 5")
