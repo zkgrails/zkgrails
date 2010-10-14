@@ -41,7 +41,7 @@ class ZkGrailsPlugin {
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
         "web-app/css/**",
-        "web-app/issue96/**",
+        "web-app/issue*",
         "web-app/js/**",
         "web-app/META-INF/**",
         "web-app/test/**",
