@@ -70,7 +70,10 @@ public class CustomContentLoader extends ResourceLoader {
         bufferStr = bufferStr.replaceAll("@\\{", "\\$\\{'@'\\}\\{");        
 
         // checked
-        Template template = gsp.createTemplate(new ByteArrayResource(bufferStr.getBytes(encoding)));
+        Template template = gsp.createTemplate(
+            new ByteArrayResource(bufferStr.getBytes(encoding)),
+            false
+        );
 
         //
         // Issue 113 is between here
