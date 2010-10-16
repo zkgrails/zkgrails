@@ -40,6 +40,29 @@ public class CustomContentLoader extends ResourceLoader {
         );
     }
 
+    private Template createTemplate(GroovyPagesTemplateEngine gsp, ByteArrayResource ba) {
+        // find "createTemplate"
+        Class<?> c = GroovyPagesTemplateEngine.class;
+        Method m = null;
+        
+        //
+        // Try Grails 1.3.x first
+        //
+        try {
+            m = c.getMethod("createTemplate", ByteArrayResource.class, boolean.class);
+        }catch(Throwable e) {}
+        if(m != null)
+            return m.invoke(gsp, ba, false);
+
+        //
+        // Grails 1.2.x
+        //
+        try {
+            m = c.getMethod("createTemplate", ByteArrayResource.class);
+        }catch(Throwable e) {}        
+        return m.invoke(gsp, ba);
+    }
+
     //-- super --//
     protected Object parse(String path, File file, Object extra)
     throws Exception {
