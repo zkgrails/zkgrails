@@ -23,6 +23,9 @@ import org.zkoss.zk.ui.WebApp;
 import org.zkoss.zk.ui.metainfo.PageDefinition;
 import org.zkoss.zk.ui.metainfo.PageDefinitions;
 import org.zkoss.zk.ui.metainfo.Parser;
+import org.springframework.core.io.Resource;
+
+import java.lang.reflect.Method;
 
 public class CustomContentLoader extends ResourceLoader {
     
@@ -38,6 +41,27 @@ public class CustomContentLoader extends ResourceLoader {
         _ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(
             (ServletContext)wapp.getNativeContext()
         );
+    }
+
+    private Template createTemplate(GroovyPagesTemplateEngine gsp, ByteArrayResource ba) throws Exception {
+        // find "createTemplate"
+        Class<?> c = GroovyPagesTemplateEngine.class;
+        Method m = null;
+
+        //
+        // Try Grails 1.3.x first
+        //
+        try {
+            m = c.getMethod("createTemplate", org.springframework.core.io.Resource.class, boolean.class);
+        if(m != null)
+            return (Template)m.invoke(gsp, ba, false);
+        } catch(Throwable e){}
+
+        //
+        // Grails 1.2.x
+        //
+        m = c.getMethod("createTemplate", org.springframework.core.io.Resource.class);
+        return (Template)m.invoke(gsp, ba);
     }
 
     //-- super --//
@@ -69,8 +93,8 @@ public class CustomContentLoader extends ResourceLoader {
         String bufferStr = new String(buffer, encoding);
         bufferStr = bufferStr.replaceAll("@\\{", "\\$\\{'@'\\}\\{");        
 
-        // checked
-        Template template = gsp.createTemplate(new ByteArrayResource(bufferStr.getBytes(encoding)));
+        // Issue 161
+        Template template = createTemplate(gsp, new ByteArrayResource(bufferStr.getBytes(encoding)));
 
         //
         // Issue 113 is between here

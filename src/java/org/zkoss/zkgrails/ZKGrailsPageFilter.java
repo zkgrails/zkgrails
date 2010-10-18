@@ -59,16 +59,17 @@ import com.opensymphony.sitemesh.webapp.ContainerTweaks;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.opensymphony.sitemesh.webapp.SiteMeshWebAppContext;
 
+import org.codehaus.groovy.grails.web.sitemesh.*;
+import org.codehaus.groovy.runtime.InvokerHelper;
+
 /**
  * Extends the default page filter to overide the apply decorator behaviour
  * if the page is a GSP
  *
  * @author Graeme Rocher
- * @since Apr 19, 2006
+ * @author Chanwit Kaewkasi
  */
 public class ZKGrailsPageFilter extends SiteMeshFilter {
-
-    private static final Log LOG = LogFactory.getLog( ZKGrailsPageFilter.class );
 
     private static final String ALREADY_APPLIED_KEY = "com.opensymphony.sitemesh.APPLIED_ONCE";
     private static final String HTML_EXT = ".html";
@@ -76,29 +77,40 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
     private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";
     public static final String GSP_SITEMESH_PAGE = GrailsPageFilter.class.getName() + ".GSP_SITEMESH_PAGE";
 
-
     private FilterConfig filterConfig;
     private ContainerTweaks containerTweaks;
     private WebApplicationContext applicationContext;
     private PersistenceContextInterceptor persistenceInterceptor = new NullPersistentContextInterceptor();
 
-    public void init(FilterConfig filterConfig) {
-        super.init(filterConfig);
-        this.filterConfig = filterConfig;
-        this.containerTweaks = new ContainerTweaks();
-        Config config = new Config(filterConfig);
-        DefaultFactory defaultFactory = new DefaultFactory(config);
+    protected Factory getSiteMeshFactory(Config config) {
+        try {
+            return (Factory)InvokerHelper.invokeConstructorOf(
+                "org.codehaus.groovy.grails.web.sitemesh.Grails5535Factory", 
+                new Object[]{config});
+        } catch(java.lang.ClassNotFoundException e) {
+            return new DefaultFactory(config);
+        }
+    }
+
+    @Override
+    public void init(FilterConfig fc) {
+        super.init(fc);
+        this.filterConfig = fc;
+        containerTweaks = new ContainerTweaks();
+        Config config = new Config(fc);
+        Factory defaultFactory = getSiteMeshFactory(config);
         config.getServletContext().setAttribute("sitemesh.factory", defaultFactory);
         defaultFactory.refresh();
         FactoryHolder.setFactory(defaultFactory);
 
-        this.applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(filterConfig.getServletContext());
-        Map interceptors = applicationContext.getBeansOfType(PersistenceContextInterceptor.class);
-        if(!interceptors.isEmpty()) {
-            persistenceInterceptor = (PersistenceContextInterceptor) interceptors.values().iterator().next();
+        applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(fc.getServletContext());
+        Map<String, PersistenceContextInterceptor> interceptors = applicationContext.getBeansOfType(PersistenceContextInterceptor.class);
+        if (!interceptors.isEmpty()) {
+            persistenceInterceptor = interceptors.values().iterator().next();
         }
     }
 
+    @Override
     public void destroy() {
         super.destroy();
         FactoryHolder.setFactory(null);
@@ -142,8 +154,9 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
      * <p>Checks if the Filter has been applied this request. If not, parses the page
      * and applies {@link com.opensymphony.module.sitemesh.Decorator} (if found).
      */
+    @Override
     public void doFilter(ServletRequest rq, ServletResponse rs, FilterChain chain)
-            throws IOException, ServletException {
+                throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) rq;
         HttpServletResponse response = (HttpServletResponse) rs;
@@ -165,60 +178,58 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
          }
 
         if (!contentProcessor.handles(webAppContext)) {
-             // Optimization: If the content doesn't need to be processed, bypass SiteMesh.
-             chain.doFilter(request, response);
-             return;
-         }
-
+            // Optimization: If the content doesn't need to be processed, bypass SiteMesh.
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (containerTweaks.shouldAutoCreateSession()) {
             request.getSession(true);
         }
 
-
         try {
+            Content content = obtainContent(contentProcessor, webAppContext, request, response, chain);
+            if (content == null || response.isCommitted()) {
+                return;
+            }
 
-             Content content = obtainContent(contentProcessor, webAppContext, request, response, chain);
-
-             if (content == null) {
-                 return;
-             }
-
-             detectContentTypeFromPage(content, response);
-             Decorator decorator = decoratorSelector.selectDecorator(content, webAppContext);
-             persistenceInterceptor.reconnect();
-             decorator.render(content, webAppContext);
-
-         } catch (IllegalStateException e) {
-             // Some containers (such as WebLogic) throw an IllegalStateException when an error page is served.
-             // It may be ok to ignore this. However, for safety it is propegated if possible.
-             if (!containerTweaks.shouldIgnoreIllegalStateExceptionOnErrorPage()) {
-                 throw e;
-             }
-         } catch (RuntimeException e) {
-             if (containerTweaks.shouldLogUnhandledExceptions()) {
-                 // Some containers (such as Tomcat 4) swallow RuntimeExceptions in filters.
-                 servletContext.log("Unhandled exception occurred whilst decorating page", e);
-             }
-             throw e;
-         } catch (ServletException e) {
-             request.setAttribute(ALREADY_APPLIED_KEY, null);
-             throw e;
-         }
-         finally {
-            if(persistenceInterceptor.isOpen()) {
+            detectContentTypeFromPage(content, response);
+            Decorator decorator = decoratorSelector.selectDecorator(content, webAppContext);
+            persistenceInterceptor.reconnect();
+            decorator.render(content, webAppContext);
+        }
+        catch (IllegalStateException e) {
+            // Some containers (such as WebLogic) throw an IllegalStateException when an error page is served.
+            // It may be ok to ignore this. However, for safety it is propegated if possible.
+            if (!containerTweaks.shouldIgnoreIllegalStateExceptionOnErrorPage()) {
+                throw e;
+            }
+        }
+        catch (RuntimeException e) {
+            if (containerTweaks.shouldLogUnhandledExceptions()) {
+                // Some containers (such as Tomcat 4) swallow RuntimeExceptions in filters.
+                servletContext.log("Unhandled exception occurred whilst decorating page", e);
+            }
+            throw e;
+        }
+        catch (ServletException e) {
+            request.setAttribute(ALREADY_APPLIED_KEY, null);
+            throw e;
+        }
+        finally {
+            if (persistenceInterceptor.isOpen()) {
                 persistenceInterceptor.destroy();
             }
-         }
-
+        }
     }
 
     private HTMLPage content2htmlPage(Content content) {
-        HTMLPage htmlPage=null;
-        if(content instanceof HTMLPage) {
-            htmlPage=(HTMLPage)content;
-        } else {
-            htmlPage=new Content2HTMLPage(content);
+        HTMLPage htmlPage = null;
+        if (content instanceof HTMLPage) {
+            htmlPage = (HTMLPage)content;
+        }
+        else {
+            htmlPage = new Content2HTMLPage(content);
         }
         return htmlPage;
     }
@@ -231,104 +242,104 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
         return new DecoratorMapper2DecoratorSelector(factory.getDecoratorMapper()) {
             @Override
             public Decorator selectDecorator(Content content, SiteMeshContext context) {
-                SiteMeshWebAppContext webAppContext = (SiteMeshWebAppContext) context;
+                SiteMeshWebAppContext siteMeshWebAppContext = (SiteMeshWebAppContext) context;
                 final com.opensymphony.module.sitemesh.Decorator decorator =
-                        factory.getDecoratorMapper().getDecorator(webAppContext.getRequest(), content2htmlPage(content));
+                    factory.getDecoratorMapper().getDecorator(siteMeshWebAppContext.getRequest(), content2htmlPage(content));
                 if (decorator == null || decorator.getPage() == null) {
                     return new GrailsNoDecorator();
-                } else {
-                    return new OldDecorator2NewDecorator(decorator) {
-                        @Override
-                        protected void render(Content content, HttpServletRequest request, HttpServletResponse response,
-                                              ServletContext servletContext, SiteMeshWebAppContext webAppContext)
-                                throws IOException, ServletException {
+                }
 
-                            HTMLPage htmlPage = content2htmlPage(content);
-                            request.setAttribute(PAGE, htmlPage);
+                return new OldDecorator2NewDecorator(decorator) {
+                    @Override
+                    protected void render(@SuppressWarnings("hiding") Content content, HttpServletRequest request,
+                                          HttpServletResponse response, ServletContext servletContext,
+                                          @SuppressWarnings("hiding") SiteMeshWebAppContext webAppContext)
+                            throws IOException, ServletException {
 
-                            // see if the URI path (webapp) is set
-                            if (decorator.getURIPath() != null) {
-                                // in a security conscious environment, the servlet container
-                                // may return null for a given URL
-                                if (servletContext.getContext(decorator.getURIPath()) != null) {
-                                    servletContext = servletContext.getContext(decorator.getURIPath());
-                                }
-                            }
-                            // get the dispatcher for the decorator
-                            RequestDispatcher dispatcher = servletContext.getRequestDispatcher(decorator.getPage());
-                            if(response.isCommitted()) {
-                                dispatcher.include(request, response);
-                            }
-                            else {
-                                dispatcher.forward(request, response);
-                            }
+                        HTMLPage htmlPage = content2htmlPage(content);
+                        request.setAttribute(PAGE, htmlPage);
 
-                            request.removeAttribute(PAGE);
+                        // see if the URI path (webapp) is set
+                        if (decorator.getURIPath() != null) {
+                            // in a security conscious environment, the servlet container
+                            // may return null for a given URL
+                            if (servletContext.getContext(decorator.getURIPath()) != null) {
+                                servletContext = servletContext.getContext(decorator.getURIPath());
+                            }
+                        }
+                        // get the dispatcher for the decorator
+                        RequestDispatcher dispatcher = servletContext.getRequestDispatcher(decorator.getPage());
+                        if(response.isCommitted()) {
+                            dispatcher.include(request, response);
+                        }
+                        else {
+                            dispatcher.forward(request, response);
                         }
 
-                    };
-                }
+                        request.removeAttribute(PAGE);
+                    }
+                };
             }
         };
     }
 
     /**
-      * Continue in filter-chain, writing all content to buffer and parsing
-      * into returned {@link com.opensymphony.module.sitemesh.Page} object. If
-      * {@link com.opensymphony.module.sitemesh.Page} is not parseable, null is returned.
-      */
-     private Content obtainContent(ContentProcessor contentProcessor, SiteMeshWebAppContext webAppContext,
-                                   HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-             throws IOException, ServletException {
+     * Continue in filter-chain, writing all content to buffer and parsing
+     * into returned {@link com.opensymphony.module.sitemesh.Page} object. If
+     * {@link com.opensymphony.module.sitemesh.Page} is not parseable, null is returned.
+     */
+    private Content obtainContent(ContentProcessor contentProcessor, SiteMeshWebAppContext webAppContext,
+                                  HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+                throws IOException, ServletException {
 
-         Object oldGspSiteMeshPage=request.getAttribute(GSP_SITEMESH_PAGE);
-         try {
-             request.setAttribute(GSP_SITEMESH_PAGE, new GSPSitemeshPage());
-             GrailsContentBufferingResponse contentBufferingResponse = new GrailsContentBufferingResponse(response, contentProcessor, webAppContext);
+        Object oldGspSiteMeshPage=request.getAttribute(GSP_SITEMESH_PAGE);
+        try {
+            request.setAttribute(GSP_SITEMESH_PAGE, new GSPSitemeshPage());
+            GrailsContentBufferingResponse contentBufferingResponse = new GrailsContentBufferingResponse(
+                    response, contentProcessor, webAppContext);
 
-             setDefaultConfiguredEncoding(request, contentBufferingResponse);
-             chain.doFilter(request, contentBufferingResponse);
-             // TODO: check if another servlet or filter put a page object in the request
-             //            Content result = request.getAttribute(PAGE);
-             //            if (result == null) {
-             //                // parse the page
-             //                result = pageResponse.getPage();
-             //            }
-             webAppContext.setUsingStream(contentBufferingResponse.isUsingStream());
-             return contentBufferingResponse.getContent();
-         } finally {
-             if(oldGspSiteMeshPage != null) {
-                 request.setAttribute(GSP_SITEMESH_PAGE, oldGspSiteMeshPage);
-             }
-         }
-     }
+            setDefaultConfiguredEncoding(request, contentBufferingResponse);
+            chain.doFilter(request, contentBufferingResponse);
+            // TODO: check if another servlet or filter put a page object in the request
+            //            Content result = request.getAttribute(PAGE);
+            //            if (result == null) {
+            //                // parse the page
+            //                result = pageResponse.getPage();
+            //            }
+            webAppContext.setUsingStream(contentBufferingResponse.isUsingStream());
+            return contentBufferingResponse.getContent();
+        }
+        finally {
+            if (oldGspSiteMeshPage != null) {
+                request.setAttribute(GSP_SITEMESH_PAGE, oldGspSiteMeshPage);
+            }
+        }
+    }
 
     private void setDefaultConfiguredEncoding(HttpServletRequest request, GrailsContentBufferingResponse contentBufferingResponse) {
         UrlPathHelper urlHelper = new UrlPathHelper();
         String requestURI = urlHelper.getOriginatingRequestUri(request);
         // static content?
-        if(requestURI.endsWith(HTML_EXT))    {
+        if (requestURI.endsWith(HTML_EXT))    {
             String encoding = (String) ConfigurationHolder.getFlatConfig().get(CONFIG_OPTION_GSP_ENCODING);
-            if(encoding == null) encoding = UTF_8_ENCODING;
+            if (encoding == null) encoding = UTF_8_ENCODING;
             contentBufferingResponse.setContentType("text/html;charset="+encoding);
         }
-
     }
 
-     private boolean filterAlreadyAppliedForRequest(HttpServletRequest request) {
+    private boolean filterAlreadyAppliedForRequest(HttpServletRequest request) {
         if (request.getAttribute(ALREADY_APPLIED_KEY) == Boolean.TRUE) {
             return true;
-        } else {
+        }
+
         request.setAttribute(ALREADY_APPLIED_KEY, Boolean.TRUE);
         return false;
-        }
-     }
+    }
 
     private void detectContentTypeFromPage(Content page, HttpServletResponse response) {
-         String contentType = page.getProperty("meta.http-equiv.Content-Type");
-         if(contentType != null && "text/html".equals(response.getContentType())) {
-             response.setContentType(contentType);
-         }
-     }
-
+        String contentType = page.getProperty("meta.http-equiv.Content-Type");
+        if (contentType != null && "text/html".equals(response.getContentType())) {
+            response.setContentType(contentType);
+        }
+    }
 }

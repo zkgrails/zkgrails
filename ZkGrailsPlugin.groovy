@@ -3,6 +3,7 @@ import org.zkoss.zkgrails.artefacts.*
 import org.zkoss.zk.ui.event.EventListener
 import grails.util.Environment
 import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
+import grails.util.*
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -169,9 +170,15 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 }
             }
         }
+
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name' == 'sitemesh'}
-        pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter')
+        def grailsVersion = GrailsUtil.grailsVersion
+        if(grailsVersion.startsWith("1.3")) {
+            pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter')
+        } else if(grailsVersion.startsWith("1.2") || grailsVersion.startsWith("1.1")) {
+            pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter12x')
+        }
 
         def listenerElements = xml.'listener'[0]
         listenerElements + {
