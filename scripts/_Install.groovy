@@ -12,7 +12,7 @@ def installedFile = "${zkPluginDir}/.installed"
 try {
   if(new File(installedFile).exists() == false) {
     ant.get(
-      src:"http://zkgrails.googlecode.com/files/zkgrails-100.txt", 
+      src:"http://j.mp/aaYauK", 
       dest:installedFile,
       ignoreerrors: true
     )
