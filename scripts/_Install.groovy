@@ -45,3 +45,10 @@ def themesDir = "${basedir}/zk-themes/"
 if(new File(themesDir).exists()==false) {
     ant.mkdir(dir: themesDir)
 }
+//
+// always overwrite theme jars
+//
+ant.copy(file:"${zkPluginDir}/src/templates/themes/breeze.jar",
+         todir:"${basedir}/zk-themes/",
+         overwrite: true
+)
