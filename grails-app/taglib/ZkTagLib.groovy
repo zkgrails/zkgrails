@@ -26,7 +26,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
     static namespace = "z"
 
     ApplicationContext applicationContext
-    GrailsPluginManager pluginManager    
+    GrailsPluginManager pluginManager
 
     public void afterPropertiesSet() {
       def config = applicationContext.getBean(GrailsApplication.APPLICATION_ID).config
@@ -49,7 +49,11 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         cacheZul(attrs['zul'])
         out << "<body>\n"
         out << b()
-        out << pageScope.model['body']
+        def autoHeight = attrs['autoHeight']
+        if(autoHeight==null || (autoHeight!=null && autoHeight=="true"))
+            out << pageScope.model['body']
+        else
+            out << pageScope.model['_body']
         out << "</body>\n"
     }
 
@@ -143,7 +147,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             }
         }
     }
-    
+
     def resource = { attrs, body ->
         def result = resourceImpl(attrs)
         out << result
@@ -159,7 +163,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         }
         else {
             if(attrs.contextPath) {
-                writer << attrs.contextPath.toString() 
+                writer << attrs.contextPath.toString()
             }
             else {
                 def pluginContextPath = pageScope.pluginContextPath
@@ -244,5 +248,5 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         }
         return ''
     }
-    
+
 }
