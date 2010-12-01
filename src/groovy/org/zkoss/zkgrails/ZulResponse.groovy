@@ -46,9 +46,10 @@ class ZulResponse {
 
                 if(name == 'head') {
                     model[name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
-                } else {
+                } else /* name == 'body' */ {
                     def javaScriptFirstDivOriginal = "style:'width:100%;',ct:true"
                     def javaScriptFirstDivHacked = "style:'width:100%;height:100%',ct:true"
+                    model["_" + name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
                     part = part.replace(javaScriptFirstDivOriginal, javaScriptFirstDivHacked)
                     model[name] = "\n<!-- zul $name start-->\n$part\n<!-- zul $name end-->\n"
                 }
