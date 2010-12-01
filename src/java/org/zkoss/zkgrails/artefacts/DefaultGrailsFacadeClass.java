@@ -21,16 +21,17 @@ package org.zkoss.zkgrails.artefacts;
 import org.codehaus.groovy.grails.commons.*;
 
 /**
- * 
- * 
+ *
+ *
  * @author Chanwit Kaewkasi
  */
 public class DefaultGrailsFacadeClass extends AbstractInjectableGrailsClass
-		implements GrailsFacadeClass {
+        implements GrailsFacadeClass {
 
-	public static final String FACADE = "Facade";
-	
-	public DefaultGrailsFacadeClass(Class clazz) {
-		super(clazz, FACADE);
-	}
+    public static final String FACADE = "Facade";
+
+    @SuppressWarnings("unchecked")
+    public DefaultGrailsFacadeClass(Class clazz) {
+        super(clazz, FACADE);
+    }
 }

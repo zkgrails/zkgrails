@@ -14,6 +14,7 @@ public class CometArtefactHandler extends ArtefactHandlerAdapter {
             false);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isArtefactClass(Class clazz) {
         return super.isArtefactClass(clazz) &&
                !DomainClassArtefactHandler.isDomainClass(clazz);

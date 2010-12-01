@@ -45,10 +45,10 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
 
     private static final long serialVersionUID = -5307023773234300419L;
     private MessageHolder messageHolder = null;
-    
+
     // inject
     private DesktopCounter desktopCounter;
-    
+
     public GrailsComposer() {
         super('_');
         if(shallSkipZscriptWiring()) {
@@ -75,7 +75,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
     public void enablePush() {
         desktopCounter.enablePush(this.desktop);
     }
-    
+
     public void disablePush() {
         desktopCounter.disablePush(this.desktop);
     }
@@ -106,6 +106,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         return getMessage().getAt(code);
     }
 
+    @SuppressWarnings("unchecked")
     public String message(Map map) {
         return getMessage().call(map);
     }

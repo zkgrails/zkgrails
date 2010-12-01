@@ -21,16 +21,17 @@ package org.zkoss.zkgrails.artefacts;
 import org.codehaus.groovy.grails.commons.*;
 
 /**
- * 
- * 
+ *
+ *
  * @author Chanwit Kaewkasi
  */
 public class DefaultGrailsComposerClass extends AbstractInjectableGrailsClass
-		implements GrailsComposerClass {
+        implements GrailsComposerClass {
 
-	public static final String COMPOSER = "Composer";
-	
-	public DefaultGrailsComposerClass(Class clazz) {
-		super(clazz, COMPOSER);
-	}
+    public static final String COMPOSER = "Composer";
+
+    @SuppressWarnings("unchecked")
+    public DefaultGrailsComposerClass(Class clazz) {
+        super(clazz, COMPOSER);
+    }
 }

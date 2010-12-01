@@ -29,8 +29,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.ConfigurationHolder;
 import org.codehaus.groovy.grails.support.NullPersistentContextInterceptor;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
@@ -39,6 +37,7 @@ import org.codehaus.groovy.grails.web.sitemesh.GSPSitemeshPage;
 import org.codehaus.groovy.grails.web.sitemesh.GrailsContentBufferingResponse;
 import org.codehaus.groovy.grails.web.sitemesh.GrailsNoDecorator;
 import org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
@@ -58,9 +57,6 @@ import com.opensymphony.sitemesh.compatability.OldDecorator2NewDecorator;
 import com.opensymphony.sitemesh.webapp.ContainerTweaks;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.opensymphony.sitemesh.webapp.SiteMeshWebAppContext;
-
-import org.codehaus.groovy.grails.web.sitemesh.*;
-import org.codehaus.groovy.runtime.InvokerHelper;
 
 /**
  * Extends the default page filter to overide the apply decorator behaviour
@@ -85,7 +81,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
     protected Factory getSiteMeshFactory(Config config) {
         try {
             return (Factory)InvokerHelper.invokeConstructorOf(
-                "org.codehaus.groovy.grails.web.sitemesh.Grails5535Factory", 
+                "org.codehaus.groovy.grails.web.sitemesh.Grails5535Factory",
                 new Object[]{config});
         } catch(java.lang.ClassNotFoundException e) {
             return new DefaultFactory(config);
@@ -251,9 +247,9 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
 
                 return new OldDecorator2NewDecorator(decorator) {
                     @Override
-                    protected void render(@SuppressWarnings("hiding") Content content, HttpServletRequest request,
+                    protected void render(Content content, HttpServletRequest request,
                                           HttpServletResponse response, ServletContext servletContext,
-                                          @SuppressWarnings("hiding") SiteMeshWebAppContext webAppContext)
+                                          SiteMeshWebAppContext webAppContext)
                             throws IOException, ServletException {
 
                         HTMLPage htmlPage = content2htmlPage(content);
