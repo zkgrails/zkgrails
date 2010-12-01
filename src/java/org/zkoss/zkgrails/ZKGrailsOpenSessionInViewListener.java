@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-/* 
+/*
 History:
     Tue Sep  5 10:11:55     2006, Created by henrichen
 */
@@ -58,9 +58,9 @@ import org.zkoss.zkplus.spring.SpringUtil;
  */
 public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, ExecutionCleanup {
 
-	private static final Log log = Log.lookup(ZKGrailsOpenSessionInViewListener.class);
+    private static final Log log = Log.lookup(ZKGrailsOpenSessionInViewListener.class);
 
-    private SessionFactory lookupSessionFactory() {        
+    private SessionFactory lookupSessionFactory() {
         ApplicationContext context = SpringUtil.getApplicationContext();
         if(context != null) {
             return (SessionFactory) context.getBean("sessionFactory", SessionFactory.class);
@@ -76,102 +76,103 @@ public class ZKGrailsOpenSessionInViewListener implements ExecutionInit, Executi
         return session;
     }
 
-	//-- ExecutionInit --//
-	public void init(Execution exec, Execution parent) {
-	    if(sessionFactory == null) {
-	        sessionFactory = lookupSessionFactory();
+    //-- ExecutionInit --//
+    public void init(Execution exec, Execution parent) {
+        if(sessionFactory == null) {
+            sessionFactory = lookupSessionFactory();
         }
-		if (parent == null) { //the root execution of a servlet request
-			log.debug("Starting a database transaction: "+exec);
-			getSession().beginTransaction();
-		}
-	}
+        if (parent == null) { //the root execution of a servlet request
+            log.debug("Starting a database transaction: "+exec);
+            getSession().beginTransaction();
+        }
+    }
 
-	//-- ExecutionCleanup --//
-	public void cleanup(Execution exec, Execution parent, List errs) {
-		if (parent == null) { //the root execution of a servlet request
-			try {
-				if (errs == null || errs.isEmpty()) {
-				    //if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-    					// Commit and cleanup
-    					log.debug("Committing the database transaction: "+exec);
-    					sessionFactory.getCurrentSession().getTransaction().commit();
-				    //}
-				} else {
-					final Throwable ex = (Throwable) errs.get(0);
-					if (ex instanceof StaleObjectStateException) {
-						// default implementation does not do any optimistic concurrency
-						// control; it simply rollback the transaction.
-						handleStaleObjectStateException(exec, (StaleObjectStateException)ex);
-					} else {
-						// default implementation log the stacktrace and then rollback
-						// the transaction.
-						handleOtherException(exec, ex);
-					}
-				}
-			} finally {
+    //-- ExecutionCleanup --//
+    @SuppressWarnings("unchecked")
+    public void cleanup(Execution exec, Execution parent, List errs) {
+        if (parent == null) { //the root execution of a servlet request
+            try {
+                if (errs == null || errs.isEmpty()) {
+                    //if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
+                        // Commit and cleanup
+                        log.debug("Committing the database transaction: "+exec);
+                        sessionFactory.getCurrentSession().getTransaction().commit();
+                    //}
+                } else {
+                    final Throwable ex = (Throwable) errs.get(0);
+                    if (ex instanceof StaleObjectStateException) {
+                        // default implementation does not do any optimistic concurrency
+                        // control; it simply rollback the transaction.
+                        handleStaleObjectStateException(exec, (StaleObjectStateException)ex);
+                    } else {
+                        // default implementation log the stacktrace and then rollback
+                        // the transaction.
+                        handleOtherException(exec, ex);
+                    }
+                }
+            } finally {
                 Session session = sessionFactory.getCurrentSession();
                 if(!FlushMode.MANUAL.equals(session.getFlushMode())) {
                     session.flush();
                 }
-				session.close();
-			}
-		}
-	}
+                session.close();
+            }
+        }
+    }
 
-	/**
-	 * <p>Default StaleObjectStateException handler. This implementation
-	 * does not implement optimistic concurrency control! It simply rollback
-	 * the transaction.</p>
-	 *
-	 * <p>Application developer might want to extends this class and override
-	 * this method to do other things like compensate for any permanent changes
-	 * during the conversation, and finally restart business conversation.
-	 * Or maybe give the user of the application a chance to merge some of his
-	 * work with fresh data... what can be done here depends on the applications
-	 * design.</p>
-	 *
-	 * @param exec the exection to clean up.
-	 * @param ex the StaleObjectStateException being thrown (and not handled) during the execution
-	 */
-	protected void handleStaleObjectStateException(Execution exec, StaleObjectStateException ex) {
-		log.error("This listener does not implement optimistic concurrency control!");
-		rollback(exec, ex);
-	}
+    /**
+     * <p>Default StaleObjectStateException handler. This implementation
+     * does not implement optimistic concurrency control! It simply rollback
+     * the transaction.</p>
+     *
+     * <p>Application developer might want to extends this class and override
+     * this method to do other things like compensate for any permanent changes
+     * during the conversation, and finally restart business conversation.
+     * Or maybe give the user of the application a chance to merge some of his
+     * work with fresh data... what can be done here depends on the applications
+     * design.</p>
+     *
+     * @param exec the exection to clean up.
+     * @param ex the StaleObjectStateException being thrown (and not handled) during the execution
+     */
+    protected void handleStaleObjectStateException(Execution exec, StaleObjectStateException ex) {
+        log.error("This listener does not implement optimistic concurrency control!");
+        rollback(exec, ex);
+    }
 
-	/**
-	 * <p>Default other exception (other than StaleObjectStateException) handler.
-	 * This implementation simply rollback the transaction.</p>
-	 *
-	 * <p>Application developer might want to extends this class and override
-	 * this method to do other things like compensate for any permanent changes
-	 * during the conversation, and finally restart business conversation...
-	 * what can be done here depends on the applications design.</p>
-	 *
-	 * @param exec the exection to clean up.
-	 * @param ex the Throwable other than StaleObjectStateException being thrown (and not handled) during the execution
-	 */
-	protected void handleOtherException(Execution exec, Throwable ex) {
-		// Rollback only
-		ex.printStackTrace();
-		rollback(exec, ex);
-	}
+    /**
+     * <p>Default other exception (other than StaleObjectStateException) handler.
+     * This implementation simply rollback the transaction.</p>
+     *
+     * <p>Application developer might want to extends this class and override
+     * this method to do other things like compensate for any permanent changes
+     * during the conversation, and finally restart business conversation...
+     * what can be done here depends on the applications design.</p>
+     *
+     * @param exec the exection to clean up.
+     * @param ex the Throwable other than StaleObjectStateException being thrown (and not handled) during the execution
+     */
+    protected void handleOtherException(Execution exec, Throwable ex) {
+        // Rollback only
+        ex.printStackTrace();
+        rollback(exec, ex);
+    }
 
-	/**
-	 * rollback the current session.
-	 *
-	 * @param exec the exection to clean up.
-	 * @param ex the StaleObjectStateException being thrown (and not handled) during the execution
-	 */
-	private void rollback(Execution exec, Throwable ex) {
-	    // sessionFactory = lookupSessionFactory();
-		try {
-			if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
-				log.debug("Trying to rollback database transaction after exception:"+ex);
-				sessionFactory.getCurrentSession().getTransaction().rollback();
-			}
-		} catch (Throwable rbEx) {
-			log.error("Could not rollback transaction after exception! Original Exception:\n"+ex, rbEx);
-		}
-	}
+    /**
+     * rollback the current session.
+     *
+     * @param exec the exection to clean up.
+     * @param ex the StaleObjectStateException being thrown (and not handled) during the execution
+     */
+    private void rollback(Execution exec, Throwable ex) {
+        // sessionFactory = lookupSessionFactory();
+        try {
+            if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
+                log.debug("Trying to rollback database transaction after exception:"+ex);
+                sessionFactory.getCurrentSession().getTransaction().rollback();
+            }
+        } catch (Throwable rbEx) {
+            log.error("Could not rollback transaction after exception! Original Exception:\n"+ex, rbEx);
+        }
+    }
 }

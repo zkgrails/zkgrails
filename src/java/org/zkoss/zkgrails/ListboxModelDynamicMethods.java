@@ -25,8 +25,9 @@ import java.util.*;
 
 public class ListboxModelDynamicMethods {
 
+    @SuppressWarnings("unchecked")
     public static void setModel(Listbox delegate, Object list) {
-        if(list instanceof Set) {            
+        if(list instanceof Set) {
             ArrayList newList = new ArrayList();
             for(Object e: (Set)list) {
                 newList.add(e);
@@ -46,7 +47,7 @@ public class ListboxModelDynamicMethods {
                     delegate.setModel(new BindingListModelList((java.util.List)list, false));
                     return;
                 }
-            } else {                
+            } else {
                 delegate.setModel(new BindingListModelList((java.util.List)list, false));
                 return;
             }

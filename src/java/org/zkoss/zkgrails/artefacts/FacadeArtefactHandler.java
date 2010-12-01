@@ -28,12 +28,13 @@ public class FacadeArtefactHandler extends ArtefactHandlerAdapter {
     public static final String TYPE = "Facade";
 
     public FacadeArtefactHandler() {
-        super(TYPE, GrailsFacadeClass.class, 
-            DefaultGrailsFacadeClass.class, 
+        super(TYPE, GrailsFacadeClass.class,
+            DefaultGrailsFacadeClass.class,
             DefaultGrailsFacadeClass.FACADE,
             false);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isArtefactClass(Class clazz) {
         return super.isArtefactClass(clazz) && !DomainClassArtefactHandler.isDomainClass(clazz);
     }

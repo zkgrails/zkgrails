@@ -1,7 +1,5 @@
 package org.zkoss.zkgrails.scaffolding
 
-import java.util.*
-
 class PageableGormList extends AbstractList {
 
     Class gormClass
@@ -9,10 +7,12 @@ class PageableGormList extends AbstractList {
     Object[] buffer
     Integer page
 
+    //
     //    def list = scaffold.list(
     //                    offset: page * scaffoldPaging.pageSize,
     //                    max:    scaffoldPaging.pageSize
     //    )
+    //
 
     PageableGormList(Class gormClass, Integer pageSize) {
         super()
@@ -48,6 +48,7 @@ class PageableGormList extends AbstractList {
                 i + 1
             }
         }
+
         //
         // if pageSize = 8, index = 7, page = 0, then localIndex = 7
         // if pageSize = 8, index = 8, page = 1, then localIndex = 0

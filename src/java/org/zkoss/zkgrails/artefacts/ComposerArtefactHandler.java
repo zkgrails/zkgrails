@@ -37,6 +37,7 @@ public class ComposerArtefactHandler extends ArtefactHandlerAdapter {
             false);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isArtefactClass(Class clazz) {
         return super.isArtefactClass(clazz) &&
                !DomainClassArtefactHandler.isDomainClass(clazz);

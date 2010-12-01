@@ -7,6 +7,7 @@ public class DefaultGrailsCometClass extends AbstractGrailsClass
 
     public static final String COMET = "Comet";
 
+    @SuppressWarnings("unchecked")
     public DefaultGrailsCometClass(Class clazz) {
         super(clazz, COMET);
     }
