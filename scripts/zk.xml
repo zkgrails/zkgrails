@@ -15,7 +15,6 @@
             <value>
                 org.springframework.transaction.support.TransactionSynchronizationManager=resources,
                 synchronizations,currentTransactionName,currentTransactionReadOnly,actualTransactionActive;
-                org.springframework.orm.hibernate3.SessionFactoryUtils=deferredCloseHolder;
                 org.springframework.transaction.interceptor.TransactionAspectSupport=transactionInfoHolder;
                 org.springframework.web.context.request.RequestContextHolder=requestAttributesHolder,inheritableRequestAttributesHolder;
             </value>
