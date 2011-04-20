@@ -2,18 +2,15 @@ import org.zkoss.zkgrails.*
 import org.zkoss.zkgrails.artefacts.*
 import org.zkoss.zk.ui.event.EventListener
 import grails.util.Environment
-import org.zkoss.zkgrails.scaffolding.DefaultScaffoldingTemplate
 import grails.util.*
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.0.2"
+    def version = "1.1-M1"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
-
-    def loadAfter = ['hibernate']
 
     def artefacts = [
         org.zkoss.zkgrails.artefacts.CometArtefactHandler,
@@ -116,22 +113,12 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             }
         }
 
-        if(!parentCtx?.containsBean("zkgrailsScaffoldingTemplate")) {
-            zkgrailsScaffoldingTemplate(DefaultScaffoldingTemplate.class) { bean ->
-                bean.scope = "prototype"
-                bean.autowire = "byName"
-            }
-        }
-
         // composer resolver which directly resolves Spring Beans
         org.zkoss.zkgrails.ComposerResolver.init()
     }
 
     def doWithApplicationContext = { applicationContext ->
     }
-
-    static final String GOSIV_CLASS =
-        "org.codehaus.groovy.grails.orm.hibernate.support.GrailsOpenSessionInViewFilter"
 
     def doWithWebDescriptor = { xml ->
         //
@@ -150,26 +137,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         def urls = supportExts.collect{ "*." + it } +
                    ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
-        // adding GrailsOpenSessionInView
-        if(manager?.hasGrailsPlugin("hibernate")) {
-            def filterElements = xml.'filter'[0]
-            filterElements + {
-                'filter' {
-                    'filter-name' ("GOSIVFilter")
-                    'filter-class' (GOSIV_CLASS)
-                }
-            }
-            // filter for each ZK urls
-            def filterMappingElements = xml.'filter-mapping'[0]
-            filterUrls.each {p ->
-                filterMappingElements + {
-                    'filter-mapping' {
-                        'filter-name'("GOSIVFilter")
-                        'url-pattern'("${p}")
-                    }
-                }
-            }
-        }
 
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name' == 'sitemesh'}
