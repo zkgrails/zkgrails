@@ -1,4 +1,4 @@
-/* GrailsComposerClass.java
+/* DefaultGrailsComposerClass.java
 
 Copyright (C) 2008, 2009 Chanwit Kaewkasi
 
@@ -18,6 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.zkoss.zkgrails.artefacts;
 
-public interface GrailsComposerClass {
+import org.codehaus.groovy.grails.commons.*;
 
+/**
+ *
+ *
+ * @author Chanwit Kaewkasi
+ */
+public class DefaultGrailsLiveModelClass extends AbstractInjectableGrailsClass implements GrailsLiveModelClass {
+
+    public static final String LIVE_MODEL = "LiveModel";
+
+    @SuppressWarnings("unchecked")
+    public DefaultGrailsLiveModelClass(Class clazz) {
+        super(clazz, LIVE_MODEL);
+    }
 }

@@ -15,7 +15,8 @@ class ZkGrailsPlugin {
     def artefacts = [
         org.zkoss.zkgrails.artefacts.CometArtefactHandler,
         org.zkoss.zkgrails.artefacts.ComposerArtefactHandler,
-        org.zkoss.zkgrails.artefacts.FacadeArtefactHandler
+        org.zkoss.zkgrails.artefacts.FacadeArtefactHandler,
+        org.zkoss.zkgrails.artefacts.LiveModelArtefactHandler,
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
@@ -23,7 +24,10 @@ class ZkGrailsPlugin {
                             "file:./grails-app/comets/**/*Comet.groovy",
                             "file:./plugins/*/grails-app/comets/**/*Comet.groovy",
                             "file:./grails-app/facade/**/*Facade.groovy",
-                            "file:./plugins/*/grails-app/facade/**/*Facade.groovy"]
+                            "file:./plugins/*/grails-app/facade/**/*Facade.groovy",
+                            "file:./grails-app/live-models/**/*LiveModel.groovy",
+                            "file:./plugins/*/grails-app/live-models/**/*LiveModel.groovy"]
+
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
@@ -35,6 +39,7 @@ class ZkGrailsPlugin {
         "grails-app/controllers/zk/**",
         "grails-app/composers/**",
         "grails-app/facade/**",
+        "grails-app/live-models/**",
         "grails-app/views/**",
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
@@ -108,6 +113,16 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         //
         application.cometClasses.each { cometClass ->
             "${cometClass.propertyName}"(cometClass.clazz) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "byName"
+            }
+        }
+
+        //
+        // Registering UI-Model classes
+        //
+        application.liveModelClasses.each { modelClass ->
+            "${modelClass.propertyName}"(modelClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
@@ -341,6 +356,21 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             def cometClass = application.addArtefact(CometArtefactHandler.TYPE, event.source)
             def beanDefinitions = beans {
                 "${cometClass.propertyName}"(cometClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
+            }
+            beanDefinitions.registerBeans(event.ctx)
+        } else if (application.isArtefactOfType(LiveModelArtefactHandler.TYPE, event.source)) {
+            def context = event.ctx
+            if (!context) {
+                if (log.isDebugEnabled())
+                    log.debug("Application context not found. Can't reload")
+                return
+            }
+            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE, event.source)
+            def beanDefinitions = beans {
+                "${modelClass.propertyName}"(modelClass.clazz) { bean ->
                     bean.scope = "prototype"
                     bean.autowire = "byName"
                 }

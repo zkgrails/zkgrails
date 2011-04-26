@@ -1,4 +1,4 @@
-/* GrailsComposerClass.java
+/* ComposerArtefactHandler.java
 
 Copyright (C) 2008, 2009 Chanwit Kaewkasi
 
@@ -16,8 +16,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 package org.zkoss.zkgrails.artefacts;
 
-public interface GrailsComposerClass {
+import org.codehaus.groovy.grails.commons.*;
 
+/**
+ *
+ * @author Chanwit Kaewkasi (chanwit@gmail.com)
+ *
+*/
+public class LiveModelArtefactHandler extends ArtefactHandlerAdapter {
+
+    public static final String TYPE = "LiveModel";
+
+    public LiveModelArtefactHandler() {
+        super(TYPE, GrailsLiveModelClass.class,
+            DefaultGrailsLiveModelClass.class,
+            DefaultGrailsLiveModelClass.LIVE_MODEL,
+            false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean isArtefactClass(Class clazz) {
+        return super.isArtefactClass(clazz) &&
+               !DomainClassArtefactHandler.isDomainClass(clazz);
+    }
 }
