@@ -18,3 +18,7 @@ plugin.xml
 
 target/
 bin/
+
+# ViM swap files
+*.swp
+
