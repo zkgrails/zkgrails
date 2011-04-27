@@ -46,7 +46,7 @@ target ('default': "Creates a new live model") {
     if(name.endsWith("LiveModel"))
         name = name.substring(0, name.indexOf("LiveModel"))
 
-    createArtifact(name: name, suffix: type, type: type, path: "grails-app/live-models")
+    createArtifact(name: name, suffix: type, type: type, path: "grails-app/livemodels")
 
     // check if input contains package
     def pkg = null
@@ -75,10 +75,10 @@ target ('default': "Creates a new live model") {
     else
         filename = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/" + GrailsNameUtils.getClassName(name, type)
 
-    // create a facade property for the composer
+    // create a domain property for the composer
     ant.replace(
-        file: "${basedir}/grails-app/live-models/${filename}.groovy",
-        token: "@artifact.name.prop@",
-        value: propName
+        file: "${basedir}/grails-app/livemodels/${filename}.groovy",
+        token: "@artifact.domain@",
+        value: (GrailsNameUtils.getClassName(name, ""))
     )
 }

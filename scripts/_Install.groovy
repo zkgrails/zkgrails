@@ -10,7 +10,7 @@
 //
 def installedFile = "${zkPluginDir}/.installed"
 try {
-  if(new File(installedFile).exists() == false) {
+  if(/*new File(installedFile).exists() ==*/ false) {
     ant.get(
       src:"http://j.mp/aaYauK", 
       dest:installedFile,

@@ -3,6 +3,8 @@ import org.zkoss.zkgrails.artefacts.*
 import org.zkoss.zk.ui.event.EventListener
 import grails.util.Environment
 import grails.util.*
+import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
+import org.zkoss.zkgrails.livemodels.*
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -25,8 +27,8 @@ class ZkGrailsPlugin {
                             "file:./plugins/*/grails-app/comets/**/*Comet.groovy",
                             "file:./grails-app/facade/**/*Facade.groovy",
                             "file:./plugins/*/grails-app/facade/**/*Facade.groovy",
-                            "file:./grails-app/live-models/**/*LiveModel.groovy",
-                            "file:./plugins/*/grails-app/live-models/**/*LiveModel.groovy"]
+                            "file:./grails-app/livemodels/**/*LiveModel.groovy",
+                            "file:./plugins/*/grails-app/livemodels/**/*LiveModel.groovy"]
 
 
     // resources that are excluded from plugin packaging
@@ -39,7 +41,7 @@ class ZkGrailsPlugin {
         "grails-app/controllers/zk/**",
         "grails-app/composers/**",
         "grails-app/facade/**",
-        "grails-app/live-models/**",
+        "grails-app/livemodels/**",
         "grails-app/views/**",
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
@@ -122,9 +124,21 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         // Registering UI-Model classes
         //
         application.liveModelClasses.each { modelClass ->
-            "${modelClass.propertyName}"(modelClass.clazz) { bean ->
-                bean.scope = "prototype"
-                bean.autowire = "byName"
+            def cfg = GCU.getStaticPropertyValue(modelClass.clazz, "config")
+            if(cfg) {
+                def lmb = new LiveModelBuilder()
+                cfg.delegate = lmb
+                cfg.resolveStrategy = Closure.DELEGATE_ONLY
+                cfg.call()
+                println lmb.map
+                if (lmb.map['model'] == 'page') {
+                    "${modelClass.propertyName}"(SortingPagingListModel.class) { bean ->
+                        bean.scope = "prototype"
+                        bean.autowire = "byName"
+                        bean.initMethod = "init"
+                        map = lmb.map.clone()
+                    }
+                }
             }
         }
 
@@ -302,6 +316,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 delegate.loadComponent(it)
             }
         }
+
     }
 
     def onChange = { event ->

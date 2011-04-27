@@ -1,12 +1,13 @@
-@artifact.package@import org.zkoss.zkgrails.*
+package zk
 
-class @artifact.name@  {
+import org.zkoss.zkgrails.*
+
+class UserLiveModel  {
 
     static config = {
         model    "page" // or "list"
         pageSize 100
         sorted   true
-        domain   @artifact.domain@.class
     }
 
 }
