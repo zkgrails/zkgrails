@@ -4,9 +4,9 @@ class @artifact.name@  {
 
     static config = {
         model    "page" // or "list"
-        pageSize 100
-        sorted   true
         domain   @artifact.domain@.class
+        pageSize 20
+        sorted   true
     }
 
 }
