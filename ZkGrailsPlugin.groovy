@@ -130,7 +130,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 cfg.delegate = lmb
                 cfg.resolveStrategy = Closure.DELEGATE_ONLY
                 cfg.call()
-                println lmb.map
                 if (lmb.map['model'] == 'page') {
                     "${modelClass.propertyName}"(SortingPagingListModel.class) { bean ->
                         bean.scope = "prototype"
@@ -383,14 +382,26 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                     log.debug("Application context not found. Can't reload")
                 return
             }
-            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE, event.source)
-            def beanDefinitions = beans {
-                "${modelClass.propertyName}"(modelClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
+            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE,
+                                                     event.source)
+            def cfg = GCU.getStaticPropertyValue(modelClass.clazz, "config")
+            if(cfg) {
+                def lmb = new LiveModelBuilder()
+                cfg.delegate = lmb
+                cfg.resolveStrategy = Closure.DELEGATE_ONLY
+                cfg.call()
+                if (lmb.map['model'] == 'page') {
+                    def beanDefinitions = beans {
+                        "${modelClass.propertyName}"(SortingPagingListModel.class) { bean ->
+                            bean.scope = "prototype"
+                            bean.autowire = "byName"
+                            bean.initMethod = "init"
+                            map = lmb.map.clone()
+                        }
+                    }
+                    beanDefinitions.registerBeans(event.ctx)
                 }
             }
-            beanDefinitions.registerBeans(event.ctx)
         }
     }
 
