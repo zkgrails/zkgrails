@@ -28,6 +28,13 @@ class SortingPagingListModel extends AbstractListModel implements ListModelExt {
         orderBy  = map['orderBy']
         sorted   = map['sorted']
         domain   = map['domain']
+        cachedSize = -1
+        cache    = null
+    }
+
+    public void refresh() throws Exception {
+        init()
+        fireEvent(ListDataEvent.CONTENTS_CHANGED, -1, -1)
     }
 
 	private List load(int offset, int max) {
