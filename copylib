@@ -9,4 +9,4 @@ do
   cp -vf $SRC/zkforge/$FILE $DST/$FILE
 done
 
-cp -vf ../zk-aspect/dist/zk.jar $DST/.
+cp -vf ../zkgrails-aspect/dist/zk.jar $DST/.
