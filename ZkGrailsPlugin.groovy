@@ -7,7 +7,7 @@ import grails.util.*
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.0.3-SNAPSHOT"
+    def version = "1.0.3"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
@@ -296,14 +296,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
         org.zkoss.zul.AbstractListModel.metaClass.getAt = { Integer i ->
             return delegate.getElementAt(i)
-        }
-
-        // simple session
-        org.zkoss.zk.ui.http.SimpleSession.metaClass.getAt = { String name ->
-            delegate.getAttribute(name)
-        }
-        org.zkoss.zk.ui.http.SimpleSession.metaClass.putAt = { String name, value ->
-            delegate.setAttribute(name, value)
         }
 
         // simple session
