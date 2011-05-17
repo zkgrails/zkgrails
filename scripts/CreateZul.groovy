@@ -76,10 +76,12 @@ target ('default': "Creates a new zul page") {
         pkgPath = pkgPath.replace('-' as char,'/' as char).replace('.' as char,'/' as char).toLowerCase() + "/"
     }
 
-    def propName = GrailsNameUtils.getPropertyNameRepresentation(name)
+    def propName  = GrailsNameUtils.getPropertyNameRepresentation(name)
+    def className = GrailsNameUtils.getClassNameRepresentation(name)
     def zulFile = "${basedir}/web-app/${zulPkgPath}${propName}.zul"
 
-    propName = "${pkgPath.replace('/', '.')}${propName}Composer"
+    className = "${pkgPath.replace('/', '.')}${className}Composer"
+    propName  = "${pkgPath.replace('/', '.')}${propName}Composer"
 
     ant.copy(
         file:"${zkPluginDir}/src/templates/artifacts/template.zul",
@@ -89,7 +91,7 @@ target ('default': "Creates a new zul page") {
     ant.replace(
         file: zulFile,
         token: "@artifact.name@",
-        value: propName
+        value: className
     )
 
     // Convert the given name into class name and property name
