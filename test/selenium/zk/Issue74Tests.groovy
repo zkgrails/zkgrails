@@ -13,6 +13,7 @@ class Issue74Tests extends GroovyTestCase {
             open "/zk/issue_74.zul"
             // user label
             assertEquals "mock user", getText("zk_comp_4")
+            assertEquals "mock user 2", getText("zk_comp_5")
         }
     }
 
