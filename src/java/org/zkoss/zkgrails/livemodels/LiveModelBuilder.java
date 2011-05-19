@@ -4,13 +4,13 @@ import java.util.*;
 
 public class LiveModelBuilder {
 
-    private HashMap map;
+    private HashMap<String,Object> map;
 
     public LiveModelBuilder() {
-        this.map = new HashMap();
+        this.map = new HashMap<String,Object>();
     }
 
-    public HashMap getMap() {
+    public HashMap<String,Object> getMap() {
         return this.map;
     }
 
