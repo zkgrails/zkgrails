@@ -13,6 +13,7 @@
         <image src="${z.resource(dir:'images', file:'grails_logo.png')}"/>
     </hbox>
     <label id="lblUser"/>
+    <label id="lblUser_2"/>
 </window>
 
 </zk>

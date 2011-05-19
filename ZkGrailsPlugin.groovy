@@ -298,11 +298,19 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             return delegate.getElementAt(i)
         }
 
+        //
         // simple session
+        //
         org.zkoss.zk.ui.http.SimpleSession.metaClass.getAt = { String name ->
             delegate.getAttribute(name)
         }
         org.zkoss.zk.ui.http.SimpleSession.metaClass.putAt = { String name, value ->
+            delegate.setAttribute(name, value)
+        }
+        org.zkoss.zk.ui.http.SimpleSession.metaClass.propertyMissing = { String name ->
+            delegate.getAttribute(name)
+        }
+        org.zkoss.zk.ui.http.SimpleSession.metaClass.propertyMissing << { String name, value ->
             delegate.setAttribute(name, value)
         }
 
