@@ -8,7 +8,7 @@ import org.zkoss.zkgrails.livemodels.*
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.1-M1"
+    def version = "1.1-M2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
