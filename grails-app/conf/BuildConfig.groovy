@@ -19,7 +19,6 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
         mavenRepo "http://203.158.7.11/artifactory/repo/"
         mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
     }
@@ -35,6 +34,7 @@ grails.project.dependency.resolution = {
         compile ("org.zkoss.common:zcommon:${zkVersion}") { transitive = false }
         compile ("org.zkoss.common:zweb:${zkVersion}")    { transitive = false }
         compile ("org.zkoss.zkforge.el:zcommons-el:1.1.0")
+        compile ("org.zkoss.zkforge:ckez:3.5.2.0")
 
         runtime ("org.zkoss.zk.grails:zk:${zkVersion}")
         runtime ("org.zkoss.zk.grails:zul:${zkVersion}")
@@ -43,6 +43,14 @@ grails.project.dependency.resolution = {
         runtime ("org.zkoss.common:zcommon:${zkVersion}") { transitive = false }
         runtime ("org.zkoss.common:zweb:${zkVersion}")    { transitive = false }
         runtime ("org.zkoss.zkforge.el:zcommons-el:1.1.0")
+        runtime ("org.zkoss.zkforge:ckez:3.5.2.0")
+
+        runtime ("org.apache.poi:poi:3.2-FINAL")
+        runtime ("jfree:jcommon:1.0.15")
+        runtime ("jfree:jfreechart:1.0.13") { transitive = false }
+
+        runtime ("jasperreports:jasperreports:3.5.3")
+        runtime ("com.jhlabs:filters:2.0.235")
     }
 
     plugins {
