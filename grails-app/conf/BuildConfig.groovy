@@ -34,6 +34,7 @@ grails.project.dependency.resolution = {
         compile ("org.zkoss.zk:zkplus:${zkVersion}")      { transitive = false }
         compile ("org.zkoss.common:zcommon:${zkVersion}") { transitive = false }
         compile ("org.zkoss.common:zweb:${zkVersion}")    { transitive = false }
+        compile ("org.zkoss.zkforge.el:zcommons-el:1.1.0")
 
         runtime ("org.zkoss.zk.grails:zk:${zkVersion}")
         runtime ("org.zkoss.zk.grails:zul:${zkVersion}")
@@ -41,6 +42,7 @@ grails.project.dependency.resolution = {
         runtime ("org.zkoss.zk:zkplus:${zkVersion}")      { transitive = false }
         runtime ("org.zkoss.common:zcommon:${zkVersion}") { transitive = false }
         runtime ("org.zkoss.common:zweb:${zkVersion}")    { transitive = false }
+        runtime ("org.zkoss.zkforge.el:zcommons-el:1.1.0")
     }
 
     plugins {
