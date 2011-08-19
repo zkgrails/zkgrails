@@ -27,6 +27,8 @@ grails.project.dependency.resolution = {
         
         def zkVersion = "5.0.8.FL.20110818"
 
+        build ("net.java.dev.inflector:inflector:0.7.0")
+
         compile ("org.zkoss.zk.grails:zk:${zkVersion}")
         compile ("org.zkoss.zk.grails:zul:${zkVersion}")
         compile ("org.zkoss.zk:zhtml:${zkVersion}")       { transitive = false }
@@ -51,6 +53,8 @@ grails.project.dependency.resolution = {
 
         runtime ("jasperreports:jasperreports:3.5.3")
         runtime ("com.jhlabs:filters:2.0.235")
+
+        runtime ("bsh:bsh:2.0b1")
     }
 
     plugins {
