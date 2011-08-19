@@ -51,9 +51,9 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
 
     public GrailsComposer() {
         super('_');
-        if(shallSkipZscriptWiring()) {
-            this.skipZscriptWiring();
-        }
+        // if(shallSkipZscriptWiring()) {
+        //    this.skipZscriptWiring();
+        // }
     }
 
     public void setDesktopCounter(DesktopCounter dc) {
