@@ -1,9 +1,7 @@
 package zk;
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
 
-import groovy.util.GroovyTestCase;
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class ComposerComentInstatiationTests extends GroovyTestCase {
 

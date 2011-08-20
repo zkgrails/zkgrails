@@ -11,10 +11,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder;
+import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
@@ -44,7 +45,7 @@ public class CustomContentLoader extends ResourceLoader {
     private Template createTemplate(GroovyPagesTemplateEngine gsp, ByteArrayResource ba) throws Exception {
         // find "createTemplate"
         Class<?> c = GroovyPagesTemplateEngine.class;
-        Method m = null;
+        Method m;
 
         //
         // Try Grails 1.3.x first
@@ -65,7 +66,10 @@ public class CustomContentLoader extends ResourceLoader {
     //-- super --//
     protected Object parse(String path, File file, Object extra)
     throws Exception {
-        Boolean disable = (Boolean)ConfigurationHolder.getFlatConfig().get(CONFIG_ZKGRAILS_TAGLIB_DISABLE);
+        GrailsApplication grailsApplication = (GrailsApplication)_ctx.getBean("grailsApplication");
+        final Map config = grailsApplication.getConfig().flatten();
+
+        Boolean disable = (Boolean) config.get(CONFIG_ZKGRAILS_TAGLIB_DISABLE);
         if(disable != null) {
             if(disable) {
                 final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
@@ -73,7 +77,7 @@ public class CustomContentLoader extends ResourceLoader {
             }
         }
 
-        Locator locator = null;
+        Locator locator;
         if(extra !=null)
             locator = (Locator)extra;
         else
@@ -85,7 +89,7 @@ public class CustomContentLoader extends ResourceLoader {
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
         bis.read(buffer);
 
-        String encoding = (String)ConfigurationHolder.getFlatConfig().get(CONFIG_OPTION_GSP_ENCODING);
+        String encoding = (String)config.get(CONFIG_OPTION_GSP_ENCODING);
         if(encoding == null) encoding = UTF_8_ENCODING;
 
         String bufferStr = new String(buffer, encoding);

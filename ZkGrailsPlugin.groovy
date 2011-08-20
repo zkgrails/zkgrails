@@ -1,24 +1,37 @@
-import org.zkoss.zkgrails.*
-import org.zkoss.zkgrails.artefacts.*
-import org.zkoss.zk.ui.event.EventListener
-import grails.util.Environment
-import grails.util.*
 import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
-import org.zkoss.zkgrails.livemodels.*
+
+import grails.util.Environment
+import grails.util.GrailsUtil
+
+import org.zkoss.zk.ui.event.EventListener
+
+import org.zkoss.zk.grails.ComposerResolver
+import org.zkoss.zk.grails.DesktopCounter
+import org.zkoss.zk.grails.ZkBuilder
+import org.zkoss.zk.grails.livemodels.LiveModelBuilder
+import org.zkoss.zk.grails.ListboxModelDynamicMethods
+import org.zkoss.zk.grails.artefacts.CometArtefactHandler
+import org.zkoss.zk.grails.artefacts.ComposerArtefactHandler
+import org.zkoss.zk.grails.artefacts.FacadeArtefactHandler
+import org.zkoss.zk.grails.artefacts.LiveModelArtefactHandler
+
+import org.zkoss.zk.grails.livemodels.SortingPagingListModel
+import org.zkoss.zk.grails.ZkConfigHelper
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.1-M2"
+    def version = "1.1.BUILD-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
+    def loadAfter = ['core', 'controllers']
 
     def artefacts = [
-        org.zkoss.zkgrails.artefacts.CometArtefactHandler,
-        org.zkoss.zkgrails.artefacts.ComposerArtefactHandler,
-        org.zkoss.zkgrails.artefacts.FacadeArtefactHandler,
-        org.zkoss.zkgrails.artefacts.LiveModelArtefactHandler,
+        CometArtefactHandler,
+        ComposerArtefactHandler,
+        FacadeArtefactHandler,
+        LiveModelArtefactHandler,
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
@@ -76,8 +89,8 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
         boolean developmentMode = !application.warDeployed
         Environment env = Environment.current
-        boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload == true || (developmentMode && env == Environment.DEVELOPMENT)
-        boolean warDeployedWithReload = application.warDeployed && enableReload
+        // boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload || (developmentMode && env == Environment.DEVELOPMENT)
+        // boolean warDeployedWithReload = application.warDeployed && enableReload
 
         // Registering desktopCounter
         desktopCounter(DesktopCounter.class) { bean ->
@@ -142,7 +155,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         }
 
         // composer resolver which directly resolves Spring Beans
-        org.zkoss.zkgrails.ComposerResolver.init()
+        ComposerResolver.init()
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -162,17 +175,25 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
         //
-        def urls = supportExts.collect{ "*." + it } +
-                   ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
+        def urls = supportExts.collect{ "*." + it } + ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
 
         // quick hack for page filtering
-        def pageFilter = xml.filter.find { it.'filter-name' == 'sitemesh'}
+        def pageFilter = xml.filter.find { it.'filter-name'.text() == 'sitemesh' }
+
         def grailsVersion = GrailsUtil.grailsVersion
-        if(grailsVersion.startsWith("1.3")) {
-            pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter')
-        } else if(grailsVersion.startsWith("1.2") || grailsVersion.startsWith("1.1")) {
-            pageFilter.'filter-class'.replaceBody('org.zkoss.zkgrails.ZKGrailsPageFilter12x')
+
+        // Grails 1.3.x & Grails 2.0.x
+        def pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter"
+        if (grailsVersion.startsWith("1.2") || grailsVersion.startsWith("1.1")) {
+            pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter12x"
+        }
+        if(grailsVersion.startsWith("2.0")) {
+            pageFilter.'filter-class'.replaceNode {
+                'filter-class'(pageFilterClass)
+            }
+        } else {
+            pageFilter.'filter-class'.replaceBody(pageFilterClass)
         }
 
         def listenerElements = xml.'listener'[0]
@@ -338,6 +359,8 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                     bean.autowire = "byName"
                 }
             }
+
+            //
             // now that we have a BeanBuilder calling registerBeans and passing the app ctx will
             // register the necessary beans with the given app ctx
             beanDefinitions.registerBeans(event.ctx)

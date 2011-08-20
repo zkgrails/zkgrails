@@ -1,6 +1,6 @@
 package test
 
-import org.zkoss.zkgrails.*
+import org.zkoss.zk.grails.*
 
 class IndexComposer extends GrailsComposer {
 	

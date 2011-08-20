@@ -1,25 +1,23 @@
-
 import grails.util.Environment
-import grails.util.GrailsUtil
-import grails.util.Metadata
+
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsControllerClass
+
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import org.codehaus.groovy.grails.web.mapping.UrlCreator
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
+
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
 import org.springframework.context.MessageSourceResolvable
 import org.springframework.context.NoSuchMessageException
-import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
-import org.zkoss.zkgrails.ZulResponse
+import org.zkoss.zk.grails.ZulResponse
 import org.zkoss.util.resource.Labels
 import org.zkoss.util.Locales
+
+import org.zkoss.zk.fn.JspFns
 
 class ZkTagLib implements ApplicationContextAware, InitializingBean {
 
@@ -29,12 +27,34 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
     GrailsPluginManager pluginManager
 
     public void afterPropertiesSet() {
-      def config = applicationContext.getBean(GrailsApplication.APPLICATION_ID).config
-      if(config.grails.views.enable.jsessionid instanceof Boolean) {
-         useJsessionId = config.grails.views.enable.jsessionid
-      }
+        def config = applicationContext.getBean(GrailsApplication.APPLICATION_ID).config
+        if (config.grails.views.enable.jsessionid instanceof Boolean) {
+            useJsessionId = config.grails.views.enable.jsessionid
+        }
+    }
+    
+    def wrapper = { attrs, b ->
+        def url = attrs.remove('url')
+        if (url == null) {
+            url = "/${controllerName}/${actionName}.zul"
+        }        
+        out << '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />    
+'''
+        out << JspFns.outZkHtmlTags(servletContext, request, response, null)
+        out << "\n"
+        out << "</head>\n"
+        out << "<body>\n"
+        def zres = new ZulResponse(url, request, response, servletContext)
+        out << zres.model['source']
+        out << "</body>\n"
+        out << "</html>"
     }
 
+/*
     def head = { attrs, b ->
         cacheZul(attrs['zul'])
         out << "<head>\n"
@@ -56,7 +76,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             out << pageScope.model['_body']
         out << "</body>\n"
     }
-
+*/
     def div = { attrs, b ->
         cacheZul(attrs['zul'])
         out << pageScope.model[attrs['part']]
@@ -69,35 +89,35 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         String defValue = attrs["default"] as String
         def label
 
-        if(!key) {
+        if (!key) {
             throwTagError("Attribute [key] is obrigatory")
         }
-        if(required != null && !(required instanceof Boolean)) {
+        if (required != null && !(required instanceof Boolean)) {
             throwTagError("Attribute [required] has to be a boolean value [true|false]")
         }
-        if(args && !(args instanceof List)) {
+        if (args && !(args instanceof List)) {
             throwTagError("Attribute [args] has to be a list")
         }
-        if(defValue && !(defValue instanceof String)) {
+        if (defValue && !(defValue instanceof String)) {
             throwTagError("Attribute [default] has to be a String")
         }
 
-        if(! required) {
-            if(! defValue) {
-                if(! args) {
+        if (!required) {
+            if (!defValue) {
+                if (!args) {
                     label = Labels.getLabel(key)
                 } else {
                     label = Labels.getLabel(key, args as Object[])
                 }
             } else {
-                if(args) {
+                if (args) {
                     label = Labels.getLabel(key, defValue, args as Object[])
                 } else {
                     label = Labels.getLabel(key, defValue)
                 }
             }
         } else {
-            if(! args) {
+            if (!args) {
                 label = Labels.getRequiredLabel(key)
             } else {
                 label = Labels.getRequiredLabel(key, args as Object[])
@@ -115,7 +135,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         if (!u) {
             // Leave it null if we're in production so we can throw
             if (Environment.current != Environment.PRODUCTION) {
-                u = "http://localhost:" +(System.getProperty('server.port') ? System.getProperty('server.port') : "8080")
+                u = "http://localhost:" + (System.getProperty('server.port') ? System.getProperty('server.port') : "8080")
             }
         }
         return u
@@ -126,7 +146,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
      */
     private handleAbsolute(attrs) {
         def base = attrs.remove('base')
-        if(base) {
+        if (base) {
             return base
         }
         else {
@@ -157,41 +177,41 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         def writer = new StringBuffer("")
         writer << handleAbsolute(attrs)
         def dir = attrs['dir']
-        if(attrs.plugin) {
+        if (attrs.plugin) {
             def pp = pluginManager.getPluginPath(attrs.plugin)
             writer << (pp ?: '')
         }
         else {
-            if(attrs.contextPath) {
+            if (attrs.contextPath) {
                 writer << attrs.contextPath.toString()
             }
             else {
                 def pluginContextPath = pageScope.pluginContextPath
-                if(dir != pluginContextPath) {
+                if (dir != pluginContextPath) {
                     def pcp = pluginContextPath
                     writer << (pcp ?: '')
                 }
             }
         }
-        if(dir) {
-           writer << (dir.startsWith("/") ?  dir : "/${dir}")
+        if (dir) {
+            writer << (dir.startsWith("/") ? dir : "/${dir}")
         }
         def file = attrs['file']
-        if(file) {
-           writer << (file.startsWith("/") || dir?.endsWith('/') ?  file : "/${file}")
+        if (file) {
+            writer << (file.startsWith("/") || dir?.endsWith('/') ? file : "/${file}")
         }
         return writer.toString()
     }
 
     private cacheZul(url) {
-        if(pageScope.variables.containsKey("cached")==false) {
-            if(url==null) {
+        if (pageScope.variables.containsKey("cached") == false) {
+            if (url == null) {
                 url = "/${controllerName}/${actionName}.zul"
             }
             def zres = new ZulResponse(url, request, response, servletContext)
-            if(pageScope.variables.containsKey("model")==false) {
-                if(zres.status.ok) {
-                    pageScope.model  = zres.model
+            if (pageScope.variables.containsKey("model") == false) {
+                if (zres.status.ok) {
+                    pageScope.model = zres.model
                     pageScope.cached = true
                 } else {
                     throw zres.status.exception
@@ -216,26 +236,26 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
 
         def text
         def error = attrs['error'] ?: attrs['message']
-        if(error) {
+        if (error) {
             try {
-                text = messageSource.getMessage( error , locale )
+                text = messageSource.getMessage(error, locale)
             } catch (NoSuchMessageException e) {
-                if(error instanceof MessageSourceResolvable) {
+                if (error instanceof MessageSourceResolvable) {
                     text = error?.code
                 } else {
                     text = error?.toString()
                 }
             }
-        } else if(attrs['code']) {
+        } else if (attrs['code']) {
             def code = attrs['code']
             def args = attrs['args']
-            def defaultMessage = ( attrs['default'] != null ? attrs['default'] : code )
+            def defaultMessage = (attrs['default'] != null ? attrs['default'] : code)
 
-            def message = messageSource.getMessage( code,
-                                                    args == null ? null : args.toArray(),
-                                                    defaultMessage,
-                                                    locale )
-            if(message) {
+            def message = messageSource.getMessage(code,
+                    args == null ? null : args.toArray(),
+                    defaultMessage,
+                    locale)
+            if (message) {
                 text = message
             }
             else {

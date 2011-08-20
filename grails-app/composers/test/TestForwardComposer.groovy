@@ -2,7 +2,7 @@ package test
 
 import org.zkoss.*
 import org.zkoss.zk.ui.event.*
-import org.zkoss.zkgrails.*
+import org.zkoss.zk.grails.*
 
 class TestForwardComposer extends GrailsComposer {
 

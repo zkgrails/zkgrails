@@ -1,4 +1,1 @@
-<html>
-    <z:head/>
-    <z:body/>
-</html>
+<zul:wrapper/>

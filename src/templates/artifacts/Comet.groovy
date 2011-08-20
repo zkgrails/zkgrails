@@ -1,4 +1,4 @@
-@artifact.package@import org.zkoss.zkgrails.*
+@artifact.package@import org.zkoss.zk.grails.*
 
 class @artifact.name@ extends GrailsComet {
 

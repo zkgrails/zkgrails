@@ -1,6 +1,6 @@
 package zk
 
-import org.zkoss.zkgrails.GrailsComposer
+import org.zkoss.zk.grails.GrailsComposer
 
 class Issue164Composer extends GrailsComposer {
 

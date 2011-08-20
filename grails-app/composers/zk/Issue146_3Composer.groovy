@@ -1,6 +1,6 @@
 package zk
 
-import org.zkoss.zkgrails.GrailsComposer
+import org.zkoss.zk.grails.GrailsComposer
 
 class Issue146_3Composer extends GrailsComposer {
     static skipZscriptWiring = false

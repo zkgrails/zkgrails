@@ -1,8 +1,6 @@
 package zk
 
-import org.zkoss.zkgrails.*
-
-class Issue137Comet extends GrailsComet {
+class Issue137Comet extends org.zkoss.zk.grails.GrailsComet {
 
     int i = 0
 

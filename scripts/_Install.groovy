@@ -10,14 +10,14 @@
 //
 def installedFile = "${zkPluginDir}/.installed"
 try {
-  if(/*new File(installedFile).exists() ==*/ false) {
-    ant.get(
-      src:"http://j.mp/aaYauK", 
-      dest:installedFile,
-      ignoreerrors: true
-    )
-  }
-}catch(e){}
+    if(/*new File(installedFile).exists() ==*/ false) {
+        ant.get(
+            src:"http://j.mp/aaYauK", 
+            dest: installedFile,
+            ignoreerrors: true
+        )
+    }
+}catch(e){ /* do nothing */ }
 
 //
 // Copy zk.xml, if not exist
@@ -43,15 +43,16 @@ if(! (new File(targetFile).exists())) {
 //
 // Issue #154 - create "zk-themes" dir
 //
-def themesDir = "${basedir}/zk-themes/"
-if(new File(themesDir).exists()==false) {
-    ant.mkdir(dir: themesDir)
-}
+// def themesDir = "${basedir}/zk-themes/"
+// if(new File(themesDir).exists()==false) {
+//     ant.mkdir(dir: themesDir)
+// }
 
 //
 // always overwrite theme jars
+// inti the lib directory
 //
 ant.copy(file:"${zkPluginDir}/src/templates/themes/breeze.jar",
-         todir:"${basedir}/zk-themes/",
+         todir:"${basedir}/lib/",
          overwrite: true
 )

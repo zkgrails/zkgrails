@@ -7,7 +7,7 @@
     <zscript-config>
         <language-name>GroovyGrails</language-name>
         <interpreter-class>
-            org.zkoss.zkgrails.scripting.GroovyGrailsInterpreter
+            org.zkoss.zk.grails.scripting.GroovyGrailsInterpreter
         </interpreter-class>
     </zscript-config>
     <preference>

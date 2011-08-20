@@ -5,13 +5,13 @@ eventSetClasspath = { classLoader ->
     //
     // support themes
     //
-    if(new File(ZK_THEMES_DIR).exists()) {
-        println "Adding theme jars to class loader"
-        def themeJars = resolveResources("file:${ZK_THEMES_DIR}*.jar")
-        for(jar in themeJars) {
-            classLoader.addURL(jar.URL)
-        }
-    }
+    // if(new File(ZK_THEMES_DIR).exists()) {
+    //     println "Adding theme jars to class loader"
+    //     def themeJars = resolveResources("file:${ZK_THEMES_DIR}*.jar")
+    //     for(jar in themeJars) {
+    //         classLoader.addURL(jar.URL)
+    //     }
+    // }
 
     //
     // Issue #140 - Support sub-plugins for every plugin with 'zk' prefix.

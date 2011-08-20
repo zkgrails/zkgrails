@@ -2,7 +2,7 @@
 <zk>
     <system-config>
         <disable-event-thread/>
-        <id-generator-class>org.zkoss.zkgrails.test.TestIdGenerator</id-generator-class>
+        <id-generator-class>org.zkoss.zk.grails.test.TestIdGenerator</id-generator-class>
     </system-config>    
     <listener>
         <description>ThreadLocal Synchronization Listener</description>
@@ -11,7 +11,7 @@
     <zscript-config>
         <language-name>GroovyGrails</language-name>
         <interpreter-class>
-            org.zkoss.zkgrails.scripting.GroovyGrailsInterpreter
+            org.zkoss.zk.grails.scripting.GroovyGrailsInterpreter
         </interpreter-class>
     </zscript-config>
     <preference>
