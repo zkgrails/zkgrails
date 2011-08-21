@@ -166,6 +166,8 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                     'filter-mapping' {
                         'filter-name'("GOSIVFilter")
                         'url-pattern'("${p}")
+                        'dispatcher' ("REQUEST")
+                        'dispatcher' ("FORWARD")
                     }
                 }
             }
