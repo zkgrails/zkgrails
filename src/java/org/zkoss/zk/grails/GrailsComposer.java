@@ -30,16 +30,13 @@ import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Desktop;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.ForwardEvent;
 import org.zkoss.zk.ui.sys.ComponentsCtrl;
-import org.zkoss.zk.grails.GrailsComet;
-import org.zkoss.zk.grails.ZkBuilder;
-import org.zkoss.zk.grails.ZkConfigHelper;
+import org.zkoss.zkgrails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zkplus.spring.SpringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +51,9 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
 
     public GrailsComposer() {
         super('_');
+        if(shallSkipZscriptWiring()) {
+            this.skipZscriptWiring();
+        }
     }
 
     public void setDesktopCounter(DesktopCounter dc) {
@@ -210,12 +210,12 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
         } catch(BeansException e) { /* do nothing */}
     }
 
-    //
-    //  Issue #146 - Support for skip zscript wiring for better performance.
-    //  1st look at variable skipZscriptWiring on composer
-    //  2nd look at global config skipZscriptWiring on Config.
-    //  If none specified default to true (wire zscript variables) maintaining backward compatibility
-    //
+    /**
+     * Issue #146 - Support for skip zscript wiring for better performance.
+     * 1st look at variable skipZscriptWiring on composer
+     * 2nd look at global config skipZscriptWiring on Config.
+     * If none specified default to true (wire zscript variables) maintaining backward compatibility
+     */
     private boolean shallSkipZscriptWiring() {
         boolean shallSkipZscriptWiring;
         Object skipZscriptWiringFromComposer =
