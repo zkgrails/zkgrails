@@ -25,7 +25,7 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        def zkVersion = "5.0.8.FL.20110825"
+        def zkVersion = "5.0.8.FL.20110826"
 
         build ("net.java.dev.inflector:inflector:0.7.0")
 
