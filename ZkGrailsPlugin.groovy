@@ -7,7 +7,7 @@ import grails.util.*
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.0.5"
+    def version = "1.0.6"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
