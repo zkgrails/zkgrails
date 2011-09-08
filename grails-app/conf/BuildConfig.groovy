@@ -19,8 +19,8 @@ grails.project.dependency.resolution = {
         // mavenRepo "http://snapshots.repository.codehaus.org"
         // mavenRepo "http://repository.codehaus.org"
         // mavenRepo "http://download.java.net/maven/2/"
-        mavenRepo "http://203.158.7.11/artifactory/repo/"
         mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
+        mavenRepo "http://mavensync.zkoss.org/maven2/"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
