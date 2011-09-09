@@ -9,12 +9,9 @@
 //    ant.mkdir(dir:"${basedir}/grails-app/jobs")
 //
 
-includeTargets << grailsScript("_GrailsClean")
-includeTargets << grailsScript("_GrailsPackage")
-includeTargets << grailsScript("_PluginDependencies")
-
-// doInstallPlugin "hibernate"
-doInstallPlugin "zk-hibernate"
+def m = grails.util.Metadata.current
+m.setProperty('plugins.zk-hibernate','1.1.M2')
+m.persist()
 
 def installedFile = "${zkPluginDir}/.installed"
 try {
