@@ -8,6 +8,14 @@
 //
 //    ant.mkdir(dir:"${basedir}/grails-app/jobs")
 //
+
+includeTargets << grailsScript("_GrailsClean")
+includeTargets << grailsScript("_GrailsPackage")
+includeTargets << grailsScript("_PluginDependencies")
+
+// doInstallPlugin "hibernate"
+doInstallPlugin "zk-hibernate"
+
 def installedFile = "${zkPluginDir}/.installed"
 try {
     if(/*new File(installedFile).exists() ==*/ false) {
