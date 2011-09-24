@@ -37,10 +37,10 @@ grails.project.dependency.resolution = {
 
         runtime ("org.zkoss.zkforge:ckez:3.5.2.0")
 
-        runtime ("jasperreports:jasperreports:3.5.3") {
-            excludes "bcprov-jdk14"
-        }
-        runtime ("com.jhlabs:filters:2.0.235")
+        // runtime ("jasperreports:jasperreports:3.5.3") {
+        //     excludes "bcprov-jdk14"
+        // }
+        // runtime ("com.jhlabs:filters:2.0.235")
 
         test ("com.h2database:h2:1.3.159")
     }
