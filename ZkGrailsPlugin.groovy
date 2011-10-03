@@ -142,6 +142,16 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         }        
 
         //
+        // Registering ViewModel Beans to support MVVM
+        //
+        application.viewModelClasses.each { viewModelClass ->
+            "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
+                bean.scope = "desktop"
+                bean.autowire = "byName"
+            }
+        }
+
+        //
         // Registering Facade Beans
         //
         application.facadeClasses.each { facadeClass ->
