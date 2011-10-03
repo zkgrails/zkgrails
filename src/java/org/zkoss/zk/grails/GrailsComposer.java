@@ -151,7 +151,11 @@ public class GrailsComposer extends GenericForwardComposer {
         super.doAfterCompose(comp);
         injectComet();
 
+<<<<<<< HEAD
         this.binder = new AnnotateDataBinder(comp);
+=======
+        binder = new AnnotateDataBinder(comp);
+>>>>>>> add binder to GrailsComposer
         comp.setAttribute("binder", binder);
         binder.loadAll();
         
