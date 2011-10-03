@@ -11,7 +11,10 @@ import org.zkoss.zk.grails.ZkBuilder
 import org.zkoss.zk.grails.livemodels.LiveModelBuilder
 import org.zkoss.zk.grails.ListboxModelDynamicMethods
 import org.zkoss.zk.grails.artefacts.CometArtefactHandler
+
 import org.zkoss.zk.grails.artefacts.ComposerArtefactHandler
+import org.zkoss.zk.grails.artefacts.ViewModelArtefactHandler
+
 import org.zkoss.zk.grails.artefacts.FacadeArtefactHandler
 import org.zkoss.zk.grails.artefacts.LiveModelArtefactHandler
 
@@ -32,6 +35,7 @@ class ZkGrailsPlugin {
         ComposerArtefactHandler,
         FacadeArtefactHandler,
         LiveModelArtefactHandler,
+        ViewModelArtefactHandler,
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
@@ -41,8 +45,10 @@ class ZkGrailsPlugin {
                             "file:./grails-app/facade/**/*Facade.groovy",
                             "file:./plugins/*/grails-app/facade/**/*Facade.groovy",
                             "file:./grails-app/livemodels/**/*LiveModel.groovy",
-                            "file:./plugins/*/grails-app/livemodels/**/*LiveModel.groovy"]
-
+                            "file:./plugins/*/grails-app/livemodels/**/*LiveModel.groovy",
+                            "file:./grails-app/viewmodels/**/*ViewModel.groovy",
+                            "file:./plugins/*/grails-app/viewmodels/**/*ViewModel.groovy"
+                            ]
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
@@ -56,6 +62,7 @@ class ZkGrailsPlugin {
         "grails-app/facade/**",
         "grails-app/livemodels/**",
         "grails-app/views/**",
+        "grails-app/viewmodels/**",        
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
         "web-app/css/**",
@@ -92,8 +99,18 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         // boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload || (developmentMode && env == Environment.DEVELOPMENT)
         // boolean warDeployedWithReload = application.warDeployed && enableReload
 
+        //
+        // Registering new scopes
+        //
+        desktopScope(org.zkoss.zk.grails.scope.DesktopScope)
+        pageScope   (org.zkoss.zk.grails.scope.PageScope   )
+        zkgrailsScopesConfigurer(org.springframework.beans.factory.config.CustomScopeConfigurer) {
+            scopes = ['desktop': ref('desktopScope'),
+                      'page'   : ref('pageScope')   ]
+        }
+
         // Registering desktopCounter
-        desktopCounter(DesktopCounter.class) { bean ->
+        desktopCounter(org.zkoss.zk.grails.DesktopCounter) { bean ->
             bean.scope = "singleton"
             bean.autowire = "byName"
         }
@@ -111,6 +128,16 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 bean.autowire = "byName"
             }
 
+        }
+
+        //
+        // Registering ViewModel Beans to support MVVM
+        //
+        application.viewModelClasses.each { viewModelClass ->
+            "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
+                bean.scope = "desktop"
+                bean.autowire = "byName"
+            }
         }
 
         //
