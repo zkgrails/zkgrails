@@ -9,6 +9,7 @@ class MyViewModel extends GrailsViewModel {
 
     static binding = {
         'button > *' autowire: byName, property: 'value'
+        txtFirstName
     }
 
 }
