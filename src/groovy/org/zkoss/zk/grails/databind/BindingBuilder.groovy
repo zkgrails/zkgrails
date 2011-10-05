@@ -45,6 +45,7 @@ class BindingBuilder {
                         "suffix": break// match each bean property with each comp suffix?
                     }
                 } else {
+
                     //
                     // normal mode
                     // an expression is would be something like "viewModel.person.name"
