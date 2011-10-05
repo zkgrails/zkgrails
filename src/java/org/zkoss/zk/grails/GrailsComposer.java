@@ -53,8 +53,8 @@ public class GrailsComposer extends GenericForwardComposer {
 
     // inject
     private DesktopCounter desktopCounter;
-    
     private AnnotateDataBinder binder;
+    private GrailsViewModel viewModel;
 
     public GrailsComposer() {
     	//default is true
@@ -71,6 +71,14 @@ public class GrailsComposer extends GenericForwardComposer {
         }catch (Exception e) {
         	e.printStackTrace();
         }
+    }
+    
+    public void setViewModel(GrailsViewModel vm) {
+        this.viewModel = vm;
+    }
+    
+    public GrailsViewModel getViewModel() {
+        return this.viewModel;
     }
 
     public void setDesktopCounter(DesktopCounter dc) {
@@ -143,7 +151,7 @@ public class GrailsComposer extends GenericForwardComposer {
         super.doAfterCompose(comp);
         injectComet();
 
-        binder = new AnnotateDataBinder(comp);
+        this.binder = new AnnotateDataBinder(comp);
         comp.setAttribute("binder", binder);
         binder.loadAll();
         
