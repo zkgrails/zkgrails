@@ -116,6 +116,17 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         }
 
         //
+        // Registering ViewModel Beans to support MVVM
+        //
+        application.viewModelClasses.each { viewModelClass ->
+            "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
+                bean.scope = "page"
+                bean.autowire = "byName"
+                id = viewModelClass.propertyName
+            }
+        }
+
+        //
         // Registering Composer Beans
         //
         application.composerClasses.each { composerClass ->
@@ -126,19 +137,9 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
+                viewModel = ref(composerClass.propertyName.replace('Composer','ViewModel'))
             }
-
-        }
-
-        //
-        // Registering ViewModel Beans to support MVVM
-        //
-        application.viewModelClasses.each { viewModelClass ->
-            "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
-                bean.scope = "desktop"
-                bean.autowire = "byName"
-            }
-        }
+        }        
 
         //
         // Registering Facade Beans
