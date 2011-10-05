@@ -8,7 +8,8 @@ class MyViewModel extends GrailsViewModel {
     Comment comment
 
     static binding = {
-        'button > *' source: 'person', property: 'value'
+        'button > *' autowire: byName, property: 'value'
+        txtFirstName 
     }
 
 }
