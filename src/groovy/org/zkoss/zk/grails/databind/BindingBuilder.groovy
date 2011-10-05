@@ -31,14 +31,17 @@ class BindingBuilder {
 
         result.each { comp ->
             if(args instanceof Map) {
-                //
-                // args['property'] is a property name to bind
-                // expression is would be "viewModel.person.name"
-                //
-                this.binding.addBinding(comp, args['property'], "${this.viewModel.id}.${args['']}" )
-                // binder.addBinding(editor, "value", "selected.${p.name}")
-                // set data binding
-                // binding.
+                if(args.containsKey('autowire')) {
+                    // autowire mode
+                } else {
+                    //
+                    // normal mode
+                    // an expression is would be something like "viewModel.person.name"
+                    //
+                    args.each { k, v -> 
+                        this.binding.addBinding(comp, k, "${viewModel.id}.${v}")
+                    }
+                }                
             }
         }
         this.binding.bindBean(this.viewModel.id, this.viewModel)
