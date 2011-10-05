@@ -139,7 +139,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 bean.autowire = "byName"
                 viewModel = ref(composerClass.propertyName.replace('Composer','ViewModel'))
             }
-        }        
+        }
 
         //
         // Registering ViewModel Beans to support MVVM
