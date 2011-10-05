@@ -49,7 +49,7 @@ class BindingBuilder {
                     // normal mode
                     // an expression is would be something like "viewModel.person.name"
                     //
-                    args.each { k, v -> 
+                    args.each { k, v ->
                         this.binding.addBinding(comp, k, "${viewModel.id}.${v}")
                     }
                 }
