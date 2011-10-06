@@ -224,7 +224,7 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
      * Issue #146 - Support for skip zscript wiring for better performance.
      * 1st look at variable skipZscriptWiring on composer
      * 2nd look at global config skipZscriptWiring on Config.
-     * If none specified default to true (wire zscript variables) maintaining backward compatibility
+     * If none specified default to false (don't skip wiring zscript variables) maintaining backward compatibility
      */
     private boolean shallSkipZscriptWiring() {
         boolean shallSkipZscriptWiring;
