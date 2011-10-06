@@ -21,15 +21,15 @@ class BindingBuilder {
     //
     def methodMissing(String name, args) {
 
-        def result = page?.roots.collect { root -> root.getFellowIfAny(name) }
-        if(result?.size() == 0) {
-            result = Selector.select(name, page?.roots)
+        def components = page?.roots.collect { root -> root.getFellowIfAny(name) }
+        if(components?.size() == 0) {
+            components = Selector.select(name, page?.roots)
         }
-        if(result?.size() == 0) {
+        if(components?.size() == 0) {
             throw new MissingMethodException(name, args)
         }
 
-        result.each { comp ->
+        components.each { comp ->
             if(args instanceof Map) {
                 if(args.containsKey('autowire')) {
                     //
@@ -37,12 +37,23 @@ class BindingBuilder {
                     //  suffix = match firstName <-> txtFirstName
                     //  normal = match firstName <-> firstName
                     //
-                    def autowire = args['autowire']
-                    def source   = args['source']
-                    def property = args['property']
+                    def autowire   = args['autowire'] // "suffix", "normal"
+                    def source     = args['source']   // ex. "person"
+                    def uiProperty = args['property'] // ex. "value"
+                    //
+                    // TODO: where to get propName
+                    //
                     switch(autowire) {
-                        "normal": break// match each bean property with each comp?
-                        "suffix": break// match each bean property with each comp suffix?
+                        "normal":   if(comp.id == propName)
+                                        this.binding.addBinding(comp, uiProperty, "${viewModel.id}.${source}.${propName}")
+
+                                    break// match each bean property with each comp?
+
+                        "suffix":   
+                                    if(comp.id.endsWith(propName))
+                                        this.binding.addBinding(comp, uiProperty, "${viewModel.id}.${source}.${propName}")
+
+                                    break// match each bean property with each comp suffix?
                     }
                 } else {
 
