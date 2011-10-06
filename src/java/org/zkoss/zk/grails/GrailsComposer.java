@@ -50,9 +50,19 @@ public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer 
     private DesktopCounter desktopCounter;
 
     public GrailsComposer() {
-        super('_');
-        if(shallSkipZscriptWiring()) {
-            this.skipZscriptWiring();
+    	//default is true
+        super('_',true,true);
+        try{
+        	if (!shallSkipZscriptWiring()){
+        		Field ignoreZscript = GenericAutowireComposer.class.getDeclaredField("_ignoreZScript");
+        		Field ignoreXel = GenericAutowireComposer.class.getDeclaredField("_ignoreXel");
+        		ignoreZscript.setAccessible(true);
+        		ignoreXel.setAccessible(true);
+        		ignoreZscript.setBoolean(this, false);
+        		ignoreXel.setBoolean(this, false);
+        	}
+        }catch (Exception e) {
+        	e.printStackTrace();
         }
     }
 
