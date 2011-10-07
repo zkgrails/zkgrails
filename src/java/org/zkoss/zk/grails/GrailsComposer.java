@@ -39,6 +39,8 @@ import org.zkoss.zk.ui.sys.ComponentsCtrl;
 import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zkplus.databind.AnnotateDataBinder;
+import org.zkoss.zk.ui.util.GenericAutowireComposer;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
 
 import org.zkoss.zkplus.databind.AnnotateDataBinder;
 import org.zkoss.zk.ui.util.GenericAutowireComposer;
