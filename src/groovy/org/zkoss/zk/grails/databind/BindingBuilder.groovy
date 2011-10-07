@@ -44,16 +44,14 @@ class BindingBuilder {
                     // TODO: where to get propName
                     //
                     switch(autowire) {
-                        "normal":   if(comp.id == propName)
+                        case "normal":  if(comp.id == propName)
                                         this.binding.addBinding(comp, uiProperty, "${viewModel.id}.${source}.${propName}")
 
-                                    break// match each bean property with each comp?
-
-                        "suffix":   
-                                    if(comp.id.endsWith(propName))
+                                        break // match each bean property with each comp?
+                        case "suffix":  if(comp.id.endsWith(propName))
                                         this.binding.addBinding(comp, uiProperty, "${viewModel.id}.${source}.${propName}")
 
-                                    break// match each bean property with each comp suffix?
+                                        break // match each bean property with each comp suffix?
                     }
                 } else {
 
