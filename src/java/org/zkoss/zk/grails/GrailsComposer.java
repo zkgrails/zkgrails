@@ -39,9 +39,13 @@ import org.zkoss.zk.ui.sys.ComponentsCtrl;
 import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zkplus.spring.SpringUtil;
 
+import org.zkoss.zkplus.databind.AnnotateDataBinder;
+import org.zkoss.zk.ui.util.GenericAutowireComposer;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
+
 import javax.servlet.http.HttpServletRequest;
 
-public class GrailsComposer extends org.zkoss.zk.ui.util.GenericForwardComposer {
+public class GrailsComposer extends GenericForwardComposer {
 
     private static final long serialVersionUID = -5307023773234300419L;
     private MessageHolder messageHolder = null;
