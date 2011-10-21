@@ -23,7 +23,7 @@ import org.zkoss.zk.grails.ZkConfigHelper
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.1.M2"
+    def version = "2.0.M2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
@@ -138,16 +138,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 bean.scope = "prototype"
                 bean.autowire = "byName"
                 viewModel = ref(composerClass.propertyName.replace('Composer','ViewModel'))
-            }
-        }
-
-        //
-        // Registering ViewModel Beans to support MVVM
-        //
-        application.viewModelClasses.each { viewModelClass ->
-            "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
-                bean.scope = "desktop"
-                bean.autowire = "byName"
             }
         }
 

@@ -37,17 +37,12 @@ grails.project.dependency.resolution = {
 
         runtime ("org.zkoss.zkforge:ckez:3.5.2.0")
 
-        // runtime ("jasperreports:jasperreports:3.5.3") {
-        //     excludes "bcprov-jdk14"
-        // }
-        // runtime ("com.jhlabs:filters:2.0.235")
-
-        test ("com.h2database:h2:1.3.159")
+        test ("com.h2database:h2:1.2.147")
     }
 
     plugins {
         build(":tomcat:$grailsVersion",
-              ":release:1.0.0.RC1",
+              ":release:1.0.0.RC3",
               ":svn:1.0.0.M1") {
             export = false
         }
