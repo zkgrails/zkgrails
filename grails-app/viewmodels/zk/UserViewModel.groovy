@@ -17,8 +17,15 @@ class UserViewModel extends GrailsViewModel {
     // psuedo property
     //
     def fullname = [
-        forward: { "${user.name} ${user.lastName}" },    
+        forward: { "${user.name} ${user.lastName}" },
         reverse: { (user.name, user.lastName) = it.split(' ') }
     ]
+
+    def nameIsLowerCase = {
+        if (user.name[0].isLowerCase())
+            "red"
+        else
+            "black"
+    }
 
 }
