@@ -1,0 +1,8 @@
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" arg0="./mywin"?>
+<window id="mywin" border="none">
+ZK name check list :
+	<zscript>
+         Date mydate = new Date();
+	</zscript>
+	<label value="@{mydate, converter='org.zkoss.zkplus.databind.DateFormatConverter'}" self="@{format(yyyy/MM/dd)}"/>
+</window>

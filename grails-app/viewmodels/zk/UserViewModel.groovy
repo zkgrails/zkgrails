@@ -7,9 +7,13 @@ class UserViewModel extends GrailsViewModel {
     List<User> userList
     User user
 
-
     static binding = {
-        'button > *' autowire: byName, property: 'value'
+        //
+        // 'button > *' autowire: byName, property: 'value'
+        //
+        txtName     value: "user.name", color:"nameIsLowerCase"
+        txtLastName value: "user.lastName"
+        txtFullName value: "fullname"
     }
 
 
@@ -18,7 +22,7 @@ class UserViewModel extends GrailsViewModel {
     //
     def fullname = [
         forward: { "${user.name} ${user.lastName}" },
-        reverse: { (user.name, user.lastName) = it.split(' ') }
+        reverse: { } // user.name, user.lastName = it.split(' ') }
     ]
 
     def nameIsLowerCase = {

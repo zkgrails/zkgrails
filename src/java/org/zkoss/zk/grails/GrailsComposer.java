@@ -59,26 +59,26 @@ public class GrailsComposer extends GenericForwardComposer {
     private GrailsViewModel viewModel;
 
     public GrailsComposer() {
-    	//default is true
+        //default is true
         super('_',true,true);
         try{
-        	if (!shallSkipZscriptWiring()){
-        		Field ignoreZscript = GenericAutowireComposer.class.getDeclaredField("_ignoreZScript");
-        		Field ignoreXel = GenericAutowireComposer.class.getDeclaredField("_ignoreXel");
-        		ignoreZscript.setAccessible(true);
-        		ignoreXel.setAccessible(true);
-        		ignoreZscript.setBoolean(this, false);
-        		ignoreXel.setBoolean(this, false);
-        	}
+            if (!shallSkipZscriptWiring()){
+                Field ignoreZscript = GenericAutowireComposer.class.getDeclaredField("_ignoreZScript");
+                Field ignoreXel = GenericAutowireComposer.class.getDeclaredField("_ignoreXel");
+                ignoreZscript.setAccessible(true);
+                ignoreXel.setAccessible(true);
+                ignoreZscript.setBoolean(this, false);
+                ignoreXel.setBoolean(this, false);
+            }
         }catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
     }
-    
+
     public void setViewModel(GrailsViewModel vm) {
         this.viewModel = vm;
     }
-    
+
     public GrailsViewModel getViewModel() {
         return this.viewModel;
     }
@@ -149,7 +149,7 @@ public class GrailsComposer extends GenericForwardComposer {
     }
 
     @Override
-    public void doAfterCompose(Component comp) throws Exception {        
+    public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
         injectComet();
 
@@ -157,7 +157,7 @@ public class GrailsComposer extends GenericForwardComposer {
 
         comp.setAttribute("binder", binder);
         binder.loadAll();
-        
+
         handleAfterComposeClosure(comp);
         handleScaffold(comp);
     }
