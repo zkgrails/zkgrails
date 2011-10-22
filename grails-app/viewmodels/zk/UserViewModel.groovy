@@ -5,13 +5,13 @@ import org.zkoss.zk.grails.*
 class UserViewModel extends GrailsViewModel {
 
     List<User> userList
-    User user
+    User user = new User(name:"test", lastName:"last")
 
     static binding = {
         //
         // 'button > *' autowire: byName, property: 'value'
         //
-        txtName     value: "user.name", color:"nameIsLowerCase"
+        txtName     value: "user.name", style:"nameIsLowerCase"
         txtLastName value: "user.lastName"
         txtFullName value: "fullname"
     }
@@ -22,14 +22,18 @@ class UserViewModel extends GrailsViewModel {
     //
     def fullname = [
         forward: { "${user.name} ${user.lastName}" },
-        reverse: { } // user.name, user.lastName = it.split(' ') }
+        reverse: {
+            def (name, lastName) = it.split(' ')
+            user.name = name
+            user.lastName = lastName
+        }
     ]
 
     def nameIsLowerCase = {
-        if (user.name[0].isLowerCase())
-            "red"
+        if ((user.name[0] as Character).isLowerCase())
+            "color: red"
         else
-            "black"
+            "color: black"
     }
 
 }

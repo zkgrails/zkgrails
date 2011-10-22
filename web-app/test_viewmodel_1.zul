@@ -14,9 +14,9 @@
     
     <vbox>
         <label>Name</label>
-        <textbox id="txtName">
-        <textbox id="txtLastName">
-        <textbox id="txtFullName">
+        <textbox id="txtName"/>
+        <textbox id="txtLastName"/>
+        <textbox id="txtFullName"/>
     </vbox>
 </window>
 

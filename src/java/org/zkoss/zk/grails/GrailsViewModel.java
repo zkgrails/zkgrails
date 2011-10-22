@@ -44,6 +44,8 @@ public class GrailsViewModel implements InitializingBean {
             c.setResolveStrategy(Closure.DELEGATE_FIRST);
             c.call();
         }
+
+        this.binder.loadAll();
     }
     
 }
