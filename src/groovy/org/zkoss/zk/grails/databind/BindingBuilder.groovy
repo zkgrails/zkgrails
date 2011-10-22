@@ -70,12 +70,12 @@ class BindingBuilder {
                         if (obj) {
                             if(obj instanceof Map) {
                                 if(obj.containsKey('forward')) {
-                                    closureSets["$k_forward"] = obj['forward']
+                                    closureSets["${k}:forward"] = obj['forward']
                                 } else if(obj.containsKey('reverse')) {
-                                    closureSets["$k_reverse"] = obj['reverse']
+                                    closureSets["${k}:reverse"] = obj['reverse']
                                 }
                             } else if(obj instanceof Closure) {
-                                closureSets["$k_forward"] = obj
+                                closureSets["${k}:forward"] = obj
                             }
                         }
                         // and v is a map containing forward || reverse

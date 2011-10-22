@@ -31,8 +31,8 @@ grails.project.dependency.resolution = {
 
         runtime ("org.zkoss.zk.grails:zk:${zkVersion}")
         runtime ("org.zkoss.zk.grails:zul:${zkVersion}")
+        runtime ("org.zkoss.zk.grails:zkplus:${zkVersion}")
         runtime ("org.zkoss.zk:zhtml:${zkVersion}")       { transitive = false }
-        runtime ("org.zkoss.zk:zkplus:${zkVersion}")      { transitive = false }
         runtime ("org.zkoss.common:zweb:${zkVersion}")
 
         runtime ("org.zkoss.zkforge:ckez:3.5.2.0")
