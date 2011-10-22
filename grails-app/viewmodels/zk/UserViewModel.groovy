@@ -5,17 +5,13 @@ import org.zkoss.zk.grails.*
 class UserViewModel extends GrailsViewModel {
 
     List<User> userList
-    User user = new User(name:"test", lastName:"last")
+    User user // = new User(name:"test", lastName:"last")
 
     static binding = {
-        //
-        // 'button > *' autowire: byName, property: 'value'
-        //
         txtName     value: "user.name", style:"nameIsLowerCase"
         txtLastName value: "user.lastName"
         txtFullName value: "fullname"
     }
-
 
     //
     // psuedo property

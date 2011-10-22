@@ -21,17 +21,13 @@ public class GrailsViewModel implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-
+        binder.setLoadOnSave(true);
     }
     
     public void binds(Component root) {
         //
         // should be called by #afterCompose
         //
-
-        //        
-        //
-        // binder.bindBean(this.getId(), this);
 
         //
         // get static binding

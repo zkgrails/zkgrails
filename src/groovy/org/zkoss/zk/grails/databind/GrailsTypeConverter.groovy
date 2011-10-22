@@ -10,25 +10,37 @@ public class GrailsTypeConverter implements TypeConverter, java.io.Serializable 
 
     @Override
     public Object coerceToUi(Object val, Component comp) {
-        def attr = comp.getAttribute(CURRENT_EXPR)
-        def map  = comp.getAttribute(BindingBuilder.BINDING_ARGS)['closureSets']
+        def attr   = comp.getAttribute(CURRENT_EXPR)
+        def binder = comp.getAttribute(BindingBuilder.BINDING_ARGS)['binder']
+        def map    = comp.getAttribute(BindingBuilder.BINDING_ARGS)['closureSets']
+
         def forward = map["${attr}:forward"]
+        def result
         if(forward)
-            return forward(val)
+            result = forward(val)
         else
-            return val
+            result = val
+
+        //binder.loadAll()
+        return result
     }
 
     @Override
     public Object coerceToBean(Object val, Component comp) {
         def attr = comp.getAttribute(CURRENT_EXPR)
+        def binder = comp.getAttribute(BindingBuilder.BINDING_ARGS)['binder']
         def map  = comp.getAttribute(BindingBuilder.BINDING_ARGS)['closureSets']
-        def reverse = map["${attr}:reverse"]
-        if(reverse == null)
-            return val
 
-        reverse(val)
-        return TypeConverter.IGNORE
+        def reverse = map["${attr}:reverse"]
+
+        def result
+        if(reverse == null)
+            result = val
+        else {
+            reverse(val)
+            result = TypeConverter.IGNORE
+        }
+        return result
     }
 
 }
