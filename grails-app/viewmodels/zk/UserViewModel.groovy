@@ -5,8 +5,9 @@ import org.zkoss.zk.grails.*
 class UserViewModel extends GrailsViewModel {
 
     List<User> userList
-    User user // = new User(name:"test", lastName:"last")
+    User user = new User(name:"test", lastName:"last")
 
+    // allow you to bind UI elements locally
     static binding = {
         txtName     value: "user.name", style:"nameIsLowerCase"
         txtLastName value: "user.lastName"

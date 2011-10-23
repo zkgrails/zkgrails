@@ -82,9 +82,11 @@ class BindingBuilder {
                         //
                         // $k is "value"
                         // $v is user.name
-                        this.binder.addBinding(comp, k,
-                            "${v}", null, null, "both",
-                            "org.zkoss.zk.grails.databind.GrailsTypeConverter")
+                        this.binder.addBinding(comp, k, v,
+                            null, null, null,
+                            "org.zkoss.zk.grails.databind.GrailsTypeConverter",null,
+                            [comp.id + '.onChange'], null)
+
                     }
 
                     comp.setAttribute(BindingBuilder.BINDING_ARGS, [binder: this.binder, closureSets: closureSets])
