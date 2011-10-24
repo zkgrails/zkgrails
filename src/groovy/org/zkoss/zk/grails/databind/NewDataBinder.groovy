@@ -116,5 +116,9 @@ class NewDataBinder {
     def getBean(String key) {
         return beanMap[key].object
     }
+
+    def containsBean(String beanName) {
+        return beanMap.containsKey(beanName)
+    }
 }
 
