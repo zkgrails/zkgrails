@@ -6,9 +6,7 @@ class NewDataBinderTests extends GroovyTestCase {
         def binder = new NewDataBinder()
         def obj = [test:"test"]
         binder.bindBean("obj", obj)
-        def observable = binder.getBean("obj")
-        assert observable instanceof Observable
-        assert observable.object == [test:"test"]
+        assert binder.getBean("obj") == [test:"test"]
     }
 
     def testAddBinding() {

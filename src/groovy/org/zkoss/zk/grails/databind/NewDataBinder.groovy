@@ -114,7 +114,7 @@ class NewDataBinder {
     }
 
     def getBean(String key) {
-        return beanMap[key]
+        return beanMap[key].object
     }
 }
 
