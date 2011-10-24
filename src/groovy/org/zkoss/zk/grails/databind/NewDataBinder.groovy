@@ -21,8 +21,8 @@ import java.lang.reflect.Field
 class NewDataBinder {
 
     private beanMap = [:]
-    private exprSubscribeMap = [:]
-    private compSubscribeMap = [:]
+    def exprSubscribeMap = [:]
+    def compSubscribeMap = [:]
 
     //
     //  context
@@ -59,15 +59,16 @@ class NewDataBinder {
         }
     }
 
-    // TODO: unit test
-    def eval(bean, String[] expr) {
+    def eval(String expression) {
+        String[] expr = expression.split(/\./)
+        def bean = beanMap[expr[0]]
         if (expr.size() == 1) {
             def value = bean
             if(value instanceof Observable) value = value.object
             return value
         } else {
             def value = bean
-            for(ex in expr) {
+            for(ex in expr[1..-1]) {
                 if(value instanceof Observable) value = value.object
                 value = value?."$ex"
             }
@@ -75,17 +76,19 @@ class NewDataBinder {
         }
     }
 
-    // TODO: unit test
-    void set(bean, String[] expr, newValue) {
+    void set(String expression, newValue) {
+        String[] expr = expression.split(/\./)
+        def bean = beanMap[expr[0]]
         if (expr.size() == 1) {
             throw new IllegalAccessException("${expr[0]} cannot be set")
         } else {
             def value = bean
             def last = expr.size()-1
-            for(i in 0..<last) {
+            for(i in 1..<last) {
                 if(value instanceof Observable) value = value.object
-                value = value?."$ex"
+                value = value?."$expr[i]"
             }
+            if(value instanceof Observable) value = value.object
             value."${expr[last]}" = newValue
         }
     }
@@ -97,19 +100,21 @@ class NewDataBinder {
     def fireViewChanged (Component comp, String eventName) {
         def list = compSubscribeMap[comp]
         for (it in list) {
-            String[] expr = it['expr'].split('.')
-            def bean = beanMap[expr[0]]
-            def value = eval(bean, expr)
             def converter = it['converter']
+            def expr = it['expr']
+            def value = eval(expr)
             def result = converter.coerceToBean(value, comp)
             if(result != TypeConverter.IGNORE)
-                set(bean, expr, result)
+                set(expr, result)
         }
     }
 
     boolean contains (Component comp) {
-        return beanMap.containsKey(comp)
+        return compSubscribeMap.containsKey(comp)
     }
 
+    def getBean(String key) {
+        return beanMap[key]
+    }
 }
 
