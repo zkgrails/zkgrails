@@ -49,5 +49,9 @@ class NewBindingBuilderTests extends GroovyTestCase {
         assert binder.contains(txtName)
         assert binder.contains(txtLastName)
         assert binder.contains(txtFullName)
+
+        assert txtName.value == "test"
+        assert txtLastName.value == "last"
+        assert txtFullName.value == "test last"
     }
 }

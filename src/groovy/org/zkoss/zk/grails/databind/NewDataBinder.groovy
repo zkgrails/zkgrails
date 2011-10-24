@@ -52,10 +52,14 @@ class NewDataBinder {
         def list = exprSubscribeMap[expr]
         for (it in list) {
             def attr = it['attr']
+            def comp = it['comp']
+            def result = value
             def converter = it['converter']
-            def result = converter.coerceToUi(value, it['comp'])
-            if(result != TypeConverter.IGNORE)
-                it['comp']."${attr}" = result
+            if(converter) {
+                result = converter.coerceToUi(value, comp)
+                if(result == TypeConverter.IGNORE) continue
+            }
+            comp."${attr}" = result
         }
     }
 
@@ -120,5 +124,13 @@ class NewDataBinder {
     def containsBean(String beanName) {
         return beanMap.containsKey(beanName)
     }
+
+    public void loadAll( ) {
+        exprSubscribeMap.each { expr, list ->
+            fireModelChanged(null, expr, eval(expr))
+        }
+    }
+
 }
+
 

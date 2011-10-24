@@ -33,7 +33,7 @@ class NewBindingBuilder {
         def comp = root.getFellowIfAny(name)
         def map = args[0]
         map.each { attr, expr ->
-            binder.addBinding(comp, attr, expr, new GrailsTypeConverter())
+            binder.addBinding(comp, attr, expr, new ViewModelTypeConverter()) // new GrailsTypeConverter())
         }
     }
 
