@@ -31,6 +31,7 @@ class NewBindingBuilder {
         // TODO: use Select to quantify components
         // def components = [root.getFellowIfAny(name)]
         def comp = root.getFellowIfAny(name)
+        comp.addEventListener("onChange", this.viewModel)
         def map = args[0]
         map.each { attr, expr ->
             binder.addBinding(comp, attr, expr, new ViewModelTypeConverter()) // new GrailsTypeConverter())

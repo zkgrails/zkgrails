@@ -7,10 +7,8 @@ import org.zkoss.zk.ui.Component
 class ViewModelTypeConverter implements TypeConverter {
 
     Object coerceToUi(Object val, Component comp) {
-        if(val instanceof Map &&
-           val.size() == 2 &&
-           val.containsKey("forward") &&
-           val.containsKey("reverse")) {
+        if(val instanceof Map && val.size() == 2 &&
+           val.containsKey("forward") && val.containsKey("reverse")) {
             def c = val['forward']
             return c.call()
         } else if (val instanceof Closure) {
@@ -21,14 +19,14 @@ class ViewModelTypeConverter implements TypeConverter {
     }
 
     Object coerceToBean(Object val, Component comp) {
-        if(val instanceof Map &&
-           val.size() == 2 &&
-           val.containsKey("forward") &&
-           val.containsKey("reverse")) {
+        if(val instanceof Map && val.size() == 2 &&
+           val.containsKey("forward") && val.containsKey("reverse")) {
             def c = val['reverse']
-            return c.call()
+            c.call()
+            return TypeConverter.IGNORE
+        } else if (val instanceof Closure) { // it's forward, skip
+            return TypeConverter.IGNORE
         }
-
         return val
     }
 

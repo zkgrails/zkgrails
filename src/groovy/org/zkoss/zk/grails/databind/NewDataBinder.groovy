@@ -49,17 +49,19 @@ class NewDataBinder {
     // TODO: dealing with sender to prevent SOE
     //
     def fireModelChanged(sender, String expr, value) {
-        def list = exprSubscribeMap[expr]
-        for (it in list) {
-            def attr = it['attr']
-            def comp = it['comp']
-            def result = value
-            def converter = it['converter']
+        def list = exprSubscribeMap[expr].collect{ it.comp }.collect { compSubscribeMap[it] }.flatten().unique()
+        list.each { entry ->
+            def attr = entry['attr']
+            def comp = entry['comp']
+            def converter = entry['converter']
+            def newValue = eval(entry['expr'])
             if(converter) {
-                result = converter.coerceToUi(value, comp)
-                if(result == TypeConverter.IGNORE) continue
+                def result = converter.coerceToUi(newValue, comp)
+                if(result != TypeConverter.IGNORE)
+                    comp."${attr}" = result
+            } else {
+                comp."${attr}" = value
             }
-            comp."${attr}" = result
         }
     }
 
@@ -84,7 +86,7 @@ class NewDataBinder {
         String[] expr = expression.split(/\./)
         def bean = beanMap[expr[0]]
         if (expr.size() == 1) {
-            throw new IllegalAccessException("${expr[0]} cannot be set")
+            // throw new IllegalAccessException("${expr[0]} cannot be set")
         } else {
             def value = bean
             def last = expr.size()-1
@@ -92,7 +94,11 @@ class NewDataBinder {
                 if(value instanceof Observable) value = value.object
                 value = value?."$expr[i]"
             }
-            if(value instanceof Observable) value = value.object
+            // if(value instanceof Observable) {
+                // value = value.object
+                // value.object."${expr[last]}" = newValue
+                // value.invalidate(expr[last], newValue)
+            // }
             value."${expr[last]}" = newValue
         }
     }
@@ -105,8 +111,9 @@ class NewDataBinder {
         def list = compSubscribeMap[comp]
         for (it in list) {
             def converter = it['converter']
+            def attr = it['attr']
             def expr = it['expr']
-            def value = eval(expr)
+            def value = comp."$attr"
             def result = converter.coerceToBean(value, comp)
             if(result != TypeConverter.IGNORE)
                 set(expr, result)

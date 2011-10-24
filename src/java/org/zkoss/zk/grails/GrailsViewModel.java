@@ -36,7 +36,7 @@ public class GrailsViewModel extends GenericEventListener {
         // register event handlers
         // TODO check if this is propagate through children, it should
         //
-        this.bindComponent(root);
+        root.addEventListener("onChange", this);
 
         //
         // get static binding { }
