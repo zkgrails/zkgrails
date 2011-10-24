@@ -22,7 +22,7 @@ class Observable {
 
     def propertyMissing(String name, value) {
         obj."$name" = value
-        binder.fire(obj, rootExpr + "." + name, value)
+        binder.fireModelChanged(obj, rootExpr + "." + name, value)
     }
 
 }

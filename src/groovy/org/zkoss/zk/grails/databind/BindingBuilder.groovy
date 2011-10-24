@@ -2,6 +2,12 @@ package org.zkoss.zk.grails.databind
 
 import org.zkoss.zk.ui.Executions
 
+//
+// in the newer version
+// we bind 2 things:
+//      first  :- Observable (domain class, groovy bean)
+//      second :- Dependent Observable (field created in ViewModel)
+//
 class BindingBuilder {
 
     static final String BINDING_ARGS = "zkgrails.bindingArgs"
