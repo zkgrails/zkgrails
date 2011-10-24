@@ -2,6 +2,7 @@ package org.zkoss.zk.grails.databind
 
 import org.zkoss.zkplus.databind.TypeConverter
 import org.zkoss.zk.ui.Component
+import java.lang.reflect.Field
 
 //    data binding is two way invocation
 //
@@ -20,7 +21,8 @@ import org.zkoss.zk.ui.Component
 class NewDataBinder {
 
     private beanMap = [:]
-    private subscribeMap = [:]
+    private exprSubscribeMap = [:]
+    private compSubscribeMap = [:]
 
     //
     //  context
@@ -35,8 +37,10 @@ class NewDataBinder {
     // subscribe to expression
     //
     def addBinding(Component comp, String attr, String expr, TypeConverter converter) {
-        if(!subscribeMap[expr]) subscribeMap[expr] = []
-        subscribeMap[expr] << [comp: comp, attr: attr, converter: converter]
+        if(!exprSubscribeMap[expr]) exprSubscribeMap[expr] = []
+        exprSubscribeMap[expr] << [comp: comp, attr: attr, converter: converter]
+        if(!compSubscribeMap[comp]) compSubscribeMap[comp] = []
+        compSubscribeMap[comp] << [expr: expr, attr: attr, converter: converter]
     }
 
     //
@@ -44,7 +48,7 @@ class NewDataBinder {
     // TODO: dealing with sender to prevent SOE
     //
     def fireModelChanged(sender, String expr, value) {
-        def list = subscribeMap[expr]
+        def list = exprSubscribeMap[expr]
         for (it in list) {
             def attr = it['attr']
             def converter = it['converter']
@@ -54,11 +58,51 @@ class NewDataBinder {
         }
     }
 
+    // TODO: unit test
+    def eval(bean, String[] expr) {
+        if (expr.size() == 1) {
+            def value = bean
+            if(value instanceof Observable) value = value.object
+            return value
+        } else {
+            def value = bean
+            for(ex in expr) {
+                if(value instanceof Observable) value = value.object
+                value = value?."$ex"
+            }
+            return value
+        }
+    }
+
+    // TODO: unit test
+    void set(bean, String[] expr, newValue) {
+        if (expr.size() == 1) {
+            throw new IllegalAccessException("${expr[0]} cannot be set")
+        } else {
+            def value = bean
+            def last = expr.size()-1
+            for(i in 0..<last) {
+                if(value instanceof Observable) value = value.object
+                value = value?."$ex"
+            }
+            value."${expr[last]}" = newValue
+        }
+    }
+
+    //
+    // change occurred from UI
+    // assign values directly to beans, not through observable
     //
     def fireViewChanged (Component comp, String eventName) {
-        def result = converter.coerceToBean(value, comp)
-        if(result != TypeConverter.IGNORE) {
-            object."expr" = result
+        def list = compSubscribeMap[comp]
+        for (it in list) {
+            String[] expr = it['expr'].split('.')
+            def bean = beanMap[expr[0]]
+            def value = eval(bean, expr)
+            def converter = it['converter']
+            def result = converter.coerceToBean(value, comp)
+            if(result != TypeConverter.IGNORE)
+                set(bean, expr, result)
         }
     }
 

@@ -2,27 +2,27 @@ package org.zkoss.zk.grails.databind
 
 class Observable {
 
-    private obj
+    def object
     private binder
     private rootExpr
 
-    Observable(obj, binder, rootExpr) {
-        this.obj = obj
+    Observable(object, binder, rootExpr) {
+        this.object = object
         this.binder = binder
         this.rootExpr = rootExpr
     }
 
     def methodMissing(String name, args) {
-        return obj."$name"(args)
+        return object."$name"(args)
     }
 
     def propertyMissing(String name) {
-        return obj."$name"
+        return object."$name"
     }
 
     def propertyMissing(String name, value) {
-        obj."$name" = value
-        binder.fireModelChanged(obj, rootExpr + "." + name, value)
+        object."$name" = value
+        binder.fireModelChanged(object, rootExpr + "." + name, value)
     }
 
 }
