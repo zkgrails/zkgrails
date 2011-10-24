@@ -80,7 +80,6 @@ class ZkGrailsPlugin {
         "test/**"
     ]
 
-    // TODO Fill in these fields
     def author = "chanwit"
     def authorEmail = "chanwit@gmail.com"
     def title = "ZKGrails: ZK plugin for Grails"
@@ -93,12 +92,6 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     def documentation = "http://grails.org/plugin/zk"
 
     def doWithSpring = {
-
-        boolean developmentMode = !application.warDeployed
-        Environment env = Environment.current
-        // boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload || (developmentMode && env == Environment.DEVELOPMENT)
-        // boolean warDeployedWithReload = application.warDeployed && enableReload
-
         //
         // Registering new scopes
         //
@@ -457,6 +450,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 }
             }
         }
+        // TODO else reload ViewModel
     }
 
     def onConfigChange = { event ->
