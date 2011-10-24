@@ -1,7 +1,5 @@
 package org.zkoss.zk.grails.databind
 
-import org.zkoss.zkplus.databind.TypeConverter
-
 class NewDataBinderTests extends GroovyTestCase {
 
     def testBindBean() {
@@ -23,6 +21,7 @@ class NewDataBinderTests extends GroovyTestCase {
         assert a.size() == 1
         assert a[0] == b[0]
         assert a[0] == [comp: comp, attr:"value", expr: "user.name", converter: c]
+        assert binder.contains(comp)
     }
 
     def testEval() {
@@ -77,4 +76,5 @@ class NewDataBinderTests extends GroovyTestCase {
         binder.fireViewChanged(comp, "onChange")
         assert user.name == "expected value"
     }
+
 }
