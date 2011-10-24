@@ -38,9 +38,10 @@ class NewDataBinder {
     //
     def addBinding(Component comp, String attr, String expr, TypeConverter converter) {
         if(!exprSubscribeMap[expr]) exprSubscribeMap[expr] = []
-        exprSubscribeMap[expr] << [comp: comp, attr: attr, converter: converter]
         if(!compSubscribeMap[comp]) compSubscribeMap[comp] = []
-        compSubscribeMap[comp] << [expr: expr, attr: attr, converter: converter]
+        def entry = [comp: comp, attr: attr, expr: expr, converter: converter]
+        exprSubscribeMap[expr] << entry
+        compSubscribeMap[comp] << entry
     }
 
     //
