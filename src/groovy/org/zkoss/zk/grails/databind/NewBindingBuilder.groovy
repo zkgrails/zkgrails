@@ -34,7 +34,7 @@ class NewBindingBuilder {
         comp.addEventListener("onChange", this.viewModel)
         def map = args[0]
         map.each { attr, expr ->
-            binder.addBinding(comp, attr, expr, new ViewModelTypeConverter()) // new GrailsTypeConverter())
+            binder.addBinding(comp, attr, expr, ViewModelTypeConverter.instance)
         }
     }
 

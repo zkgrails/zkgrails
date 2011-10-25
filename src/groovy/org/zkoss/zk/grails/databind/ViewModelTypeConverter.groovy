@@ -3,7 +3,7 @@ package org.zkoss.zk.grails.databind
 import org.zkoss.zkplus.databind.TypeConverter
 import org.zkoss.zk.ui.Component
 
-
+@Singleton
 class ViewModelTypeConverter implements TypeConverter {
 
     Object coerceToUi(Object val, Component comp) {
