@@ -16,10 +16,12 @@ class Observable {
         return object."$name"(args)
     }
 
+    // get
     def propertyMissing(String name) {
         return object."$name"
     }
 
+    // set
     def propertyMissing(String name, value) {
         object."$name" = value
         binder.fireModelChanged(object, rootExpr + "." + name, value)
