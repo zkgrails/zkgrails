@@ -300,4 +300,6 @@ class MockComponent implements Component {
         return false
     }
 
+    def value
+
 }
