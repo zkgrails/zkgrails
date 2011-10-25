@@ -1,8 +1,7 @@
 package org.zkoss.zk.grails.databind
 
-import org.zkoss.zkplus.databind.TypeConverter
 import org.zkoss.zk.ui.Component
-import java.lang.reflect.Field
+import org.zkoss.zkplus.databind.TypeConverter
 
 //    data binding is two way invocation
 //
@@ -42,6 +41,20 @@ class NewDataBinder {
         def entry = [comp: comp, attr: attr, expr: expr, converter: converter]
         exprSubscribeMap[expr] << entry
         compSubscribeMap[comp] << entry
+    }
+
+    /**
+     *
+     *
+     * @param exprToSubscribe
+     * @param comp
+     * @param attr
+     * @param expr
+     * @param converter
+     * @return
+     */
+    def subscribeToExpression(String exprToSubscribe, Component comp, String attr, String expr, TypeConverter converter) {
+
     }
 
     //
@@ -85,20 +98,20 @@ class NewDataBinder {
     void set(String expression, newValue) {
         String[] expr = expression.split(/\./)
         def bean = beanMap[expr[0]]
-        if (expr.size() == 1) {
-            // throw new IllegalAccessException("${expr[0]} cannot be set")
-        } else {
+        // simply ignore
+        // if (expr.size() == 1) {
+        //
+        // } else
+        if (expr.size() > 1) {
             def value = bean
             def last = expr.size()-1
             for(i in 1..<last) {
                 if(value instanceof Observable) value = value.object
                 value = value?."$expr[i]"
             }
-            // if(value instanceof Observable) {
-                // value = value.object
-                // value.object."${expr[last]}" = newValue
-                // value.invalidate(expr[last], newValue)
-            // }
+            //
+            // TODO if the below causes SOE bug, remove the comment
+            // if(value instanceof Observable) value = value.object
             value."${expr[last]}" = newValue
         }
     }
@@ -133,6 +146,7 @@ class NewDataBinder {
     }
 
     public void loadAll( ) {
+        // TODO re-implement this. It should be simpler
         exprSubscribeMap.each { expr, list ->
             fireModelChanged(null, expr, eval(expr))
         }
