@@ -18,7 +18,7 @@ class NewDataBinderTests extends GroovyTestCase {
         def b = binder.compSubscribeMap[comp]
         assert a.size() == 1
         assert a[0] == b[0]
-        assert a[0] == [comp: comp, attr:"value", expr: "user.name", converter: c]
+        assert a[0] == new Tuple(comp: comp, attr:"value", expr: "user.name", converter: c)
         assert binder.contains(comp)
     }
 
@@ -60,7 +60,7 @@ class NewDataBinderTests extends GroovyTestCase {
         def b = binder.compSubscribeMap[comp]
         assert a.size() == 1
         assert a[0] == b[0]
-        assert a[0] == [comp: comp, attr:"value", expr: "user.name", converter: c]
+        assert a[0] == new Tuple(comp: comp, attr:"value", expr: "user.name", converter: c)
 
         def gcl = new GroovyClassLoader()
         def user = gcl.parseClass('''

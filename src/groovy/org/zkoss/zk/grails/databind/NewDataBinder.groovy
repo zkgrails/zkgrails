@@ -38,7 +38,7 @@ class NewDataBinder {
     def addBinding(Component comp, String attr, String expr, TypeConverter converter) {
         if(!exprSubscribeMap[expr]) exprSubscribeMap[expr] = []
         if(!compSubscribeMap[comp]) compSubscribeMap[comp] = []
-        def entry = [comp: comp, attr: attr, expr: expr, converter: converter]
+        def entry = new Tuple(comp: comp, attr: attr, expr: expr, converter: converter)
         exprSubscribeMap[expr] << entry
         compSubscribeMap[comp] << entry
     }
@@ -64,10 +64,10 @@ class NewDataBinder {
     def fireModelChanged(sender, String expr, value) {
         def list = exprSubscribeMap[expr].collect{ it.comp }.collect { compSubscribeMap[it] }.flatten().unique()
         list.each { entry ->
-            def attr = entry['attr']
-            def comp = entry['comp']
-            def converter = entry['converter']
-            def newValue = eval(entry['expr'])
+            def attr = entry.attr
+            def comp = entry.comp
+            def converter = entry.converter
+            def newValue = eval(entry.expr)
             if(converter) {
                 def result = converter.coerceToUi(newValue, comp)
                 if(result != TypeConverter.IGNORE)
@@ -122,10 +122,10 @@ class NewDataBinder {
     //
     def fireViewChanged (Component comp, String eventName) {
         def list = compSubscribeMap[comp]
-        for (it in list) {
-            def converter = it['converter']
-            def attr = it['attr']
-            def expr = it['expr']
+        for (entry in list) {
+            def converter = entry.converter
+            def attr = entry.attr
+            def expr = entry.expr
             def value = comp."$attr"
             def result = converter.coerceToBean(value, comp)
             if(result != TypeConverter.IGNORE)
