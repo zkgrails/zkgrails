@@ -36,8 +36,8 @@ class NewDataBinder {
     // subscribe to expression
     //
     def addBinding(Component comp, String attr, String expr, TypeConverter converter) {
-        if(!exprSubscribeMap[expr]) exprSubscribeMap[expr] = []
-        if(!compSubscribeMap[comp]) compSubscribeMap[comp] = []
+        if(!exprSubscribeMap[expr]) exprSubscribeMap[expr] = new HashSet()
+        if(!compSubscribeMap[comp]) compSubscribeMap[comp] = new HashSet()
         def entry = new Tuple(comp: comp, attr: attr, expr: expr, converter: converter)
         exprSubscribeMap[expr] << entry
         compSubscribeMap[comp] << entry
@@ -54,7 +54,9 @@ class NewDataBinder {
      * @return
      */
     def subscribeToExpression(String exprToSubscribe, Component comp, String attr, String expr, TypeConverter converter) {
-
+        def entry = new Tuple(comp: comp, attr: attr, expr: expr, converter: converter)
+        exprSubscribeMap[exprToSubscribe] << entry
+        compSubscribeMap[comp] << entry
     }
 
     //

@@ -10,26 +10,26 @@ class Tuple {
     String expr
     TypeConverter converter
 
-    boolean equals(o) {
-        if (this.is(o)) return true;
-        if (getClass() != o.class) return false;
+    boolean equals(that) {
+        if (this.is(that)) return true
+        if (getClass() != that.class) return false
 
-        Tuple tuple = (Tuple)o
+        Tuple tuple = (Tuple)that
 
-        if (attr != tuple.attr) return false;
-        if (comp != tuple.comp) return false;
-        if (converter != tuple.converter) return false;
-        if (expr != tuple.expr) return false;
+        if (attr != tuple.attr) return false
+        if (comp != tuple.comp) return false
+        if (converter != tuple.converter) return false
+        if (expr != tuple.expr) return false
 
-        return true;
+        return true
     }
 
     int hashCode() {
-        int result;
-        result = (comp != null ? comp.hashCode() : 0);
-        result = 31 * result + (attr != null ? attr.hashCode() : 0);
-        result = 31 * result + (expr != null ? expr.hashCode() : 0);
-        result = 31 * result + (converter != null ? converter.hashCode() : 0);
-        return result;
+        int result
+        result = (comp != null ? comp.hashCode() : 0)
+        result = 31 * result + (attr != null ? attr.hashCode() : 0)
+        result = 31 * result + (expr != null ? expr.hashCode() : 0)
+        result = 31 * result + (converter != null ? converter.hashCode() : 0)
+        return result
     }
 }

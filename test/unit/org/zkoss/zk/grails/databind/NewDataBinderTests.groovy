@@ -14,8 +14,8 @@ class NewDataBinderTests extends GroovyTestCase {
         def comp = new MockComponent()
         def c = new MockTypeConverter(null)
         binder.addBinding(comp, "value", "user.name", c)
-        def a = binder.exprSubscribeMap['user.name']
-        def b = binder.compSubscribeMap[comp]
+        def a = binder.exprSubscribeMap['user.name'] as List
+        def b = binder.compSubscribeMap[comp] as List
         assert a.size() == 1
         assert a[0] == b[0]
         assert a[0] == new Tuple(comp: comp, attr:"value", expr: "user.name", converter: c)
@@ -56,8 +56,8 @@ class NewDataBinderTests extends GroovyTestCase {
         def comp = new MockComponent()
         def c = new MockTypeConverter("expected value")
         binder.addBinding(comp, "value", "user.name", c)
-        def a = binder.exprSubscribeMap['user.name']
-        def b = binder.compSubscribeMap[comp]
+        def a = binder.exprSubscribeMap['user.name'] as List
+        def b = binder.compSubscribeMap[comp] as List
         assert a.size() == 1
         assert a[0] == b[0]
         assert a[0] == new Tuple(comp: comp, attr:"value", expr: "user.name", converter: c)
