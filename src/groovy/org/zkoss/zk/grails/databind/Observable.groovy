@@ -3,7 +3,7 @@ package org.zkoss.zk.grails.databind
 class Observable {
 
     def object
-    private binder
+    private NewDataBinder binder
     private rootExpr
 
     Observable(object, binder, rootExpr) {
@@ -17,7 +17,9 @@ class Observable {
     }
 
     // get
+    // TODO: where to get comp, attr, and expr? from binding Map, but which one?
     def propertyMissing(String name) {
+        binder.subscribeToExpression(rootExpr + "." + name, comp, attr, expr, ViewModelTypeConverter.instance)
         return object."$name"
     }
 
