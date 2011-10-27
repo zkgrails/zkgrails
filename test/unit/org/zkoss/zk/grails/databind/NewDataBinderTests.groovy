@@ -12,7 +12,7 @@ class NewDataBinderTests extends GroovyTestCase {
     def testAddBinding() {
         def binder = new NewDataBinder()
         def comp = new MockComponent()
-        def c = new MockTypeConverter(null)
+        def c = new MockTypeConverter()
         binder.addBinding(comp, "value", "user.name", c)
         def a = binder.exprSubscribeMap['user.name'] as List
         def b = binder.compSubscribeMap[comp] as List
@@ -54,7 +54,7 @@ class NewDataBinderTests extends GroovyTestCase {
     def testFireViewChanged() {
         def binder = new NewDataBinder()
         def comp = new MockComponent()
-        def c = new MockTypeConverter("expected value")
+        def c = new MockTypeConverter(value:"expected value")
         binder.addBinding(comp, "value", "user.name", c)
         def a = binder.exprSubscribeMap['user.name'] as List
         def b = binder.compSubscribeMap[comp] as List

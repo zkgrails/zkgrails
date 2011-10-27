@@ -12,11 +12,7 @@ import org.zkoss.zk.ui.Component
  */
 class MockTypeConverter implements TypeConverter {
 
-    private value
-
-    MockTypeConverter(value) {
-        this.value = value;
-    }
+    def value
 
     Object coerceToUi(Object val, Component comp) {
         if(this.value) return this.value
