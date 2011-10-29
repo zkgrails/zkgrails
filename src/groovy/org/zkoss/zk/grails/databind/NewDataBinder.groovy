@@ -19,6 +19,7 @@ import org.zkoss.zkplus.databind.TypeConverter
 
 class NewDataBinder {
 
+    private static final String ZKGRAILS_BINDING_CONTEXT = "zk.grails.binding.context"
     private beanMap = [:]
     def exprSubscribeMap = [:]
     def compSubscribeMap = [:]
@@ -43,16 +44,6 @@ class NewDataBinder {
         compSubscribeMap[comp] << entry
     }
 
-    /**
-     *
-     *
-     * @param exprToSubscribe
-     * @param comp
-     * @param attr
-     * @param expr
-     * @param converter
-     * @return
-     */
     def subscribeToExpression(String exprToSubscribe, Component comp, String attr, String expr, TypeConverter converter) {
         def entry = new Tuple(comp: comp, attr: attr, expr: expr, converter: converter)
         exprSubscribeMap[exprToSubscribe] << entry
@@ -67,11 +58,14 @@ class NewDataBinder {
         def list = exprSubscribeMap[expr].collect{ it.comp }.collect { compSubscribeMap[it] }.flatten().unique()
         list.each { entry ->
             def attr = entry.attr
-            def comp = entry.comp
-            def converter = entry.converter
-            def newValue = eval(entry.expr)
+            Component comp = entry.comp
+            def converter  = entry.converter
+            def newValue   = eval(entry.expr)
             if(converter) {
+                // TODO: what to put into binding context
+                comp.setAttribute(ZKGRAILS_BINDING_CONTEXT,[:])
                 def result = converter.coerceToUi(newValue, comp)
+                comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
                 if(result != TypeConverter.IGNORE)
                     comp."${attr}" = result
             } else {
@@ -129,7 +123,10 @@ class NewDataBinder {
             def attr = entry.attr
             def expr = entry.expr
             def value = comp."$attr"
+            // TODO: what to put into binding context
+            comp.setAttribute(ZKGRAILS_BINDING_CONTEXT,[:])
             def result = converter.coerceToBean(value, comp)
+            comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
             if(result != TypeConverter.IGNORE)
                 set(expr, result)
         }
