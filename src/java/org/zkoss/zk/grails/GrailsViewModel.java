@@ -50,7 +50,7 @@ public class GrailsViewModel extends GenericEventListener {
             c.setResolveStrategy(Closure.DELEGATE_FIRST);
             c.call();
 
-            bb.subscribeExpressions();
+            bb.subscribeDependentExpressions();
         }
 
         binder.loadAll();

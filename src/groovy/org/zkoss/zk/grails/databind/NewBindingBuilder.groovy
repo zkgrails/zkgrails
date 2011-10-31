@@ -44,7 +44,7 @@ class NewBindingBuilder {
     }
 
     // must be called after calling static binding = {}
-    void subscribeExpressions() {
+    void subscribeDependentExpressions() {
         // each binding key
         def klass = viewModel.class
         binder.beanMap.each { expr, v ->
