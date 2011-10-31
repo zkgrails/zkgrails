@@ -49,12 +49,12 @@ class NewBindingBuilder {
         def klass = viewModel.class
         binder.beanMap.each { expr, v ->
             Field f = klass.getDeclaredField(expr)
-            def exprToSubscribe = f.getAnnotation(DependsOn.class).expressions()
-            if(exprToSubscribe instanceof String) {
-                binder.subscribeToExpression(expr, exprToSubscribe)
-            } else if(exprToSubscribe instanceof List) {
-                exprToSubscribe.each {
-                    binder.subscribeToExpression(expr, it)
+            def exprToSubscribe = f.getAnnotation(DependsOn.class)?.expressions()
+            if(exprToSubscribe) {
+                if(exprToSubscribe instanceof String) {
+                    binder.subscribeToExpression(expr, exprToSubscribe)
+                } else if(exprToSubscribe instanceof List) {
+                    exprToSubscribe.each { binder.subscribeToExpression(expr, it) }
                 }
             }
         }
