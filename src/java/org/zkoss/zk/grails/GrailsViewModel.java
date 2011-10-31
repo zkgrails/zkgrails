@@ -49,6 +49,8 @@ public class GrailsViewModel extends GenericEventListener {
             c.setDelegate(bb);
             c.setResolveStrategy(Closure.DELEGATE_FIRST);
             c.call();
+
+            bb.subscribeExpressions();
         }
 
         binder.loadAll();

@@ -20,7 +20,7 @@ import org.zkoss.zkplus.databind.TypeConverter
 class NewDataBinder {
 
     private static final String ZKGRAILS_BINDING_CONTEXT = "zk.grails.binding.context"
-    private beanMap = [:]
+    def beanMap = [:]
     def exprSubscribeMap = [:]
     def compSubscribeMap = [:]
 
@@ -34,7 +34,7 @@ class NewDataBinder {
     }
 
     //
-    // subscribe to expression
+    // subscribe to expression (Observable)
     //
     def addBinding(Component comp, String attr, String expr, TypeConverter converter) {
         if(!exprSubscribeMap[expr]) exprSubscribeMap[expr] = new HashSet()
@@ -44,10 +44,12 @@ class NewDataBinder {
         compSubscribeMap[comp] << entry
     }
 
-    def subscribeToExpression(String exprToSubscribe, Component comp, String attr, String expr, TypeConverter converter) {
-        def entry = new Tuple(comp: comp, attr: attr, expr: expr, converter: converter)
-        exprSubscribeMap[exprToSubscribe] << entry
-        compSubscribeMap[comp] << entry
+    //
+    // subscribe to expression (Dependent Observable)
+    //
+    def subscribeToExpression(String expr, String exprToSubscribe) {
+        if(!exprSubscribeMap[exprToSubscribe]) exprSubscribeMap[exprToSubscribe] = new HashSet()
+        exprSubscribeMap[exprToSubscribe] += exprSubscribeMap[expr]
     }
 
     //
@@ -55,7 +57,7 @@ class NewDataBinder {
     // TODO: dealing with sender to prevent SOE
     //
     def fireModelChanged(sender, String expr, value) {
-        def list = exprSubscribeMap[expr].collect{ it.comp }.collect { compSubscribeMap[it] }.flatten().unique()
+        def list = exprSubscribeMap[expr].collect{ it.comp }.collect { compSubscribeMap[it] }.flatten() // .unique()
         list.each { entry ->
             def attr = entry.attr
             Component comp = entry.comp

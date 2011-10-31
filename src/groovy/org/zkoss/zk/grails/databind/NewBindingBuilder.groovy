@@ -1,5 +1,6 @@
 package org.zkoss.zk.grails.databind
 
+import java.lang.reflect.Field
 import org.zkoss.zk.grails.GrailsViewModel
 import org.zkoss.zk.ui.Component
 
@@ -14,11 +15,15 @@ class NewBindingBuilder {
         this.binder = binder
         this.root = root
 
-        this.binder.bindBean(this.viewModel.id, this.viewModel)
-        def excludes = ['id','class','binder','binding','metaClass']
-        this.viewModel.properties.each { k, v ->
-            if(!excludes.contains(k)) {
-                this.binder.bindBean(k, v)
+        bindBeans()
+    }
+
+    private static final ArrayList<String> EXCLUDES = ['id', 'class', 'binder', 'binding', 'metaClass']
+    def bindBeans() {
+        binder.bindBean(viewModel.id, viewModel)
+        viewModel.properties.each { k, v ->
+            if (!EXCLUDES.contains(k)) {
+                binder.bindBean(k, v)
             }
         }
     }
@@ -35,6 +40,23 @@ class NewBindingBuilder {
         def map = args[0]
         map.each { attr, expr ->
             binder.addBinding(comp, attr, expr, ViewModelTypeConverter.instance)
+        }
+    }
+
+    // must be called after calling static binding = {}
+    void subscribeExpressions() {
+        // each binding key
+        def klass = viewModel.class
+        binder.beanMap.each { expr, v ->
+            Field f = klass.getDeclaredField(expr)
+            def exprToSubscribe = f.getAnnotation(DependsOn.class).expressions()
+            if(exprToSubscribe instanceof String) {
+                binder.subscribeToExpression(expr, exprToSubscribe)
+            } else if(exprToSubscribe instanceof List) {
+                exprToSubscribe.each {
+                    binder.subscribeToExpression(expr, it)
+                }
+            }
         }
     }
 
