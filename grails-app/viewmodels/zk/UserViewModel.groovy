@@ -1,6 +1,7 @@
 package zk
 
 import org.zkoss.zk.grails.*
+import org.zkoss.zk.grails.databind.DependsOn
 
 class UserViewModel extends GrailsViewModel {
 
@@ -14,9 +15,7 @@ class UserViewModel extends GrailsViewModel {
         txtFullName value: "fullname"
     }
 
-    //
-    // psuedo property
-    //
+    @DependsOn(['user.name', 'user.lastName'])
     def fullname = [
         forward: { "${user.name} ${user.lastName}" },
         reverse: {
