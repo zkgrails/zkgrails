@@ -1,7 +1,7 @@
 package zk
 
 import org.zkoss.zk.grails.*
-import org.zkoss.zk.grails.databind.DependsOn
+import org.zkoss.zk.grails.databind.*
 
 class UserViewModel extends GrailsViewModel {
 
@@ -25,6 +25,7 @@ class UserViewModel extends GrailsViewModel {
         }
     ]
 
+    @DependsOn('user.name')
     def nameIsLowerCase = {
         if ((user.name[0] as Character).isLowerCase())
             "color: red"
