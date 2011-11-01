@@ -21,7 +21,6 @@ public class GrailsViewModel extends GenericEventListener {
 
     @Override
     public void onEvent(Event evt) throws Exception {
-        System.out.println(evt.getName() + " " + evt.getTarget());
         Component comp = evt.getTarget();
         if(binder.containsComponent(comp)) {
             binder.fireViewChanged(comp, evt.getName());
