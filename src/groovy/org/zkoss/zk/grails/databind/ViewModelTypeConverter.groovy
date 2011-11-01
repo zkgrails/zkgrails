@@ -20,12 +20,18 @@ class ViewModelTypeConverter implements TypeConverter {
     }
 
     Object coerceToBean(Object val, Component comp) {
-        if(val instanceof Map && val.size() == 2 &&
-           val.containsKey("forward") && val.containsKey("reverse")) {
-            def c = val['reverse']
-            c.call()
+        def context = comp.getAttribute(NewDataBinder.ZKGRAILS_BINDING_CONTEXT)
+        def binder = context['binder']
+        def viewModel = context['viewModel']
+        def expr = context['expr']
+        def xval = viewModel."$expr"
+        if(xval instanceof Map && xval.size() == 2 && xval.containsKey("forward") && xval.containsKey("reverse")) {
+            def c = xval['reverse']
+            c.delegate = binder
+            c.resolveStrategy = Closure.DELEGATE_FIRST
+            c.call(val)
             return TypeConverter.IGNORE
-        } else if (val instanceof Closure) { // it's forward, skip
+        } else if (xval instanceof Closure) { // it's forward, skip
             return TypeConverter.IGNORE
         }
         return val

@@ -10,7 +10,7 @@ import org.zkoss.zk.ui.event.GenericEventListener;
 
 public class GrailsViewModel extends GenericEventListener {
 
-    private NewDataBinder binder = new NewDataBinder();
+    private NewDataBinder binder = new NewDataBinder(this);
 
     private String id;
 

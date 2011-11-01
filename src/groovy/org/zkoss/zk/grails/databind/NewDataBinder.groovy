@@ -2,6 +2,7 @@ package org.zkoss.zk.grails.databind
 
 import org.zkoss.zk.ui.Component
 import org.zkoss.zkplus.databind.TypeConverter
+import org.zkoss.zk.grails.GrailsViewModel
 
 //    data binding is two way invocation
 //
@@ -19,10 +20,15 @@ import org.zkoss.zkplus.databind.TypeConverter
 
 class NewDataBinder {
 
-    private static final String ZKGRAILS_BINDING_CONTEXT = "zk.grails.binding.context"
+    static final String ZKGRAILS_BINDING_CONTEXT = "zk.grails.binding.context"
     def beanMap = [:]
     def exprSubscribeMap = [:]
     def compSubscribeMap = [:]
+    private GrailsViewModel viewModel
+
+    NewDataBinder(viewModel) {
+        this.viewModel = viewModel
+    }
 
     //
     //  context
@@ -64,10 +70,9 @@ class NewDataBinder {
             def converter  = entry.converter
             def newValue   = eval(entry.expr)
             if(converter) {
-                // TODO: what to put into binding context
-                comp.setAttribute(ZKGRAILS_BINDING_CONTEXT,[:])
+                // comp.setAttribute(ZKGRAILS_BINDING_CONTEXT, this)
                 def result = converter.coerceToUi(newValue, comp)
-                comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
+                // comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
                 if(result != TypeConverter.IGNORE)
                     comp."${attr}" = result
             } else {
@@ -125,8 +130,7 @@ class NewDataBinder {
             def attr = entry.attr
             def expr = entry.expr
             def value = comp."$attr"
-            // TODO: what to put into binding context
-            comp.setAttribute(ZKGRAILS_BINDING_CONTEXT,[:])
+            comp.setAttribute(ZKGRAILS_BINDING_CONTEXT, [binder: this, viewModel: this.viewModel, expr: expr])
             def result = converter.coerceToBean(value, comp)
             comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
             if(result != TypeConverter.IGNORE)
@@ -151,6 +155,11 @@ class NewDataBinder {
         exprSubscribeMap.each { expr, list ->
             fireModelChanged(null, expr, eval(expr))
         }
+    }
+
+    // read only property
+    def propertyMissing(String name) {
+        return beanMap[name]
     }
 
 }
