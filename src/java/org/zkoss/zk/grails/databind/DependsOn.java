@@ -4,9 +4,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@interface DependsOn {
+public @interface DependsOn {
 
-    // can be both String or List
     String[] value();
 
 }

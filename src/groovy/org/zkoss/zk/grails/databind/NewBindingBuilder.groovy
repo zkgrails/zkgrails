@@ -44,6 +44,7 @@ class NewBindingBuilder {
     }
 
     // must be called after calling static binding = {}
+    // TODO do topology sorting before calling this to ensure that everything will be in its place
     void subscribeDependentExpressions() {
         // each binding key
         def klass = viewModel.class

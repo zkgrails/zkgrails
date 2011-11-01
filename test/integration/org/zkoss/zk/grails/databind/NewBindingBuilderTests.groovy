@@ -56,9 +56,9 @@ class NewBindingBuilderTests extends GroovyTestCase {
         assert txtLastName.value == "last"
         assert txtFullName.value == "test last"
 
-        Set fullnameSubscribeSet = binder.exprSubscribeMap['fullname'] as Set
-        Set userNameSubscribeSet = binder.exprSubscribeMap['user.name'] as Set
-        Set userLastNameSubscribeSet = binder.exprSubscribeMap['user.lastName'] as Set
+        def fullnameSubscribeSet = binder.exprSubscribeMap['fullname']
+        def userNameSubscribeSet = binder.exprSubscribeMap['user.name']
+        def userLastNameSubscribeSet = binder.exprSubscribeMap['user.lastName']
         assert fullnameSubscribeSet.every { userNameSubscribeSet.contains(it) }
         assert fullnameSubscribeSet.every { userLastNameSubscribeSet.contains(it) }
     }
