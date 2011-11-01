@@ -36,7 +36,7 @@ class NewBindingBuilder {
         // TODO: use Select to quantify components
         // def components = [root.getFellowIfAny(name)]
         def comp = root.getFellowIfAny(name)
-        comp.addEventListener("onChange", this.viewModel)
+        comp.addEventListener("onChange", this.viewModel) // TODO tackle other events
         def map = args[0]
         map.each { attr, expr ->
             binder.addBinding(comp, attr, expr, ViewModelTypeConverter.instance)
@@ -47,16 +47,18 @@ class NewBindingBuilder {
     void subscribeDependentExpressions() {
         // each binding key
         def klass = viewModel.class
-        binder.beanMap.each { expr, v ->
-            Field f = klass.getDeclaredField(expr)
-            def exprToSubscribe = f.getAnnotation(DependsOn.class)?.expressions()
-            if(exprToSubscribe) {
-                if(exprToSubscribe instanceof String) {
-                    binder.subscribeToExpression(expr, exprToSubscribe)
-                } else if(exprToSubscribe instanceof List) {
-                    exprToSubscribe.each { binder.subscribeToExpression(expr, it) }
+        binder.beanMap.each{ expr, v ->
+            try {
+                Field f = klass.getDeclaredField(expr)
+                def exprToSubscribe = f.getAnnotation(DependsOn.class)?.value()
+                if(exprToSubscribe) {
+                    if(exprToSubscribe instanceof String) {
+                        binder.subscribeToExpression(expr, exprToSubscribe)
+                    } else if(exprToSubscribe instanceof String[]) {
+                        exprToSubscribe.each { binder.subscribeToExpression(expr, it) }
+                    }
                 }
-            }
+            }catch(NoSuchFieldException e){ /*silently skip if it's NSFE */ }
         }
     }
 

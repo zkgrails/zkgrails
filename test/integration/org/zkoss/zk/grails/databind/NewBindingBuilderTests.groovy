@@ -3,6 +3,7 @@ package org.zkoss.zk.grails.databind
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.zkoss.zul.Window
 import org.zkoss.zul.Textbox
+import org.zkoss.zk.grails.GrailsViewModel
 
 class NewBindingBuilderTests extends GroovyTestCase {
 
@@ -29,7 +30,7 @@ class NewBindingBuilderTests extends GroovyTestCase {
         assert binder.containsBean("userList")
     }
 
-    void testViewModelBinds() {
+    void testViewModelBindsAndDependentBinds() {
         def appCtx = grailsApplication.getMainContext()
         def userComposer = appCtx.getBean("zk.userComposer")
         def wnd = new Window(); wnd.id = "wnd"
@@ -43,15 +44,22 @@ class NewBindingBuilderTests extends GroovyTestCase {
         assert wnd.getFellowIfAny("txtLastName") == txtLastName
         assert wnd.getFellowIfAny("txtFullName") == txtFullName
 
-        userComposer.viewModel.binds(wnd)
+        GrailsViewModel viewModel = userComposer.viewModel
+        viewModel.binds(wnd)
 
-        NewDataBinder binder = userComposer.viewModel.getBinder()
-        assert binder.contains(txtName)
-        assert binder.contains(txtLastName)
-        assert binder.contains(txtFullName)
+        NewDataBinder binder = viewModel.getBinder()
+        assert binder.containsComponent(txtName)
+        assert binder.containsComponent(txtLastName)
+        assert binder.containsComponent(txtFullName)
 
         assert txtName.value == "test"
         assert txtLastName.value == "last"
         assert txtFullName.value == "test last"
+
+        Set fullnameSubscribeSet = binder.exprSubscribeMap['fullname'] as Set
+        Set userNameSubscribeSet = binder.exprSubscribeMap['user.name'] as Set
+        Set userLastNameSubscribeSet = binder.exprSubscribeMap['user.lastName'] as Set
+        assert fullnameSubscribeSet.every { userNameSubscribeSet.contains(it) }
+        assert fullnameSubscribeSet.every { userLastNameSubscribeSet.contains(it) }
     }
 }

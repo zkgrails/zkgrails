@@ -19,7 +19,7 @@ class NewDataBinderTests extends GroovyTestCase {
         assert a.size() == 1
         assert a[0] == b[0]
         assert a[0] == new Tuple(comp: comp, attr:"value", expr: "user.name", converter: c)
-        assert binder.contains(comp)
+        assert binder.containsComponent(comp)
     }
 
     def testEval() {

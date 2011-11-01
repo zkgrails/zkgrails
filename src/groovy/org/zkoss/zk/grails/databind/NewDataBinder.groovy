@@ -49,7 +49,7 @@ class NewDataBinder {
     //
     def subscribeToExpression(String expr, String exprToSubscribe) {
         if(!exprSubscribeMap[exprToSubscribe]) exprSubscribeMap[exprToSubscribe] = new HashSet()
-        exprSubscribeMap[exprToSubscribe] += exprSubscribeMap[expr]
+        exprSubscribeMap[exprToSubscribe].addAll(exprSubscribeMap[expr])
     }
 
     //
@@ -134,7 +134,7 @@ class NewDataBinder {
         }
     }
 
-    boolean contains (Component comp) {
+    boolean containsComponent(Component comp) {
         return compSubscribeMap.containsKey(comp)
     }
 
