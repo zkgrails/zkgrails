@@ -30,5 +30,4 @@ class UserViewModel extends GrailsViewModel {
         else
             "color: black"
     }
-
 }
