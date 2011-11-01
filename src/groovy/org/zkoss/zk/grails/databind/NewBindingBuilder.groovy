@@ -51,14 +51,8 @@ class NewBindingBuilder {
             try {
                 Field f = klass.getDeclaredField(expr)
                 def exprToSubscribe = f.getAnnotation(DependsOn.class)?.value()
-                if(exprToSubscribe) {
-                    if(exprToSubscribe instanceof String) {
-                        binder.subscribeToExpression(expr, exprToSubscribe)
-                    } else if(exprToSubscribe instanceof String[]) {
-                        exprToSubscribe.each { binder.subscribeToExpression(expr, it) }
-                    }
-                }
-            }catch(NoSuchFieldException e){ /*silently skip if it's NSFE */ }
+                exprToSubscribe?.each { binder.subscribeToExpression(expr, it) }
+            } catch(NoSuchFieldException e){ /* silently skip if it's NSFE */ }
         }
     }
 
