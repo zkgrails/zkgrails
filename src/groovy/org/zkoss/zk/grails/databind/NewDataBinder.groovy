@@ -99,6 +99,7 @@ class NewDataBinder {
     }
 
     void set(String expression, newValue) {
+        // println "set expression: ${expression}"
         String[] expr = expression.split(/\./)
         def bean = beanMap[expr[0]]
         // simply ignore

@@ -24,6 +24,9 @@ class ViewModelTypeConverter implements TypeConverter {
         def binder = context['binder']
         def viewModel = context['viewModel']
         def expr = context['expr']
+        if(!viewModel.metaClass.hasProperty(viewModel, expr)) {
+            return val
+        }
         def xval = viewModel."$expr"
         if(xval instanceof Map && xval.size() == 2 && xval.containsKey("forward") && xval.containsKey("reverse")) {
             def c = xval['reverse']
