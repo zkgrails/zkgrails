@@ -17,6 +17,7 @@
         <textbox id="txtName"/>
         <textbox id="txtLastName"/>
         <textbox id="txtFullName"/>
+        <vbox id="buttonHolder"/>
     </vbox>
 </window>
 

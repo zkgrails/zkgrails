@@ -19,34 +19,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.zkoss.zk.grails;
 
 import groovy.lang.Closure;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.zkoss.util.Pair;
+import org.zkoss.zk.grails.jsoup.select.Components;
+import org.zkoss.zk.grails.jsoup.select.Selector;
+import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Desktop;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.ForwardEvent;
 import org.zkoss.zk.ui.sys.ComponentsCtrl;
-import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
+import org.zkoss.zk.ui.util.GenericAutowireComposer;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
-import org.zkoss.zkplus.databind.AnnotateDataBinder;
-import org.zkoss.zk.ui.util.GenericAutowireComposer;
-import org.zkoss.zk.ui.util.GenericForwardComposer;
-
-import org.zkoss.zkplus.databind.AnnotateDataBinder;
-import org.zkoss.zk.ui.util.GenericAutowireComposer;
-import org.zkoss.zk.ui.util.GenericForwardComposer;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GrailsComposer extends GenericForwardComposer {
 
@@ -55,14 +54,14 @@ public class GrailsComposer extends GenericForwardComposer {
 
     // inject
     private DesktopCounter desktopCounter;
-    private AnnotateDataBinder binder;
+    // private AnnotateDataBinder binder;
     private GrailsViewModel viewModel;
 
     public GrailsComposer() {
         //default is true
-        super('_',true,true);
-        try{
-            if (!shallSkipZscriptWiring()){
+        super('_', true, true);
+        try {
+            if (!shallSkipZscriptWiring()) {
                 Field ignoreZscript = GenericAutowireComposer.class.getDeclaredField("_ignoreZScript");
                 Field ignoreXel = GenericAutowireComposer.class.getDeclaredField("_ignoreXel");
                 ignoreZscript.setAccessible(true);
@@ -70,7 +69,7 @@ public class GrailsComposer extends GenericForwardComposer {
                 ignoreZscript.setBoolean(this, false);
                 ignoreXel.setBoolean(this, false);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -122,8 +121,8 @@ public class GrailsComposer extends GenericForwardComposer {
     }
 
     public MessageHolder getMessage() {
-        if(messageHolder == null) {
-            HttpServletRequest request = (HttpServletRequest)(this.desktop.getExecution().getNativeRequest());
+        if (messageHolder == null) {
+            HttpServletRequest request = (HttpServletRequest) (this.desktop.getExecution().getNativeRequest());
             messageHolder = new MessageHolder(page, request);
         }
         return messageHolder;
@@ -140,9 +139,9 @@ public class GrailsComposer extends GenericForwardComposer {
 
     public void injectComet() throws Exception {
         Field[] fields = this.getClass().getDeclaredFields();
-        for(Field f: fields) {
-            if(f.getName().endsWith("Comet")) {
-                GrailsComet gc = (GrailsComet)InvokerHelper.getProperty(this, f.getName());
+        for (Field f : fields) {
+            if (f.getName().endsWith("Comet")) {
+                GrailsComet gc = (GrailsComet) InvokerHelper.getProperty(this, f.getName());
                 gc.setGrailsComposer(this);
             }
         }
@@ -153,13 +152,51 @@ public class GrailsComposer extends GenericForwardComposer {
         super.doAfterCompose(comp);
         injectComet();
 
-        binder = new AnnotateDataBinder(comp);
-
-        comp.setAttribute("binder", binder);
-        binder.loadAll();
-
         handleAfterComposeClosure(comp);
         handleScaffold(comp);
+
+        wireSelectorBasedHandler(comp);
+    }
+
+    public Map<Pair, List<Method>> selectorBasedHandler = new HashMap<Pair, List<Method>>();
+
+    public void wireSelectorBasedHandler(Component comp) {
+        Method[] methods = this.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.isAnnotationPresent(Handler.class)) {
+                Handler h = method.getAnnotation(Handler.class);
+                String[] values = h.value();
+                for (String v : values) {
+                    int p = v.lastIndexOf(".");
+                    String pattern = v.substring(0, p);
+                    String eventName = v.substring(p + 1);
+                    Components components = Selector.select(pattern, comp);
+                    for (Component c : components) {
+                        c.addEventListener(eventName, this);
+                        Pair key = new Pair(c, eventName);
+                        List<Method> handlerMethods;
+                        if (selectorBasedHandler.containsKey(key) == false) {
+                            handlerMethods = new ArrayList<Method>();
+                            selectorBasedHandler.put(key, handlerMethods);
+                        } else {
+                            handlerMethods = selectorBasedHandler.get(key);
+                        }
+                        handlerMethods.add(method);
+                    }
+                }
+            }
+        }
+    }
+
+    private static final Method[] EMPTY_METHODS = new Method[]{};
+    private Method[] getHandlerMethod(Class<?> cls, Event event) {
+        Method method = ComponentsCtrl.getEventMethod(cls, event.getName());
+        if (method != null)
+            return new Method[]{method};
+        List<Method> result = selectorBasedHandler.get(new Pair(event.getTarget(), event.getName()));
+        if (result == null)
+            return EMPTY_METHODS;
+        return result.toArray(new Method[result.size()]);
     }
 
     /**
@@ -167,41 +204,44 @@ public class GrailsComposer extends GenericForwardComposer {
      * part of groovy's dynamic methods, e.g. metaClass.invokeMethod works for event methods. Without this the default java code
      * don't call the overriden invokeMethod</p>
      *
-     * @param evt
+     * @param event
      * @throws Exception
      */
     @Override
-    public void onEvent(Event evt) throws Exception {
+    public void onEvent(Event event) throws Exception {
         final Object controller = getController();
-        final Method mtd =	ComponentsCtrl.getEventMethod(controller.getClass(), evt.getName());
-        if (mtd != null) {
-            if (mtd.getParameterTypes().length == 0) {
-                InvokerHelper.invokeMethod(controller, mtd.getName(), null);
-            } else if (evt instanceof ForwardEvent) { //ForwardEvent
-                final Class<?> paramcls = (Class<?>) mtd.getParameterTypes()[0];
-                //paramcls is ForwardEvent || Event
-                if (ForwardEvent.class.isAssignableFrom(paramcls)
-                    || Event.class.equals(paramcls)) {
-                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+        final Method[] methods = getHandlerMethod(controller.getClass(), event);
+        if (methods.length == 0) return;
+        for (Method method : methods) {
+            if (method != null) {
+                if (method.getParameterTypes().length == 0) {
+                    InvokerHelper.invokeMethod(controller, method.getName(), null);
+                } else if (event instanceof ForwardEvent) { //ForwardEvent
+                    final Class<?> paramcls = method.getParameterTypes()[0];
+                    //paramcls is ForwardEvent || Event
+                    if (ForwardEvent.class.isAssignableFrom(paramcls)
+                            || Event.class.equals(paramcls)) {
+                        InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
+                    } else {
+                        do {
+                            event = ((ForwardEvent) event).getOrigin();
+                        } while (event instanceof ForwardEvent);
+                        InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
+                    }
                 } else {
-                    do {
-                        evt = ((ForwardEvent)evt).getOrigin();
-                    } while(evt instanceof ForwardEvent);
-                    InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
+                    InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
                 }
-            } else {
-                InvokerHelper.invokeMethod(controller, mtd.getName(), new Object[] {evt});
             }
         }
     }
 
     private void handleAfterComposeClosure(Component comp) {
         try {
-          Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
-          if(c instanceof Closure) {
-              ((Closure)c).call(comp);
-          }
-        } catch(BeansException e) { /* do nothing */ }
+            Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
+            if (c instanceof Closure) {
+                ((Closure) c).call(comp);
+            }
+        } catch (BeansException e) { /* do nothing */ }
     }
 
     private void handleScaffold(Component comp) {
@@ -209,8 +249,8 @@ public class GrailsComposer extends GenericForwardComposer {
             ApplicationContext ctx = SpringUtil.getApplicationContext();
 
             Object scaffold =
-                GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
-            if(scaffold != null) {
+                    GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
+            if (scaffold != null) {
                 GrailsApplication app = (GrailsApplication) ctx.getBean(
                         GrailsApplication.APPLICATION_ID,
                         GrailsApplication.class);
@@ -219,28 +259,28 @@ public class GrailsComposer extends GenericForwardComposer {
                         "zkgrailsScaffoldingTemplate",
                         ScaffoldingTemplate.class);
 
-                if(scaffold instanceof Boolean) {
-                    if(((Boolean)scaffold) == true) {
+                if (scaffold instanceof Boolean) {
+                    if (((Boolean) scaffold) == true) {
                         //
                         // Use this to find class name
                         // and cut "Composer" off.
                         //
                         String name = this.getClass()
-                                        .getName()
-                                        .replaceAll("Composer", "");
+                                .getName()
+                                .replaceAll("Composer", "");
 
                         //
                         // Look for the domain class.
                         //
                         GrailsClass domainClass = app.getArtefact("Domain", name);
                         Class<?> klass = domainClass.getClazz();
-                        template.initComponents(klass, (Component)comp, app);
+                        template.initComponents(klass, (Component) comp, app);
                     }
                 } else {
-                    template.initComponents((Class<?>)scaffold, (Component)comp, app);
+                    template.initComponents((Class<?>) scaffold, (Component) comp, app);
                 }
             }
-        } catch(BeansException e) { /* do nothing */}
+        } catch (BeansException e) { /* do nothing */}
     }
 
     /**
@@ -254,14 +294,14 @@ public class GrailsComposer extends GenericForwardComposer {
         Object skipZscriptWiringFromComposer =
                 GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
 
-        if(skipZscriptWiringFromComposer != null &&
-           skipZscriptWiringFromComposer instanceof Boolean) {
-            shallSkipZscriptWiring = (Boolean)skipZscriptWiringFromComposer;
+        if (skipZscriptWiringFromComposer != null &&
+                skipZscriptWiringFromComposer instanceof Boolean) {
+            shallSkipZscriptWiring = (Boolean) skipZscriptWiringFromComposer;
         } else {
             shallSkipZscriptWiring = ZkConfigHelper.skipZscriptWiring();
         }
 
-        if(shallSkipZscriptWiring) {
+        if (shallSkipZscriptWiring) {
             return true;
         }
         return false;
