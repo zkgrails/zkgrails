@@ -18,6 +18,6 @@ class UserComposer extends GrailsComposer {
 
     @Handler('#buttonHolder > button.onClick')
     def test(e) {
-        alert(e.target.label)
+        alert("hello ${e.target.label}")
     }
 }

@@ -381,6 +381,10 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 "${composerBeanName}"(composerClass.clazz) { bean ->
                     bean.scope = "prototype"
                     bean.autowire = "byName"
+                    def viewModelBeanName = composerClass.propertyName.replace('Composer','ViewModel')
+                    if(application.viewModelClasses.any { it.propertyName == viewModelBeanName}) {
+                        viewModel = ref(viewModelBeanName)
+                    }
                 }
             }
 
