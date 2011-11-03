@@ -1,7 +1,8 @@
 package zk
 
 import org.zkoss.zk.grails.GrailsComposer
-import org.zkoss.zk.grails.Handler
+
+import org.zkoss.zk.grails.Listen
 
 class UserComposer extends GrailsComposer {
     def buttonHolder
@@ -16,7 +17,7 @@ class UserComposer extends GrailsComposer {
         viewModel?.binds wnd
     }
 
-    @Handler('#buttonHolder > button.onClick')
+    @Listen('#buttonHolder > button.onClick')
     def test(e) {
         alert("hello ${e.target.label}")
     }

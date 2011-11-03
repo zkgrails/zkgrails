@@ -1,7 +1,7 @@
 package zk.hangman
 
 import org.zkoss.zk.grails.GrailsComposer
-import org.zkoss.zk.grails.Handler
+import org.zkoss.zk.grails.Listen
 
 class HangmanComposer extends GrailsComposer {
 
@@ -19,7 +19,7 @@ class HangmanComposer extends GrailsComposer {
         viewModel?.binds wnd
     }
 
-    @Handler(['#buttonRow1 > button.onClick','#buttonRow1 > button.onClick'])
+    @Listen(['#buttonRow1 > button.onClick','#buttonRow1 > button.onClick'])
     def guess(e) {
 
     }

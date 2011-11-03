@@ -163,8 +163,8 @@ public class GrailsComposer extends GenericForwardComposer {
     public void wireSelectorBasedHandler(Component comp) {
         Method[] methods = this.getClass().getDeclaredMethods();
         for (Method method : methods) {
-            if (method.isAnnotationPresent(Handler.class)) {
-                Handler h = method.getAnnotation(Handler.class);
+            if (method.isAnnotationPresent(Listen.class)) {
+                Listen h = method.getAnnotation(Listen.class);
                 String[] values = h.value();
                 for (String v : values) {
                     int p = v.lastIndexOf(".");
