@@ -13,6 +13,9 @@ class UserViewModel extends GrailsViewModel {
         txtName     value: "user.name", style:"nameIsLowerCase"
         txtLastName value: "user.lastName"
         txtFullName value: "fullname"
+        // lblError visible: "user.hasErrors()" value:"user.errors.allErrors[0]"
+        //
+        // validate = false; default is true
     }
 
     @DependsOn(['user.name', 'user.lastName']) fullname = [

@@ -15,7 +15,7 @@ import org.zkoss.zk.grails.GrailsViewModel
 //    2. coerceToBean
 //      from comp to domain
 //      (save)
-//      this explains by what TODO ?
+//      this explains by event firing
 //
 
 class NewDataBinder {
@@ -25,6 +25,7 @@ class NewDataBinder {
     def exprSubscribeMap = [:]
     def compSubscribeMap = [:]
     private GrailsViewModel viewModel
+    def validate = true
 
     NewDataBinder(viewModel) {
         this.viewModel = viewModel
@@ -117,6 +118,9 @@ class NewDataBinder {
             // TODO if the below causes SOE bug, remove the comment
             // if(value instanceof Observable) value = value.object
             value."${expr[last]}" = newValue
+            if(bean.metaClass.hasProperty(bean, "validate") && validate) {
+                bean.validate()
+            }
         }
     }
 
