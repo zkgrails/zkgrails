@@ -6,13 +6,11 @@ import org.zkoss.zk.grails.Listen
 
 class UserComposer extends GrailsComposer {
 
-    def buttonHolder
-
     def afterCompose = { wnd ->
-        buttonHolder.append {
-            button(label:"B1")
-            button(label:"B2")
-            button(label:"B3")
+        $('#buttonHolder').append {
+            button(label:"B1.1")
+            button(label:"B1.2")
+            button(label:"B1.3")
         }
 
         binds wnd

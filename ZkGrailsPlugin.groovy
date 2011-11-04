@@ -1,25 +1,13 @@
 import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
 
-import grails.util.Environment
 import grails.util.GrailsUtil
-
-import org.zkoss.zk.ui.event.EventListener
-
-import org.zkoss.zk.grails.ComposerResolver
-import org.zkoss.zk.grails.DesktopCounter
-import org.zkoss.zk.grails.ZkBuilder
 import org.zkoss.zk.grails.livemodels.LiveModelBuilder
-import org.zkoss.zk.grails.ListboxModelDynamicMethods
-import org.zkoss.zk.grails.artefacts.CometArtefactHandler
-
-import org.zkoss.zk.grails.artefacts.ComposerArtefactHandler
-import org.zkoss.zk.grails.artefacts.ViewModelArtefactHandler
-
-import org.zkoss.zk.grails.artefacts.FacadeArtefactHandler
-import org.zkoss.zk.grails.artefacts.LiveModelArtefactHandler
-
 import org.zkoss.zk.grails.livemodels.SortingPagingListModel
-import org.zkoss.zk.grails.ZkConfigHelper
+import org.zkoss.zk.grails.select.Components
+import org.zkoss.zk.ui.event.EventListener
+import org.zkoss.zk.grails.*
+import org.zkoss.zk.grails.artefacts.*
+import org.codehaus.groovy.runtime.InvokerHelper
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -267,6 +255,20 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
     }
 
     def doWithDynamicMethods = { ctx ->
+
+        GrailsComposer.metaClass.methodMissing = { String name, args ->
+            if(name=='$') {
+                return delegate.select(args)
+            }
+            throw new MissingMethodException(name, delegate.class, args)
+        }
+
+        Components.metaClass.methodMissing = { String name, args ->
+            for(c in delegate) {
+                InvokerHelper.invokeMethod(c, name, args)
+            }
+            return delegate
+        }
 
         // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->

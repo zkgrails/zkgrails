@@ -1,5 +1,6 @@
 package org.zkoss.zk.grails.select;
 
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.zkoss.zk.grails.select.ComponentUtil;
 import org.zkoss.zk.ui.Component;
 
@@ -573,4 +574,5 @@ public class Components implements List<Component>, Cloneable {
     public List<Component> subList(int fromIndex, int toIndex) {
         return contents.subList(fromIndex, toIndex);
     }
+
 }

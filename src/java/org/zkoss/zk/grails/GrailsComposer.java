@@ -43,10 +43,7 @@ import org.zkoss.zkplus.spring.SpringUtil;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GrailsComposer extends GenericForwardComposer {
 
@@ -310,4 +307,11 @@ public class GrailsComposer extends GenericForwardComposer {
         }
         return false;
     }
+
+    @SuppressWarnings({"unchecked"})
+    public Components select(Object[] query) {
+        Iterable<Component> roots = (Iterable<Component>)page.getRoots();
+        return Selector.select((String)query[0], roots);
+    }
+
 }
