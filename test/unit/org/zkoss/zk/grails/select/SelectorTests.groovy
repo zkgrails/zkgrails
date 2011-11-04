@@ -2,7 +2,7 @@ package org.zkoss.zk.grails.select
 
 import org.zkoss.zul.Window
 import org.zkoss.zul.Button
-import org.zkoss.zk.grails.jsoup.select.Selector
+
 import org.zkoss.zul.Vbox
 import org.zkoss.zk.ui.Component
 
