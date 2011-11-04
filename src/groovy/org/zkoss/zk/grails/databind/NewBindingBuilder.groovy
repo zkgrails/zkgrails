@@ -18,11 +18,10 @@ class NewBindingBuilder {
         bindBeans()
     }
 
-    private static final ArrayList<String> EXCLUDES = ['id', 'class', 'binder', 'binding', 'metaClass']
     def bindBeans() {
         binder.bindBean(viewModel.id, viewModel)
         viewModel.properties.each { k, v ->
-            if (!EXCLUDES.contains(k)) {
+            if (!(k in GrailsViewModel.EXCLUDES)) {
                 binder.bindBean(k, v)
             }
         }

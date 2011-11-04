@@ -1,6 +1,6 @@
 package org.zkoss.zk.grails;
 
-import groovy.lang.Closure;
+import groovy.lang.*;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.zkoss.zk.grails.databind.NewBindingBuilder;
 import org.zkoss.zk.grails.databind.NewDataBinder;
@@ -12,20 +12,13 @@ public class GrailsViewModel extends GenericEventListener {
 
     private NewDataBinder binder = new NewDataBinder(this);
 
-    private String id;
+    public static final String[] EXCLUDES = {"id", "class", "binder", "binding", "metaClass"};
 
+    private String id;
     public void setId(String value)  { this.id = value; }
     public String getId()            { return this.id;  }
     
     public NewDataBinder getBinder() { return this.binder; }
-
-    @Override
-    public void onEvent(Event evt) throws Exception {
-        Component comp = evt.getTarget();
-        if(binder.containsComponent(comp)) {
-            binder.fireViewChanged(comp, evt.getName());
-        }
-    }
 
     //
     // should be called by #afterCompose
@@ -54,5 +47,13 @@ public class GrailsViewModel extends GenericEventListener {
 
         binder.loadAll();
     }
-    
+
+    @Override
+    public void onEvent(Event evt) throws Exception {
+        Component comp = evt.getTarget();
+        if(binder.containsComponent(comp)) {
+            binder.fireViewChanged(comp, evt.getName());
+        }
+    }
+
 }

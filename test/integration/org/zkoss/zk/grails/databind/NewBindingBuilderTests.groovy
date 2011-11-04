@@ -62,4 +62,19 @@ class NewBindingBuilderTests extends GroovyTestCase {
         assert fullnameSubscribeSet.every { userNameSubscribeSet.contains(it) }
         assert fullnameSubscribeSet.every { userLastNameSubscribeSet.contains(it) }
     }
+
+    def testBindBeansNotContainExcludedBeans() {
+        def appCtx = grailsApplication.getMainContext()
+        def userComposer = appCtx.getBean("zk.userComposer")
+        def binder = new NewDataBinder()
+        def comp = new Window()
+        def nbb = new NewBindingBuilder(userComposer.viewModel, binder, comp)
+        assert nbb.root == comp
+        assert binder.getBean("userViewModel") == userComposer.viewModel
+        assert !binder.containsBean("class")
+        assert !binder.containsBean("metaClass")
+        assert !binder.containsBean("id")
+        assert !binder.containsBean("binder")
+        assert !binder.containsBean("binding")
+    }
 }
