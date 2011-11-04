@@ -1,7 +1,6 @@
 package zk.hello
 
-import org.zkoss.zk.grails.GrailsComposer
-import org.zkoss.zk.grails.Listen
+import org.zkoss.zk.grails.*
 
 class HelloComposer extends GrailsComposer {
 
@@ -10,7 +9,6 @@ class HelloComposer extends GrailsComposer {
     }
 
     @Listen('#btnHello.onClick') showHello() {
-        println "hello"
         viewModel.message = "Hello World"
     }
 
