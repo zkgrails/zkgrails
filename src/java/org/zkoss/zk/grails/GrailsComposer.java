@@ -262,7 +262,7 @@ public class GrailsComposer extends GenericForwardComposer {
                         GrailsApplication.class);
 
                 ScaffoldingTemplate template = ctx.getBean(
-                        "zkgrailsScaffoldingTemplate",
+                        ScaffoldingTemplate.SCAFFOLDING_TEMPLATE,
                         ScaffoldingTemplate.class);
 
                 if (scaffold instanceof Boolean) {
@@ -271,9 +271,7 @@ public class GrailsComposer extends GenericForwardComposer {
                         // Use this to find class name
                         // and cut "Composer" off.
                         //
-                        String name = this.getClass()
-                                .getName()
-                                .replaceAll("Composer", "");
+                        String name = this.getClass().getName().replaceAll("Composer", "");
 
                         //
                         // Look for the domain class.
@@ -298,8 +296,7 @@ public class GrailsComposer extends GenericForwardComposer {
      */
     private boolean shallSkipZscriptWiring() {
         boolean shallSkipZscriptWiring;
-        Object skipZscriptWiringFromComposer =
-                GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
+        Object skipZscriptWiringFromComposer = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
 
         if (skipZscriptWiringFromComposer != null &&
                 skipZscriptWiringFromComposer instanceof Boolean) {
