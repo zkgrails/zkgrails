@@ -5,8 +5,6 @@ import org.zkoss.zk.grails.Listen
 
 class HelloComposer extends GrailsComposer {
 
-    def lblMessage
-
     def afterCompose = { wnd ->
         binds wnd
     }

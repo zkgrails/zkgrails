@@ -11,7 +11,11 @@ class NewBindingBuilder {
     Component root
 
     NewBindingBuilder(viewModel, binder, root) {
-        this.viewModel = viewModel
+        if(viewModel instanceof Observable) {
+            this.viewModel = viewModel.object
+        } else {
+            this.viewModel = viewModel
+        }
         this.binder = binder
         this.root = root
 

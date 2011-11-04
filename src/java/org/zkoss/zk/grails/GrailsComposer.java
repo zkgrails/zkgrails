@@ -26,6 +26,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.zkoss.util.Pair;
+import org.zkoss.zk.grails.databind.Observable;
 import org.zkoss.zk.grails.jsoup.select.Components;
 import org.zkoss.zk.grails.jsoup.select.Selector;
 import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
@@ -54,8 +55,7 @@ public class GrailsComposer extends GenericForwardComposer {
 
     // inject
     private DesktopCounter desktopCounter;
-    // private AnnotateDataBinder binder;
-    private GrailsViewModel viewModel;
+    private Object viewModel;
 
     public GrailsComposer() {
         //default is true
@@ -76,16 +76,16 @@ public class GrailsComposer extends GenericForwardComposer {
 
     protected void binds(Component comp) {
         if(viewModel != null) {
-            viewModel.binds(comp);
+            ((GrailsViewModel)viewModel).binds(comp);
         }
     }
 
-    public void setViewModel(GrailsViewModel vm) {
+    public void setViewModel(Object vm) {
         this.viewModel = vm;
     }
 
-    public GrailsViewModel getViewModel() {
-        return this.viewModel;
+    public Object getViewModel() {
+        return new Observable(this.viewModel, ((GrailsViewModel)this.viewModel).getBinder(), null);
     }
 
     public void setDesktopCounter(DesktopCounter dc) {

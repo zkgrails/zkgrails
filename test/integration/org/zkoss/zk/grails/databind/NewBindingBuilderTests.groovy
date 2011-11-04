@@ -23,7 +23,7 @@ class NewBindingBuilderTests extends GroovyTestCase {
         def comp = new Window()
         def nbb = new NewBindingBuilder(userComposer.viewModel, binder, comp)
         assert nbb.root == comp
-        assert binder.getBean("userViewModel") == userComposer.viewModel
+        assert binder.getBean("userViewModel") == userComposer.viewModel.object
         assert binder.containsBean("user")
         assert binder.containsBean("fullname")
         assert binder.containsBean("nameIsLowerCase")
@@ -44,7 +44,7 @@ class NewBindingBuilderTests extends GroovyTestCase {
         assert wnd.getFellowIfAny("txtLastName") == txtLastName
         assert wnd.getFellowIfAny("txtFullName") == txtFullName
 
-        GrailsViewModel viewModel = userComposer.viewModel
+        GrailsViewModel viewModel = userComposer.viewModel.object
         viewModel.binds(wnd)
 
         NewDataBinder binder = viewModel.getBinder()
@@ -70,7 +70,7 @@ class NewBindingBuilderTests extends GroovyTestCase {
         def comp = new Window()
         def nbb = new NewBindingBuilder(userComposer.viewModel, binder, comp)
         assert nbb.root == comp
-        assert binder.getBean("userViewModel") == userComposer.viewModel
+        assert binder.getBean("userViewModel") == userComposer.viewModel.object
         assert !binder.containsBean("class")
         assert !binder.containsBean("metaClass")
         assert !binder.containsBean("id")

@@ -24,7 +24,25 @@ class Observable {
     // set
     def propertyMissing(String name, value) {
         object."$name" = value
-        binder.fireModelChanged(object, rootExpr + "." + name, value)
+        if(rootExpr) {
+            binder.fireModelChanged(object, rootExpr + "." + name, value)
+        } else {
+            binder.fireModelChanged(object, name, value)
+        }
+
+    }
+
+    @Override
+    boolean equals(Object obj) {
+        if(obj instanceof Observable)
+            return object.equals(obj.object)
+        else
+            return object.equals(obj)
+    }
+
+    @Override
+    int hashCode() {
+        return object.hashCode()
     }
 
 }

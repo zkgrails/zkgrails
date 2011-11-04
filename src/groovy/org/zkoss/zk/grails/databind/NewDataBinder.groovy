@@ -37,7 +37,10 @@ class NewDataBinder {
     //
     def bindBean(id, bean) {
         // TODO support collection
-        beanMap[id] = new Observable(bean, this, id)
+        if(bean instanceof Observable)
+            beanMap[id] = new Observable(bean.object, this, id)
+        else
+            beanMap[id] = new Observable(bean, this, id)
     }
 
     //
@@ -83,6 +86,7 @@ class NewDataBinder {
     }
 
     def eval(String expression) {
+        if(!expression.contains('.')) expression = viewModel.id + '.' + expression
         String[] expr = expression.split(/\./)
         def bean = beanMap[expr[0]]
         if (expr.size() == 1) {
@@ -100,6 +104,7 @@ class NewDataBinder {
     }
 
     void set(String expression, newValue) {
+        if(!expression.contains('.')) expression = viewModel.id + '.' + expression
         // println "set expression: ${expression}"
         String[] expr = expression.split(/\./)
         def bean = beanMap[expr[0]]
