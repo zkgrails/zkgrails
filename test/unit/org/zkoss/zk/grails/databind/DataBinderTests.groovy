@@ -1,16 +1,16 @@
 package org.zkoss.zk.grails.databind
 
-class NewDataBinderTests extends GroovyTestCase {
+class DataBinderTests extends GroovyTestCase {
 
     def testBindBean() {
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
         def obj = [test:"test"]
         binder.bindBean("obj", obj)
         assert binder.getBean("obj") == [test:"test"]
     }
 
     def testAddBinding() {
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
         def comp = new MockComponent()
         def c = new MockTypeConverter()
         binder.addBinding(comp, "value", "user.name", c)
@@ -29,7 +29,7 @@ class NewDataBinderTests extends GroovyTestCase {
                 String name
             }
         ''').newInstance()
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
         user.name = "test"
         binder.bindBean("user", user)
         assert binder.eval("user.name") == "test"
@@ -44,7 +44,7 @@ class NewDataBinderTests extends GroovyTestCase {
         ''').newInstance()
         user.name = "test"
 
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
 
         binder.bindBean("user", user)
         binder.set("user.name", "new test")
@@ -52,7 +52,7 @@ class NewDataBinderTests extends GroovyTestCase {
     }
 
     def testFireViewChanged() {
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
         def comp = new MockComponent()
         def c = new MockTypeConverter(value:"expected value")
         binder.addBinding(comp, "value", "user.name", c)

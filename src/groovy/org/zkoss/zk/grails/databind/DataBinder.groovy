@@ -18,7 +18,7 @@ import org.zkoss.zk.grails.GrailsViewModel
 //      this explains by event firing
 //
 
-class NewDataBinder {
+class DataBinder {
 
     static final String ZKGRAILS_BINDING_CONTEXT = "zk.grails.binding.context"
     def beanMap = [:]
@@ -27,7 +27,7 @@ class NewDataBinder {
     private GrailsViewModel viewModel
     def validate = true
 
-    NewDataBinder(viewModel) {
+    DataBinder(viewModel) {
         this.viewModel = viewModel
     }
 

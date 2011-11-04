@@ -4,13 +4,13 @@ import java.lang.reflect.Field
 import org.zkoss.zk.grails.GrailsViewModel
 import org.zkoss.zk.ui.Component
 
-class NewBindingBuilder {
+class BindingBuilder {
 
     GrailsViewModel viewModel
-    NewDataBinder binder
+    DataBinder binder
     Component root
 
-    NewBindingBuilder(viewModel, binder, root) {
+    BindingBuilder(viewModel, binder, root) {
         if(viewModel instanceof Observable) {
             this.viewModel = viewModel.object
         } else {

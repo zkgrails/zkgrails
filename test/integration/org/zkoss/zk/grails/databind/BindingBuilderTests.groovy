@@ -5,7 +5,7 @@ import org.zkoss.zul.Window
 import org.zkoss.zul.Textbox
 import org.zkoss.zk.grails.GrailsViewModel
 
-class NewBindingBuilderTests extends GroovyTestCase {
+class BindingBuilderTests extends GroovyTestCase {
 
     GrailsApplication grailsApplication
 
@@ -19,9 +19,9 @@ class NewBindingBuilderTests extends GroovyTestCase {
     void testInstantiateNewBindingBuilder() {
         def appCtx = grailsApplication.getMainContext()
         def userComposer = appCtx.getBean("zk.userComposer")
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
         def comp = new Window()
-        def nbb = new NewBindingBuilder(userComposer.viewModel, binder, comp)
+        def nbb = new BindingBuilder(userComposer.viewModel, binder, comp)
         assert nbb.root == comp
         assert binder.getBean("userViewModel") == userComposer.viewModel.object
         assert binder.containsBean("user")
@@ -47,7 +47,7 @@ class NewBindingBuilderTests extends GroovyTestCase {
         GrailsViewModel viewModel = userComposer.viewModel.object
         viewModel.binds(wnd)
 
-        NewDataBinder binder = viewModel.getBinder()
+        DataBinder binder = viewModel.getBinder()
         assert binder.containsComponent(txtName)
         assert binder.containsComponent(txtLastName)
         assert binder.containsComponent(txtFullName)
@@ -66,9 +66,9 @@ class NewBindingBuilderTests extends GroovyTestCase {
     def testBindBeansNotContainExcludedBeans() {
         def appCtx = grailsApplication.getMainContext()
         def userComposer = appCtx.getBean("zk.userComposer")
-        def binder = new NewDataBinder()
+        def binder = new DataBinder()
         def comp = new Window()
-        def nbb = new NewBindingBuilder(userComposer.viewModel, binder, comp)
+        def nbb = new BindingBuilder(userComposer.viewModel, binder, comp)
         assert nbb.root == comp
         assert binder.getBean("userViewModel") == userComposer.viewModel.object
         assert !binder.containsBean("class")

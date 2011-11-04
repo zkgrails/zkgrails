@@ -2,7 +2,6 @@ package org.zkoss.zk.grails.databind
 
 import org.zkoss.zkplus.databind.TypeConverter
 import org.zkoss.zk.ui.Component
-import org.zkoss.zk.ui.Executions
 
 @Singleton
 class ViewModelTypeConverter implements TypeConverter {
@@ -20,7 +19,7 @@ class ViewModelTypeConverter implements TypeConverter {
     }
 
     Object coerceToBean(Object val, Component comp) {
-        def context = comp.getAttribute(NewDataBinder.ZKGRAILS_BINDING_CONTEXT)
+        def context = comp.getAttribute(DataBinder.ZKGRAILS_BINDING_CONTEXT)
         def binder = context['binder']
         def viewModel = context['viewModel']
         def expr = context['expr']

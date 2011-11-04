@@ -3,7 +3,7 @@ package org.zkoss.zk.grails.databind
 class Observable {
 
     def object
-    private NewDataBinder binder
+    private DataBinder binder
     private rootExpr
 
     Observable(object, binder, rootExpr) {
