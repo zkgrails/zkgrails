@@ -74,6 +74,12 @@ public class GrailsComposer extends GenericForwardComposer {
         }
     }
 
+    protected void binds(Component comp) {
+        if(viewModel != null) {
+            viewModel.binds(comp);
+        }
+    }
+
     public void setViewModel(GrailsViewModel vm) {
         this.viewModel = vm;
     }
@@ -204,7 +210,7 @@ public class GrailsComposer extends GenericForwardComposer {
      * part of groovy's dynamic methods, e.g. metaClass.invokeMethod works for event methods. Without this the default java code
      * don't call the overriden invokeMethod</p>
      *
-     * @param event
+     * @param event Event object
      * @throws Exception
      */
     @Override
@@ -251,11 +257,11 @@ public class GrailsComposer extends GenericForwardComposer {
             Object scaffold =
                     GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
             if (scaffold != null) {
-                GrailsApplication app = (GrailsApplication) ctx.getBean(
+                GrailsApplication app = ctx.getBean(
                         GrailsApplication.APPLICATION_ID,
                         GrailsApplication.class);
 
-                ScaffoldingTemplate template = (ScaffoldingTemplate) ctx.getBean(
+                ScaffoldingTemplate template = ctx.getBean(
                         "zkgrailsScaffoldingTemplate",
                         ScaffoldingTemplate.class);
 
@@ -274,10 +280,10 @@ public class GrailsComposer extends GenericForwardComposer {
                         //
                         GrailsClass domainClass = app.getArtefact("Domain", name);
                         Class<?> klass = domainClass.getClazz();
-                        template.initComponents(klass, (Component) comp, app);
+                        template.initComponents(klass, comp, app);
                     }
                 } else {
-                    template.initComponents((Class<?>) scaffold, (Component) comp, app);
+                    template.initComponents((Class<?>) scaffold, comp, app);
                 }
             }
         } catch (BeansException e) { /* do nothing */}
@@ -288,6 +294,7 @@ public class GrailsComposer extends GenericForwardComposer {
      * 1st look at variable skipZscriptWiring on composer
      * 2nd look at global config skipZscriptWiring on Config.
      * If none specified default to false (don't skip wiring zscript variables) maintaining backward compatibility
+     * @return the check of ZScript wiring
      */
     private boolean shallSkipZscriptWiring() {
         boolean shallSkipZscriptWiring;

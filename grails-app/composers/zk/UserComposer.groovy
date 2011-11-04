@@ -14,7 +14,7 @@ class UserComposer extends GrailsComposer {
             button(label:"B3")
         }
 
-        viewModel?.binds wnd
+        binds wnd
     }
 
     @Listen('#buttonHolder > button.onClick')

@@ -16,7 +16,7 @@ class HangmanComposer extends GrailsComposer {
             buttonRow1.append { button(label: ch2, width: "28px") }
         }
 
-        viewModel?.binds wnd
+        binds wnd
     }
 
     @Listen(['#buttonRow1 > button.onClick','#buttonRow1 > button.onClick'])

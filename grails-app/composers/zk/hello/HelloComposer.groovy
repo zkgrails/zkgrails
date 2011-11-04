@@ -8,7 +8,7 @@ class HelloComposer extends GrailsComposer {
     def lblMessage
 
     def afterCompose = { wnd ->
-        viewModel?.binds wnd
+        binds wnd
     }
 
     @Listen('#btnHello.onClick') showHello() {
