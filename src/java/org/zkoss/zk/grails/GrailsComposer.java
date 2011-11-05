@@ -53,6 +53,11 @@ public class GrailsComposer extends GenericForwardComposer {
     // inject
     private DesktopCounter desktopCounter;
     private Object viewModel;
+    // component holder for Selector
+    private Component root;
+
+    public Component getRoot() { return root; }
+    public void setRoot(Component root) { this.root = root; }
 
     public GrailsComposer() {
         //default is true
@@ -153,6 +158,7 @@ public class GrailsComposer extends GenericForwardComposer {
     @Override
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+        this.root = comp;
         injectComet();
 
         handleAfterComposeClosure(comp);
@@ -309,9 +315,12 @@ public class GrailsComposer extends GenericForwardComposer {
     }
 
     @SuppressWarnings({"unchecked"})
-    public Components select(Object[] query) {
-        Iterable<Component> roots = (Iterable<Component>)page.getRoots();
-        return Selector.select((String)query[0], roots);
+    public Components select(String query) {
+        return Selector.select(query, root);
+    }
+
+    public Components select(String query, Iterable<Component> roots) {
+        return Selector.select(query, roots);
     }
 
 }

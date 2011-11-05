@@ -182,7 +182,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         //
         // e.g. ["*.zul", "/zkau/*"]
         //
-        def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
+        // def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
 
         //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
@@ -258,7 +258,10 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
         GrailsComposer.metaClass.methodMissing = { String name, args ->
             if(name=='$') {
-                return delegate.select(args)
+                if(args.size() == 1)
+                    return delegate.select(args[0])
+                else if(args.size() == 2)
+                    return delegate.select(args[0], args[1])
             }
             throw new MissingMethodException(name, delegate.class, args)
         }
