@@ -181,8 +181,9 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
         //
         // e.g. ["*.zul", "/zkau/*"]
+        // filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
+        // Already removed into other sub-plugin
         //
-        // def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
 
         //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
