@@ -26,7 +26,9 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.zkoss.util.Pair;
+import org.zkoss.zk.grails.databind.Attr;
 import org.zkoss.zk.grails.databind.Observable;
+import org.zkoss.zk.grails.select.ComponentUtil;
 import org.zkoss.zk.grails.select.Components;
 import org.zkoss.zk.grails.select.Selector;
 import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
@@ -41,6 +43,7 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -180,6 +183,7 @@ public class GrailsComposer extends GenericForwardComposer {
                 String[] values = h.value();
                 for (String v : values) {
                     int p = v.lastIndexOf(".");
+                    // TODO throw a proper exception when String is not in a correct format
                     String pattern = v.substring(0, p);
                     String eventName = v.substring(p + 1);
                     Components components = Selector.select(pattern, comp);
@@ -231,8 +235,7 @@ public class GrailsComposer extends GenericForwardComposer {
                 } else if (event instanceof ForwardEvent) { //ForwardEvent
                     final Class<?> paramcls = method.getParameterTypes()[0];
                     //paramcls is ForwardEvent || Event
-                    if (ForwardEvent.class.isAssignableFrom(paramcls)
-                            || Event.class.equals(paramcls)) {
+                    if (ForwardEvent.class.isAssignableFrom(paramcls) || Event.class.equals(paramcls)) {
                         InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
                     } else {
                         do {
@@ -241,7 +244,25 @@ public class GrailsComposer extends GenericForwardComposer {
                         InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
                     }
                 } else {
-                    InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
+                    Annotation[][] anns = method.getParameterAnnotations();
+                    // one parameter, and annotation-less
+                    if(anns.length == 1 && anns[0].length == 0) {
+                        InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
+                    } else {
+                        Object[] params = new Object[anns.length];
+                        int i = 0;
+                        for(Annotation[] paramAnno: anns) {
+                            for(Annotation a: paramAnno) {
+                                if(a instanceof Attr) {
+                                    String attrName = ((Attr) a).value();
+                                    params[i] = ComponentUtil.attr(event.getTarget(), attrName);
+                                    break;
+                                }
+                            }
+                            i++;
+                        }
+                        InvokerHelper.invokeMethod(controller, method.getName(), params);
+                    }
                 }
             }
         }

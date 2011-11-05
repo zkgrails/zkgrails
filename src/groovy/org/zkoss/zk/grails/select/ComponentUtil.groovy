@@ -13,6 +13,7 @@ class ComponentUtil {
         return false
     }
 
+    // todo change to Object
     static String attr(Component comp, String key) {
         return comp."${key}".toString()
     }
