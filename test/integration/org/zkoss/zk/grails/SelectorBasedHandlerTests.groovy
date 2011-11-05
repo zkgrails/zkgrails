@@ -28,7 +28,7 @@ class SelectorBasedHandlerTests extends GrailsUnitTestCase {
         hangmanComposer.wireSelectorBasedHandler(wnd)
 
         def pair1 = new Pair(button1,"onClick")
-        Method[] methods = hangmanComposer.selectorBasedHandler.get(pair1)
+        def methods = hangmanComposer.getSelectorBasedHandler(pair1)
         assert methods[0].name == "guess"
     }
 

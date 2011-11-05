@@ -167,7 +167,10 @@ public class GrailsComposer extends GenericForwardComposer {
         wireSelectorBasedHandler(comp);
     }
 
-    public Map<Pair, List<Method>> selectorBasedHandler = new HashMap<Pair, List<Method>>();
+    private Map<Pair, List<Method>> selectorBasedHandler = new HashMap<Pair, List<Method>>();
+    public List<Method> getSelectorBasedHandler(Pair pair) {
+        return selectorBasedHandler.get(pair);
+    }
 
     public void wireSelectorBasedHandler(Component comp) {
         Method[] methods = this.getClass().getDeclaredMethods();
