@@ -11,7 +11,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "2.0.M2"
+    def version = "2.0.0.M2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
@@ -68,12 +68,13 @@ class ZkGrailsPlugin {
         "test/**"
     ]
 
-    def author = "chanwit"
+    def author = "Chanwit Kaewkasi"
     def authorEmail = "chanwit@gmail.com"
     def title = "ZKGrails: ZK plugin for Grails"
-    def description = '''\\
-Originated from Flyisland ZK Grails Plugin,
-this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails applications.
+    def description = '''
+Originated from Flyisland\'s ZK Grails Plugin,
+ZKGrails adds and enhances the ZK\'s RIA development capabilities
+and seamlessly integrates it with Grails\' infrastructures.
 '''
 
     // URL to the plugin's documentation
