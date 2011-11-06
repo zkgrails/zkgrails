@@ -1,0 +1,29 @@
+To create the Hello World example, run the @create-zul@ command.
+
+{code}
+grails> create-zul hello
+{code}
+
+This will create a ZUL file and its composer. The new ZUL file, namely hello.zul, will be put in the web-app directory. The composer namely @helloworld.HelloComposer@ in the @grails-app/composers@ directory.
+
+{code:java}
+package helloworld
+
+class HelloComposer extends GrailsComposer {
+
+    def afterCompose = {
+    }
+
+    def world() {
+        alert('Hello World')
+    }
+
+}
+{code}
+
+{code}
+grails> run-app
+{code}
+
+Point URL to @http://localhost:8080/helloworld/hello#!world@
+

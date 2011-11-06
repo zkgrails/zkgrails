@@ -72,9 +72,9 @@ class ZkGrailsPlugin {
     def authorEmail = "chanwit@gmail.com"
     def title = "ZKGrails: ZK plugin for Grails"
     def description = '''
-Originated from Flyisland\'s ZK Grails Plugin,
-ZKGrails adds and enhances the ZK\'s RIA development capabilities
-and seamlessly integrates it with Grails\' infrastructures.
+Originated from Flyisland\'s ZK Plugin,
+ZKGrails adds and enhances the ZK\'s RIA capabilities
+and seamlessly integrates them with Grails\' infrastructures.
 '''
 
     // URL to the plugin's documentation
