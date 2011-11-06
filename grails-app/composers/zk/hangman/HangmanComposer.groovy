@@ -22,13 +22,15 @@ class HangmanComposer extends GrailsComposer {
             }
         }
 
-        // binds wnd
+        viewModel.hangman = new Hangman()
+        viewModel.hangman.init(['ABC','DEF','GHI'])
+
+        binds wnd
     }
 
     @Listen(['#buttonRow1 > button.onClick','#buttonRow2 > button.onClick'])
     def guess(@Attr('label') ch) {
-        alert(ch)
-        viewModel.hangman.guess(ch)
+        viewModel.hangman.guess(ch[0] as char)
     }
 
     @Listen('#btnNewGame.onClick') newGame() {

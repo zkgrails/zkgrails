@@ -10,7 +10,7 @@ class HangmanViewModel extends GrailsViewModel {
     static binding = {
         lblCount    value:"count", style:"count"
         imgStep     src:"step"
-        lblAnswer   value:"hangman.revealedWord"
+        lblAnswer   value:"revealedWord"
     }
 
     @DependsOn(['hangman.win','hangman.gameOver','hangman.wrong'])
@@ -25,5 +25,15 @@ class HangmanViewModel extends GrailsViewModel {
 
     @DependsOn('hangman.wrong')
     def step = { "images/hangman/step${hangman.wrong}.gif" }
+
+    @DependsOn('hangman.wrong')
+    def revealedWord = {
+        def r=''
+        hangman.buffer.each {
+          r += "${it} "
+        }
+        return r
+    }
+
 
 }

@@ -9,9 +9,9 @@ class Hangman {
     Integer correct = 0
     Integer wrong = 0
 
-    def init(String[] words) {
+    def init(words) {
         word = words[new Random().nextInt(3)]
-        buffer = new char[word.length]
+        buffer = new char[word.size()]
         word.eachWithIndex {obj, i ->
           this.buffer[i] = '_'
         }

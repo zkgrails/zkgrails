@@ -78,11 +78,19 @@ class DataBinder {
                 def result = converter.coerceToUi(newValue, comp)
                 // comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
                 if(result != TypeConverter.IGNORE)
-                    comp."${attr}" = result
+                    setComp(comp, attr, result)
+
             } else {
-                comp."${attr}" = value
+                setComp(comp, attr, value)
             }
         }
+    }
+
+    def setComp(comp, attr, value) {
+        if(value instanceof Map && value.containsKey(attr))
+            comp."${attr}" = value[attr]
+        else
+            comp."${attr}" = value
     }
 
     def eval(String expression) {
