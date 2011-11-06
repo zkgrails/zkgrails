@@ -27,9 +27,4 @@ import com.opensymphony.module.sitemesh.factory.DefaultFactory;
  */
 public class ZKGrailsPageFilter12x extends ZKGrailsPageFilter {
 
-    @Override
-    protected Factory getSiteMeshFactory(Config config) {
-        return new DefaultFactory(config);
-    }
-
 }

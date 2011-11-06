@@ -5,6 +5,7 @@ class UrlMappings {
 			 // apply constraints here
 		  }
 	  }
+      "/hello"(view:"/hello.zul")
       "/"(view:"/index")
 	  "500"(view:'/error')
 	}

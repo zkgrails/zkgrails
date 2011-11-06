@@ -194,6 +194,7 @@ and seamlessly integrates them with Grails\' infrastructures.
 
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name'.text() == 'sitemesh' }
+        def urlMappingFilter = xml.filter.find { it.'filter-name'.text() == 'urlMapping' }
 
         def grailsVersion = GrailsUtil.grailsVersion
 
@@ -202,12 +203,18 @@ and seamlessly integrates them with Grails\' infrastructures.
         if (grailsVersion.startsWith("1.2") || grailsVersion.startsWith("1.1")) {
             pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter12x"
         }
+        def urlMappingFilterClass = "org.zkoss.zk.grails.web.ZULUrlMappingsFilter"
+
         if(grailsVersion.startsWith("2.0")) {
             pageFilter.'filter-class'.replaceNode {
                 'filter-class'(pageFilterClass)
             }
+            urlMappingFilter.'filter-class'.replaceNode {
+                'filter-class'(urlMappingFilterClass)
+            }
         } else {
             pageFilter.'filter-class'.replaceBody(pageFilterClass)
+            urlMappingFilter.'filter-class'.replaceBody(urlMappingFilterClass)
         }
 
         def listenerElements = xml.'listener'[0]
