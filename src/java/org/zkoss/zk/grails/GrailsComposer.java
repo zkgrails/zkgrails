@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package org.zkoss.zk.grails;
 
+import com.springsource.loaded.ri.Invoker;
 import groovy.lang.Closure;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
@@ -35,8 +36,7 @@ import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Desktop;
 import org.zkoss.zk.ui.Page;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.ForwardEvent;
+import org.zkoss.zk.ui.event.*;
 import org.zkoss.zk.ui.sys.ComponentsCtrl;
 import org.zkoss.zk.ui.util.GenericAutowireComposer;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
@@ -163,6 +163,18 @@ public class GrailsComposer extends GenericForwardComposer {
         super.doAfterCompose(comp);
         this.root = comp;
         injectComet();
+
+        comp.addEventListener("onBookmarkChange", new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event event) throws Exception {
+                BookmarkEvent be = (BookmarkEvent)event;
+                String hashtag = be.getBookmark();
+                if(hashtag.startsWith("!")) {
+                    hashtag = hashtag.substring(1);
+                }
+                // TODO parse to be inputs
+                InvokerHelper.invokeMethod(GrailsComposer.this, hashtag, new Object[]{});
+            }
+        });
 
         handleAfterComposeClosure(comp);
         handleScaffold(comp);

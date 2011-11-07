@@ -8,6 +8,10 @@ class HelloComposer extends GrailsComposer {
         binds wnd
     }
 
+    def world() {
+        alert("Hello World")
+    }
+
     @Listen('#btnHello.onClick') showHello() {
         viewModel.message = "Hello World"
     }
