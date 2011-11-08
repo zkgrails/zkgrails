@@ -1,0 +1,30 @@
+A Composer in ZKGrails is a [page-scoped] Spring Bean. Normally ZKGrails enforces the page-centric MVC pattern and Composers act the role of C in MVC.
+
+However, ZKGrails 2 supports the Model-View-ViewModel (MVVM) pattern and Composers are considered a part of the View in this pattern.
+
+A Composer can be created manually by putting a class with the suffix Composer into the @grails-app/composers@ directory. But ZKGrails provides a script, @create-composer@, to automatically creating it. For example,
+
+{code}
+grails> create-composer index
+{code}
+
+will create 1. @grails-app/composers/IndexComposer.groovy@ and 2. its integration tests under the @test/integration@ directory.
+
+Assuming that we create the IndexComposer under the helloworld application, so the IndexComposer.groovy will be like this:
+
+{code}
+package helloworld
+
+import org.zkoss.zk.grails.*
+
+class IndexComposer extends GrailsComposer {
+
+    def afterCompose = { wnd ->
+    }
+    
+    // handle #index
+    def index() {
+    }
+
+}
+{code}
