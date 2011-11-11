@@ -211,6 +211,7 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                         }
                     } else if(viewName.endsWith(ZUL_SUFFIX)) {
                         RequestDispatcher dispatcher = request.getRequestDispatcher(viewName);
+                        /*
                         HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request) {
                             @Override
                             public String getHeader(String s) {
@@ -232,7 +233,8 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                                 return Collections.enumeration(list);
                             }
                         };
-                        dispatcher.forward(wrapper, response);
+                        */
+                        dispatcher.forward(request, response);
                     } else {
                         if (!renderViewForUrlMappingInfo(request, response, info, viewName)) {
                             dispatched = false;

@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.zkoss.util.resource.Locator;
+import org.zkoss.web.servlet.Servlets;
 import org.zkoss.zk.ui.WebApp;
 import org.zkoss.zk.ui.metainfo.PageDefinition;
 import org.zkoss.zk.ui.metainfo.PageDefinitions;
@@ -54,7 +55,9 @@ public class CustomContentLoader extends ResourceLoader {
             m = c.getMethod("createTemplate", org.springframework.core.io.Resource.class, boolean.class);
         if(m != null)
             return (Template)m.invoke(gsp, ba, false);
-        } catch(Throwable e){}
+        } catch(Throwable e){
+            e.printStackTrace();
+        }
 
         //
         // Grails 1.2.x
@@ -70,18 +73,13 @@ public class CustomContentLoader extends ResourceLoader {
         final Map config = grailsApplication.getConfig().flatten();
 
         Boolean disable = (Boolean) config.get(CONFIG_ZKGRAILS_TAGLIB_DISABLE);
+        final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
+
         if(disable != null) {
             if(disable) {
-                final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
                 return new Parser(_wapp, locator).parse(file, path);
             }
         }
-
-        Locator locator;
-        if(extra !=null)
-            locator = (Locator)extra;
-        else
-            locator = PageDefinitions.getLocator(_wapp, path);
 
         GroovyPagesTemplateEngine gsp = (GroovyPagesTemplateEngine)_ctx.getBean("groovyPagesTemplateEngine");
 
@@ -96,7 +94,8 @@ public class CustomContentLoader extends ResourceLoader {
         bufferStr = bufferStr.replaceAll("@\\{", "\\$\\{'@'\\}\\{");
 
         // Issue 161
-        Template template = createTemplate(gsp, new ByteArrayResource(bufferStr.getBytes(encoding)));
+        // Issue 220
+        Template template = gsp.createTemplate(new ByteArrayResource(bufferStr.getBytes(encoding)), false);
 
         //
         // Issue 113 is between here
@@ -111,14 +110,13 @@ public class CustomContentLoader extends ResourceLoader {
 
         // checked
         StringReader reader = new StringReader(zulSrc);
-        PageDefinition pgdef = new Parser(_wapp, locator).parse(reader, null);
+        PageDefinition pgdef = new Parser(_wapp, locator).parse(reader, Servlets.getExtension(path));
         pgdef.setRequestPath(path);
         return pgdef;
     }
 
     protected Object parse(String path, URL url, Object extra) throws Exception {
-        final Locator locator =
-            extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
+        final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);
         return new Parser(_wapp, locator).parse(url, path);
     }
 

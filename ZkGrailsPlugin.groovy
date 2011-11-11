@@ -236,6 +236,10 @@ and seamlessly integrates them with Grails\' infrastructures.
                     'param-name' ("update-uri")
                     'param-value' ("/zkau")
                 }
+                'init-param' {
+                    'param-name' ("compress")
+                    'param-value' ("false")
+                }
                 'load-on-startup' (0)
             }
         }

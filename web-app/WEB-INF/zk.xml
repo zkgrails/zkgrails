@@ -27,5 +27,5 @@
     <library-property>
         <name>org.zkoss.zk.ui.metainfo.page.Loader.class</name>
         <value>org.zkoss.web.util.resource.CustomContentLoader</value>
-    </library-property>    
+    </library-property>
 </zk>
