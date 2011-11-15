@@ -9,7 +9,7 @@ class HelloComposer extends GrailsComposer {
     }
 
     def world() {
-        alert("Hello World")
+        viewModel.message = "Hello World via Tag"
     }
 
     @Listen('#btnHello.onClick') showHello() {
