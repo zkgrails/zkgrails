@@ -13,7 +13,7 @@ class ZkGrailsPlugin {
     // the plugin version
     def version = "2.0.0.BUILD-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "1.2 > *"
+    def grailsVersion = "1.3 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
     def loadAfter = ['core', 'controllers']
@@ -114,7 +114,7 @@ and seamlessly integrates them with Grails\' infrastructures.
         application.composerClasses.each { composerClass ->
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
-                composerBeanName = composerClass.packageName + "." + composerBeanName
+                composerBeanName = "${composerClass.packageName}.${composerBeanName}"
             }
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
