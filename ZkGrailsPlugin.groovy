@@ -11,7 +11,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "2.0.0.M2"
+    def version = "2.0.0.BUILD-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.2 > *"
     // the other plugins this plugin depends on
