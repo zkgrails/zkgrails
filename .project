@@ -18,14 +18,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>grails-selenium-rc</name>
+			<name>.link_to_grails_plugins</name>
 			<type>2</type>
-			<location>D:/projects/grails-selenium-rc/src</location>
-		</link>
-		<link>
-			<name>tomcat-1.2.2-src-groovy</name>
-			<type>2</type>
-			<location>C:/Documents and Settings/1/.grails/1.2.2/projects/zkgrails/plugins/tomcat-1.2.2/src/groovy</location>
+			<locationURI>GRAILS_ROOT/2.0.0.RC1/projects/zk/plugins</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
