@@ -200,12 +200,9 @@ and seamlessly integrates them with Grails\' infrastructures.
 
         // Grails 1.3.x & Grails 2.0.x
         def pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter"
-        if (grailsVersion.startsWith("1.2") || grailsVersion.startsWith("1.1")) {
-            pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter12x"
-        }
         def urlMappingFilterClass = "org.zkoss.zk.grails.web.ZULUrlMappingsFilter"
 
-        if(grailsVersion.startsWith("2.0")) {
+        if(grailsVersion.startsWith("2")) {
             pageFilter.'filter-class'.replaceNode {
                 'filter-class'(pageFilterClass)
             }
