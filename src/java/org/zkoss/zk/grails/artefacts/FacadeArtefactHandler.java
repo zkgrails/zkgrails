@@ -34,8 +34,7 @@ public class FacadeArtefactHandler extends ArtefactHandlerAdapter {
             false);
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean isArtefactClass(Class clazz) {
+    public boolean isArtefactClass(@SuppressWarnings("rawtypes") Class clazz) {
         return super.isArtefactClass(clazz) && !DomainClassArtefactHandler.isDomainClass(clazz);
     }
 }

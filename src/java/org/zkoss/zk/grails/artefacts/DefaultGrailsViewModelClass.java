@@ -29,8 +29,7 @@ public class DefaultGrailsViewModelClass extends AbstractInjectableGrailsClass i
 
     public static final String VIEW_MODEL = "ViewModel";
 
-    @SuppressWarnings("unchecked")
-    public DefaultGrailsViewModelClass(Class clazz) {
+    public DefaultGrailsViewModelClass(@SuppressWarnings("rawtypes") Class clazz) {
         super(clazz, VIEW_MODEL);
     }
 }

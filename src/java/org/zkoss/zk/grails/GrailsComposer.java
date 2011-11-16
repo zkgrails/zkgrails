@@ -142,8 +142,7 @@ public class GrailsComposer extends GenericForwardComposer {
         return getMessage().getAt(code);
     }
 
-    @SuppressWarnings("unchecked")
-    public String message(Map map) {
+    public String message(Map<?,?> map) {
         return getMessage().call(map);
     }
 
@@ -283,7 +282,7 @@ public class GrailsComposer extends GenericForwardComposer {
         try {
             Object c = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "afterCompose");
             if (c instanceof Closure) {
-                ((Closure) c).call(comp);
+                ((Closure<?>) c).call(comp);
             }
         } catch (BeansException e) { /* do nothing */ }
     }
@@ -349,7 +348,6 @@ public class GrailsComposer extends GenericForwardComposer {
         return false;
     }
 
-    @SuppressWarnings({"unchecked"})
     public Components select(String query) {
         return Selector.select(query, root);
     }

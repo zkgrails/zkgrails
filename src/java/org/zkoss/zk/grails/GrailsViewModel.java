@@ -1,6 +1,7 @@
 package org.zkoss.zk.grails;
 
 import groovy.lang.*;
+
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.zkoss.zk.grails.databind.BindingBuilder;
 import org.zkoss.zk.grails.databind.DataBinder;
@@ -36,7 +37,7 @@ public class GrailsViewModel extends GenericEventListener {
         //        
         Object obj = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "binding");
         if(obj instanceof Closure) {
-            Closure c = ((Closure)obj);
+            Closure<?> c = ((Closure<?>)obj);
             BindingBuilder bb = new BindingBuilder(this, this.getBinder(), root);
             c.setDelegate(bb);
             c.setResolveStrategy(Closure.DELEGATE_FIRST);

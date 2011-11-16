@@ -81,7 +81,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
         this.filterConfig = fc;
         containerTweaks = new ContainerTweaks();
         Config config = new Config(fc);
-        //DefaultFactory defaultFactory = new DefaultFactory(config);
+
         Grails5535Factory defaultFactory = new Grails5535Factory(config);//TODO revert once Sitemesh bug is fixed
         fc.getServletContext().setAttribute(FACTORY_SERVLET_CONTEXT_ATTRIBUTE, defaultFactory);
         defaultFactory.refresh();
@@ -223,7 +223,7 @@ public class ZKGrailsPageFilter extends SiteMeshFilter {
      * into returned {@link com.opensymphony.module.sitemesh.Page} object. If
      * {@link com.opensymphony.module.sitemesh.Page} is not parseable, null is returned.
      */
-    private Content obtainContent(@SuppressWarnings("hiding") ContentProcessor contentProcessor, SiteMeshWebAppContext webAppContext,
+    private Content obtainContent(ContentProcessor contentProcessor, SiteMeshWebAppContext webAppContext,
                                   HttpServletRequest request, HttpServletResponse response, FilterChain chain)
                 throws IOException, ServletException {
 

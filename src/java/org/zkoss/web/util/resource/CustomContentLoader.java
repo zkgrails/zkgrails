@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Map;
 
@@ -43,34 +42,11 @@ public class CustomContentLoader extends ResourceLoader {
         );
     }
 
-    private Template createTemplate(GroovyPagesTemplateEngine gsp, ByteArrayResource ba) throws Exception {
-        // find "createTemplate"
-        Class<?> c = GroovyPagesTemplateEngine.class;
-        Method m;
-
-        //
-        // Try Grails 1.3.x first
-        //
-        try {
-            m = c.getMethod("createTemplate", org.springframework.core.io.Resource.class, boolean.class);
-        if(m != null)
-            return (Template)m.invoke(gsp, ba, false);
-        } catch(Throwable e){
-            e.printStackTrace();
-        }
-
-        //
-        // Grails 1.2.x
-        //
-        m = c.getMethod("createTemplate", org.springframework.core.io.Resource.class);
-        return (Template)m.invoke(gsp, ba);
-    }
-
     //-- super --//
     protected Object parse(String path, File file, Object extra)
     throws Exception {
         GrailsApplication grailsApplication = (GrailsApplication)_ctx.getBean("grailsApplication");
-        final Map config = grailsApplication.getConfig().flatten();
+        final Map<?, ?> config = grailsApplication.getConfig().flatten();
 
         Boolean disable = (Boolean) config.get(CONFIG_ZKGRAILS_TAGLIB_DISABLE);
         final Locator locator = extra != null ? (Locator)extra: PageDefinitions.getLocator(_wapp, path);

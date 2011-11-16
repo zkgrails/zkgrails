@@ -25,14 +25,13 @@ import java.util.*;
 
 public class ListboxModelDynamicMethods {
 
-    @SuppressWarnings("unchecked")
     public static void setModel(Listbox delegate, Object list) {
         if(list instanceof Set) {
-            ArrayList newList = new ArrayList();
-            for(Object e: (Set)list) {
+            ArrayList<Object> newList = new ArrayList<Object>();
+            for(Object e: (Set<?>)list) {
                 newList.add(e);
             }
-            list = (java.util.List)newList;
+            list = (java.util.List<?>)newList;
         }
 
         if(list instanceof java.util.List) {
@@ -41,14 +40,14 @@ public class ListboxModelDynamicMethods {
                 if(model instanceof BindingListModelList) {
                     BindingListModelList blml = (BindingListModelList)model;
                     blml.clear();
-                    blml.addAll((java.util.List)list);
+                    blml.addAll((java.util.List<?>)list);
                     return;
                 } else {
-                    delegate.setModel(new BindingListModelList((java.util.List)list, false));
+                    delegate.setModel(new BindingListModelList((java.util.List<?>)list, false));
                     return;
                 }
             } else {
-                delegate.setModel(new BindingListModelList((java.util.List)list, false));
+                delegate.setModel(new BindingListModelList((java.util.List<?>)list, false));
                 return;
             }
         }

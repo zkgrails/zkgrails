@@ -30,8 +30,7 @@ public class DefaultGrailsFacadeClass extends AbstractInjectableGrailsClass
 
     public static final String FACADE = "Facade";
 
-    @SuppressWarnings("unchecked")
-    public DefaultGrailsFacadeClass(Class clazz) {
+    public DefaultGrailsFacadeClass(@SuppressWarnings("rawtypes") Class clazz) {
         super(clazz, FACADE);
     }
 }

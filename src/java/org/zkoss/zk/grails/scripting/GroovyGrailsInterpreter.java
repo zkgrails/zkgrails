@@ -150,13 +150,12 @@ public class GroovyGrailsInterpreter extends GenericInterpreter {
      * <p>
      * Currently it only looks for closures, and argTypes are ignored.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Function getFunction(String name, Class[] argTypes) {
+    public Function getFunction(String name, @SuppressWarnings("rawtypes") Class[] argTypes) {
         final Object val = get(name);
         if (!(val instanceof Closure))
             return null;
-        return new ClosureFunction((Closure) val);
+        return new ClosureFunction((Closure<?>) val);
     }
 
     public void destroy() {
@@ -183,9 +182,9 @@ public class GroovyGrailsInterpreter extends GenericInterpreter {
     }
 
     private static class ClosureFunction implements Function {
-        private final Closure _closure;
+        private final Closure<?> _closure;
 
-        private ClosureFunction(Closure closure) {
+        private ClosureFunction(Closure<?> closure) {
             _closure = closure;
         }
 

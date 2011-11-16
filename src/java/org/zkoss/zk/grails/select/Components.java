@@ -1,10 +1,13 @@
 package org.zkoss.zk.grails.select;
 
-import org.codehaus.groovy.runtime.InvokerHelper;
-import org.zkoss.zk.grails.select.ComponentUtil;
-import org.zkoss.zk.ui.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
-import java.util.*;
+import org.zkoss.zk.ui.Component;
 
 /**
  * A list of {@link Component Components}, with methods that act on every element in the list

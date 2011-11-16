@@ -30,8 +30,7 @@ public class DefaultGrailsComposerClass extends AbstractInjectableGrailsClass
 
     public static final String COMPOSER = "Composer";
 
-    @SuppressWarnings("unchecked")
-    public DefaultGrailsComposerClass(Class clazz) {
+    public DefaultGrailsComposerClass(@SuppressWarnings("rawtypes") Class clazz) {
         super(clazz, COMPOSER);
     }
 }

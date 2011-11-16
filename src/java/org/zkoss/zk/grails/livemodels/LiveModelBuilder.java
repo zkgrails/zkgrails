@@ -26,7 +26,7 @@ public class LiveModelBuilder {
         this.map.put("sorted", b);
     }
 
-    public void domain(Class domain) {
+    public void domain(Class<?> domain) {
         this.map.put("domain", domain);
     }
 }
