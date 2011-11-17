@@ -46,8 +46,5 @@ grails.project.dependency.resolution = {
               ":svn:1.0.0.M1") {
             export = false
         }
-        test(":selenium-rc:1.0.2") {
-            export = false
-        }
     }
 }
