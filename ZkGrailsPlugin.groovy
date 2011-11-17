@@ -44,7 +44,7 @@ class ZkGrailsPlugin {
         "grails-app/conf/BuildConfig.groovy",
         "grails-app/conf/SeleniumConfig.groovy",
         "grails-app/domain/zk/**",
-        "grails-app/services/zk/**"
+        "grails-app/services/zk/**",
         "grails-app/comets/**",
         "grails-app/controllers/zk/**",
         "grails-app/composers/**",
