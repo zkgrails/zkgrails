@@ -28,6 +28,7 @@ import org.zkoss.zk.ui.metainfo.Parser;
 
 public class CustomContentLoader extends ResourceLoader {
 
+    private static final String GROOVY_PAGES_TEMPLATE_ENGINE = "groovyPagesTemplateEngine";
     private static final String UTF_8_ENCODING = "UTF-8";
     private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";
     private static final String CONFIG_ZKGRAILS_TAGLIB_DISABLE = "grails.zk.taglib.disabled";
@@ -42,9 +43,7 @@ public class CustomContentLoader extends ResourceLoader {
         );
     }
 
-    //-- super --//
-    protected Object parse(String path, File file, Object extra)
-    throws Exception {
+    protected Object parse(String path, File file, Object extra) throws Exception {
         GrailsApplication grailsApplication = (GrailsApplication)_ctx.getBean("grailsApplication");
         final Map<?, ?> config = grailsApplication.getConfig().flatten();
 
@@ -57,17 +56,18 @@ public class CustomContentLoader extends ResourceLoader {
             }
         }
 
-        GroovyPagesTemplateEngine gsp = (GroovyPagesTemplateEngine)_ctx.getBean("groovyPagesTemplateEngine");
+        GroovyPagesTemplateEngine gsp = (GroovyPagesTemplateEngine)_ctx.getBean(GROOVY_PAGES_TEMPLATE_ENGINE);
 
         byte[] buffer = new byte[(int)file.length()];
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
         bis.read(buffer);
 
         String encoding = (String)config.get(CONFIG_OPTION_GSP_ENCODING);
-        if(encoding == null) encoding = UTF_8_ENCODING;
+        if(encoding == null) {
+            encoding = UTF_8_ENCODING;
+        }
 
-        String bufferStr = new String(buffer, encoding);
-        bufferStr = bufferStr.replaceAll("@\\{", "\\$\\{'@'\\}\\{");
+        String bufferStr = new String(buffer, encoding).replaceAll("@\\{", "\\$\\{'@'\\}\\{");
 
         // Issue 161
         // Issue 220
@@ -81,11 +81,9 @@ public class CustomContentLoader extends ResourceLoader {
         StringWriter sw = new StringWriter();
         w.writeTo(new PrintWriter(sw));
 
-        // checked
         String zulSrc = sw.toString().replaceAll("\\#\\{","\\$\\{");
 
-        // checked
-        StringReader reader = new StringReader(zulSrc);
+        StringReader reader  = new StringReader(zulSrc);
         PageDefinition pgdef = new Parser(_wapp, locator).parse(reader, Servlets.getExtension(path));
         pgdef.setRequestPath(path);
         return pgdef;
