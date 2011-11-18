@@ -65,8 +65,10 @@ class ZkGrailsPlugin {
         "web-app/images/grails_*",
         "web-app/images/leftnav_*",
         "web-app/images/sp*",
-        "web-app/*.zul",
-        "test/**"
+        "web-app/**/*.zul",
+        "test/**",
+        "src/docs/**",
+        "src/java/org/zkoss/zk/grails/test/**"
     ]
 
     def author = "Chanwit Kaewkasi"
