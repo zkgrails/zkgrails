@@ -10,6 +10,7 @@ class MyComposer extends GrailsComposer {
     def afterCompose = {    }
 
     def onClick_btnStart() {
+        println "start"
         myComet.start()
     }
 

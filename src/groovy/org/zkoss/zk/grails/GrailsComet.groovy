@@ -6,8 +6,8 @@ import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 class GrailsComet {
 
     GrailsComposer grailsComposer
-    private Thread th
-    private Boolean stop = false
+    Thread th
+    Boolean stop = false
 
     public void start() {
         stop = false
