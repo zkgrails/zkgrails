@@ -28,11 +28,18 @@ grails.project.dependency.resolution = {
         def zkVersion = "5.0.9"
 
         build ("net.java.dev.inflector:inflector:0.7.0")
+        build ("com.google.code.maven-svn-wagon:maven-svn-wagon:1.4") {
+            export = false
+        }
 
         runtime ("org.zkoss.zk.grails:zk:${zkVersion}")
         runtime ("org.zkoss.zk.grails:zul:${zkVersion}")
         runtime ("org.zkoss.zk.grails:zkplus:${zkVersion}")
-        runtime ("org.zkoss.zk:zhtml:${zkVersion}")       { transitive = false }
+        runtime ("org.zkoss.zk:zhtml:${zkVersion}") {
+            excludes ("org.zkoss.zk:zk:${zkVersion}")
+            excludes ("org.zkoss.zk:zul:${zkVersion}")
+            excludes ("org.zkoss.zk:zkplus:${zkVersion}")
+        }
         runtime ("org.zkoss.common:zweb:${zkVersion}")
 
         runtime ("org.zkoss.zkforge:ckez:3.5.2.0")
