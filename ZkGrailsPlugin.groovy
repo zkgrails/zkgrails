@@ -42,6 +42,7 @@ class ZkGrailsPlugin {
     def pluginExcludes = [
         "grails-app/conf/Config.groovy",
         "grails-app/conf/SeleniumConfig.groovy",
+        "grails-app/conf/TestUrlMappings.groovy",
         "grails-app/domain/zk/**",
         "grails-app/services/zk/**",
         "grails-app/comets/**",
@@ -120,7 +121,7 @@ and seamlessly integrates them with Grails\' infrastructures.
                 bean.scope = "prototype"
                 bean.autowire = "byName"
                 def viewModelBeanName = composerClass.propertyName.replace('Composer','ViewModel')
-                if(application.viewModelClasses.any { it.propertyName == viewModelBeanName}) {
+                if(application.viewModelClasses.any { it.propertyName == viewModelBeanName }) {
                     viewModel = ref(viewModelBeanName)
                 }
             }
@@ -181,16 +182,9 @@ and seamlessly integrates them with Grails\' infrastructures.
         def supportExts = ZkConfigHelper.supportExtensions
 
         //
-        // e.g. ["*.zul", "/zkau/*"]
-        // filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
-        // Already removed into other sub-plugin
-        //
-
-        //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
         //
-        def urls = supportExts.collect{ "*." + it } + ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
-
+        def urls = supportExts.collect { "*." + it } + ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name'.text() == 'sitemesh' }
@@ -241,7 +235,7 @@ and seamlessly integrates them with Grails\' infrastructures.
             }
         }
 
-        urls.each {p ->
+        urls.each { p ->
             mappingElements + {
                 'servlet-mapping' {
                     'servlet-name'("zkLoader")
@@ -293,7 +287,7 @@ and seamlessly integrates them with Grails\' infrastructures.
         }
 
         // Simpler way to add and remove event
-        org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = {String name, args ->
+        org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = { String name, args ->
             // converts OnXxxx to onXxxx
             name.metaClass.toEventName {return substring(indexOf("On"), length()).replace("On", "on")}
 
@@ -389,7 +383,7 @@ and seamlessly integrates them with Grails\' infrastructures.
             def composerClass = application.addArtefact(ComposerArtefactHandler.TYPE, event.source)
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
-                composerBeanName = composerClass.packageName + "." + composerBeanName
+                composerBeanName = "${composerClass.packageName}.${composerBeanName}"
             }
             // composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
@@ -397,7 +391,7 @@ and seamlessly integrates them with Grails\' infrastructures.
                     bean.scope = "prototype"
                     bean.autowire = "byName"
                     def viewModelBeanName = composerClass.propertyName.replace('Composer','ViewModel')
-                    if(application.viewModelClasses.any { it.propertyName == viewModelBeanName}) {
+                    if(application.viewModelClasses.any { it.propertyName == viewModelBeanName }) {
                         viewModel = ref(viewModelBeanName)
                     }
                 }
@@ -448,8 +442,7 @@ and seamlessly integrates them with Grails\' infrastructures.
                     log.debug("Application context not found. Can't reload")
                 return
             }
-            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE,
-                                                     event.source)
+            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE, event.source)
             def cfg = GCU.getStaticPropertyValue(modelClass.clazz, "config")
             if(cfg) {
                 def lmb = new LiveModelBuilder()
@@ -473,7 +466,5 @@ and seamlessly integrates them with Grails\' infrastructures.
     }
 
     def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
     }
 }
