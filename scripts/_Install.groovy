@@ -17,7 +17,7 @@ def installedFile = "${zkPluginDir}/.installed"
 try {
     if(/*new File(installedFile).exists() ==*/ false) {
         ant.get(
-            src:"http://j.mp/aaYauK", 
+            src:"http://j.mp/aaYauK",
             dest: installedFile,
             ignoreerrors: true
         )
@@ -57,7 +57,7 @@ if(! (new File(targetFile).exists())) {
 // always overwrite theme jars
 // inti the lib directory
 //
-ant.copy(file:"${zkPluginDir}/src/templates/themes/breeze.jar",
-         todir:"${basedir}/lib/",
-         overwrite: true
-)
+// ant.copy(file:"${zkPluginDir}/src/templates/themes/breeze.jar",
+//          todir:"${basedir}/lib/",
+//          overwrite: true
+// )
