@@ -9,10 +9,6 @@
 //    ant.mkdir(dir:"${basedir}/grails-app/jobs")
 //
 
-def m = grails.util.Metadata.current
-m.setProperty('plugins.zk-hibernate','1.1.M2')
-m.persist()
-
 def installedFile = "${zkPluginDir}/.installed"
 try {
     if(/*new File(installedFile).exists() ==*/ false) {
