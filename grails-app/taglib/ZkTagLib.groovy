@@ -192,7 +192,7 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
             }
         }
         if (dir) {
-            writer << (dir.startsWith("/") ? dir : "/${dir}")
+            writer << (dir.startsWith("/") ? dir : "/static/${dir}")
         }
         def file = attrs['file']
         if (file) {
