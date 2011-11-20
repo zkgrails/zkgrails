@@ -4,6 +4,7 @@ grails.project.test.reports.dir = "target/test-reports"
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.project.dependency.resolution = {
+    def zkVersion = "5.0.9"
     // inherit Grails' default dependencies
     inherits("global") {
         // uncomment to disable ehcache
@@ -25,24 +26,18 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        def zkVersion = "5.0.9"
-
         build ("net.java.dev.inflector:inflector:0.7.0")
         build ("com.google.code.maven-svn-wagon:maven-svn-wagon:1.4") {
             export = false
         }
 
-        runtime ("org.zkoss.zk.grails:zk:${zkVersion}")
-        runtime ("org.zkoss.zk.grails:zul:${zkVersion}")
-        runtime ("org.zkoss.zk.grails:zkplus:${zkVersion}")
-        runtime ("org.zkoss.zk:zhtml:${zkVersion}") {
-            excludes ("org.zkoss.zk:zk:${zkVersion}")
-            excludes ("org.zkoss.zk:zul:${zkVersion}")
-            excludes ("org.zkoss.zk:zkplus:${zkVersion}")
-        }
-        runtime ("org.zkoss.common:zweb:${zkVersion}")
+        compile ("org.zkoss.zk.grails:zk:${zkVersion}")
+        compile ("org.zkoss.zk.grails:zul:${zkVersion}")
+        compile ("org.zkoss.zk.grails:zkplus:${zkVersion}")
+        compile ("org.zkoss.zk.grails:zhtml:${zkVersion}")
 
-        runtime ("org.zkoss.zkforge:ckez:3.5.2.0")
+        compile ("org.zkoss.common:zweb:${zkVersion}")
+        compile ("org.zkoss.zkforge:ckez:3.5.2.0")
 
         test ("com.h2database:h2:1.2.147")
     }
