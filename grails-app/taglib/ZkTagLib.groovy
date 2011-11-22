@@ -21,11 +21,12 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
 
     static namespace = "z"
 
+    GrailsApplication grailsApplication
     ApplicationContext applicationContext
     GrailsPluginManager pluginManager
 
     public void afterPropertiesSet() {
-        def config = applicationContext.getBean(GrailsApplication.APPLICATION_ID).config
+        def config = grailsApplication.config
         if (config.grails.views.enable.jsessionid instanceof Boolean) {
             useJsessionId = config.grails.views.enable.jsessionid
         }
@@ -52,29 +53,6 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         out << "</html>"
     }
 
-/*
-    def head = { attrs, b ->
-        cacheZul(attrs['zul'])
-        out << "<head>\n"
-        out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n"
-        out << "<meta http-equiv=\"Expires\" content=\"-1\" />\n"
-        out	<< b()
-        out << pageScope.model['head']
-        out << "</head>\n"
-    }
-
-    def body = { attrs, b ->
-        cacheZul(attrs['zul'])
-        out << "<body>\n"
-        out << b()
-        def autoHeight = attrs['autoHeight']
-        if(autoHeight==null || (autoHeight!=null && autoHeight=="true"))
-            out << pageScope.model['body']
-        else
-            out << pageScope.model['_body']
-        out << "</body>\n"
-    }
-*/
     def div = { attrs, b ->
         cacheZul(attrs['zul'])
         out << pageScope.model[attrs['part']]
@@ -139,66 +117,10 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         return u
     }
 
-    /**
-     * Check for "absolute" attribute and render server URL if available from Config or deducible in non-production
-     */
-    private handleAbsolute(attrs) {
-        def base = attrs.remove('base')
-        if (base) {
-            return base
-        }
-        else {
-            def abs = attrs.remove("absolute")
-            if (Boolean.valueOf(abs)) {
-                def u = makeServerURL()
-                if (u) {
-                    return u
-                } else {
-                    throwTagError("Attribute absolute='true' specified but no grails.serverURL set in Config")
-                }
-            }
-            else {
-                //
-                // return nothing because ZK will handle contextPath automatically
-                //
-                return "" // GrailsWebRequest.lookup(request).contextPath
-            }
-        }
-    }
-
-    def resource = { attrs, body ->
-        def result = resourceImpl(attrs)
-        out << result
-    }
-
-    def resourceImpl(attrs) {
-        def writer = new StringBuffer("")
-        writer << handleAbsolute(attrs)
-        def dir = attrs['dir']
-        if (attrs.plugin) {
-            def pp = pluginManager.getPluginPath(attrs.plugin)
-            writer << (pp ?: '')
-        }
-        else {
-            if (attrs.contextPath) {
-                writer << attrs.contextPath.toString()
-            }
-            else {
-                def pluginContextPath = pageScope.pluginContextPath
-                if (dir != pluginContextPath) {
-                    def pcp = pluginContextPath
-                    writer << (pcp ?: '')
-                }
-            }
-        }
-        if (dir) {
-            writer << (dir.startsWith("/") ? dir : "/static/${dir}")
-        }
-        def file = attrs['file']
-        if (file) {
-            writer << (file.startsWith("/") || dir?.endsWith('/') ? file : "/${file}")
-        }
-        return writer.toString()
+    def resource = { attrs ->
+        def r = applicationContext.getBean("org.grails.plugin.resource.ResourceTagLib")
+        def result = r.resource(attrs)
+        out << result.replaceFirst(request.contextPath, "")
     }
 
     private cacheZul(url) {
