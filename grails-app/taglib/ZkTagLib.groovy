@@ -17,20 +17,13 @@ import org.zkoss.util.Locales
 
 import org.zkoss.zk.fn.JspFns
 
-class ZkTagLib implements ApplicationContextAware, InitializingBean {
+class ZkTagLib implements ApplicationContextAware {
 
     static namespace = "z"
 
     GrailsApplication grailsApplication
     ApplicationContext applicationContext
     GrailsPluginManager pluginManager
-
-    public void afterPropertiesSet() {
-        def config = grailsApplication.config
-        if (config.grails.views.enable.jsessionid instanceof Boolean) {
-            useJsessionId = config.grails.views.enable.jsessionid
-        }
-    }
 
     def wrapper = { attrs, b ->
         def url = attrs.remove('url')
