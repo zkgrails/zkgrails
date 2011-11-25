@@ -1,4 +1,4 @@
-package org.zkoss.zk.grails.databind
+package org.zkoss.zk.grails.test
 
 import org.zkoss.zkplus.databind.TypeConverter
 import org.zkoss.zk.ui.Component

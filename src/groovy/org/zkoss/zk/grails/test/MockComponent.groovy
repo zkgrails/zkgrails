@@ -1,4 +1,4 @@
-package org.zkoss.zk.grails.databind
+package org.zkoss.zk.grails.test
 
 import org.zkoss.zk.scripting.Namespace
 import org.zkoss.zk.ui.Component

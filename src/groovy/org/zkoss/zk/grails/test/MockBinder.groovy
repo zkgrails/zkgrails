@@ -1,4 +1,4 @@
-package org.zkoss.zk.grails.databind
+package org.zkoss.zk.grails.test
 
 class MockBinder {
 

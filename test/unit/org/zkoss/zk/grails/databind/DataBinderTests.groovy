@@ -1,5 +1,8 @@
 package org.zkoss.zk.grails.databind
 
+import org.zkoss.zk.grails.test.MockComponent;
+import org.zkoss.zk.grails.test.MockTypeConverter;
+
 class DataBinderTests extends GroovyTestCase {
 
     def testBindBean() {
