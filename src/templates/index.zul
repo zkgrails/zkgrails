@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="Welcome to ZK plugin for Grails"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+    <style>
+        .content {
+            width:   60em;
+            margin:  0 auto;
+            padding: 15px;
+        }
+        .blue {
+            background: #b1cbd5;
+        }
+        .white {
+            background: #f8f8f8;
+        }
+        h2 {
+            font-weight: normal;
+            font-size:   1.25em;
+            font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        }
+    </style>
+
+    <window width="100%" height="100%">
+        <hlayout sclass="content blue">
+            <image src="${z.resource(dir:'images', file:'zkpowered_s.png')}"/>
+            <image src="${z.resource(dir:'images', file:'grails_logo.png')}"/>
+        </hlayout>
+        <hlayout sclass="content white z-valign-top">
+            <vlayout width="16em">
+                <panel title="Application Status" framable="true" width="15em" collapsible="true">
+                <panelchildren>
+                    <vlayout>
+                        <label value="App version: ${g.meta(name:'app.version')}"/>
+                        <label value="Grails version: ${g.meta(name:'app.grails.version')}"/>
+                        <label value="Groovy version: ${org.codehaus.groovy.runtime.InvokerHelper.getVersion()}"/>
+                        <label value="JVM version: ${System.getProperty('java.version')}"/>
+                        <label value="Reloading active: ${grails.util.Environment.reloadingAgentEnabled}"/>
+                        <label value="Controllers: ${grailsApplication.controllerClasses.size()}"/>
+                        <label value="Composers: ${grailsApplication.composerClasses.size()}"/>
+                        <label value="Domains: ${grailsApplication.domainClasses.size()}"/>
+                        <label value="Services: ${grailsApplication.serviceClasses.size()}"/>
+                        <label value="Tag Libraries: ${grailsApplication.tagLibClasses.size()}"/>
+                        <label value="View Models: ${grailsApplication.viewModelClasses.size()}"/>
+                    </vlayout>
+                </panelchildren>
+                </panel>
+                <panel title="Installed Plugins" framable="true" width="15em" collapsible="true" open="false">
+                <panelchildren>
+                    <vlayout>
+                        <g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
+                         <label value="${plugin.name} - ${plugin.version}"/>
+                        </g:each>
+                    </vlayout>
+                </panelchildren>
+                </panel>
+            </vlayout>
+            <vlayout width="44em">
+                <html><![CDATA[
+                    <h2>Welcome to ZK plugin for Grails</h2>
+                    <p class="text">
+                    Congratulations, you have successfully started your
+                    first ZKGrails application! At the moment this is
+                    the default page, feel free to modify it to either
+                    redirect to a composer or display whatever content
+                    you may choose. <br/>
+                    <br/>
+                    Below is a list of composers that are currently
+                    deployed in this application, click on each to execute
+                    its default action:
+                    </p>
+                    <br/>
+                    <h2>Available Composers:</h2>
+                ]]></html>
+                <vlayout>
+                    <h:ul>
+                        <g:each var="c" in="${grailsApplication.composerClasses.sort { it.fullName } }">
+                        <h:li><h:a href="${c.logicalPropertyName}">${c.fullName}</h:a></h:li>
+                        </g:each>
+                    </h:ul>
+                </vlayout>
+            </vlayout>
+        </hlayout>
+    </window>
+
+</zk>
