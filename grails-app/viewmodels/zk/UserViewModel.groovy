@@ -18,19 +18,21 @@ class UserViewModel extends GrailsViewModel {
         // validate = false; default is true
     }
 
-    @DependsOn(['user.name', 'user.lastName']) fullname = [
-        forward: { "${user.name} ${user.lastName}" },
-        reverse: {
+    @DependsOn(['user.name', 'user.lastName']) fullname = {
+        get { "${user.name} ${user.lastName}" }
+        set {
             def (name, lastName) = it.split(' ')
             user.name = name
             user.lastName = lastName
         }
-    ]
+    }
 
     @DependsOn('user.name') nameIsLowerCase = {
-        if ((user.name[0] as Character).isLowerCase())
-            "color: red"
-        else
-            "color: black"
+        get {
+            if (user.name.charAt(0).isLowerCase())
+                "color: red"
+            else
+                "color: black"
+        }
     }
 }
