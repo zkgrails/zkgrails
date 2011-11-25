@@ -13,11 +13,8 @@ class ViewModelTypeConverter implements TypeConverter {
             val.resolveStrategy = Closure.DELEGATE_ONLY
             val.call()
 
-
             def context = comp.getAttribute(DataBinder.ZKGRAILS_BINDING_CONTEXT)
             def binder = context['binder']
-            def viewModel = context['viewModel']
-            def expr = context['expr']
 
             def c = holder.getter
             c.delegate = binder
