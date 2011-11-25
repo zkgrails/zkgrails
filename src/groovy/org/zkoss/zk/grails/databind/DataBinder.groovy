@@ -74,9 +74,9 @@ class DataBinder {
             def converter  = entry.converter
             def newValue   = eval(entry.expr)
             if(converter) {
-                // comp.setAttribute(ZKGRAILS_BINDING_CONTEXT, this)
+                comp.setAttribute(ZKGRAILS_BINDING_CONTEXT, [binder: this, viewModel: this.viewModel, expr: expr])
                 def result = converter.coerceToUi(newValue, comp)
-                // comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
+                comp.removeAttribute(ZKGRAILS_BINDING_CONTEXT)
                 if(result != TypeConverter.IGNORE)
                     setComp(comp, attr, result)
 
