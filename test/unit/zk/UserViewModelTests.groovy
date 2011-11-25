@@ -1,8 +1,7 @@
 package zk
 
 import grails.test.GrailsUnitTestCase
-
-import org.zkoss.zk.grails.test.MockViewModel;
+import org.zkoss.zk.grails.test.MockViewModel
 
 class UserViewModelTests extends GrailsUnitTestCase {
 
