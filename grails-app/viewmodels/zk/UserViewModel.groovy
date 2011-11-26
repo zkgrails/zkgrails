@@ -10,7 +10,7 @@ class UserViewModel extends GrailsViewModel {
 
     // allow you to bind UI elements locally
     static binding = {
-        txtName     value: "user.name", style:"nameIsLowerCase"
+        txtName     value: "user.name", style:"colorForName"
         txtLastName value: "user.lastName"
         txtFullName value: "fullname"
         // lblError visible: "user.hasErrors()" value:"user.errors.allErrors[0]"
@@ -27,7 +27,7 @@ class UserViewModel extends GrailsViewModel {
         }
     }
 
-    @DependsOn('user.name') nameIsLowerCase = {
+    @DependsOn('user.name') colorForName = {
         get {
             if (user.name.charAt(0).isLowerCase())
                 "color: red"

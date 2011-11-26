@@ -19,7 +19,7 @@ class HangmanViewModel extends GrailsViewModel {
             if(hangman.win)
                 [value:"you win !!",  style:"color: green"]
             else if(hangman.gameOver)
-                [value:"you win !!",  style:"color: red"]
+                [value:"you lose !!", style:"color: red"  ]
             else
                 [value:hangman.wrong, style:"color: black"]
         }
@@ -37,7 +37,7 @@ class HangmanViewModel extends GrailsViewModel {
         get {
             def r=''
             hangman.buffer.each {
-              r += "${it} "
+                r += "${it} "
             }
             return r
         }

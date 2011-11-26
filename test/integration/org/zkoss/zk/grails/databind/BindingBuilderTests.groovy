@@ -26,7 +26,7 @@ class BindingBuilderTests extends GroovyTestCase {
         assert binder.getBean("userViewModel") == userComposer.viewModel.object
         assert binder.containsBean("user")
         assert binder.containsBean("fullname")
-        assert binder.containsBean("nameIsLowerCase")
+        assert binder.containsBean("colorForName")
         assert binder.containsBean("userList")
     }
 

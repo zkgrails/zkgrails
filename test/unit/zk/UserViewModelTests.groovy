@@ -11,11 +11,11 @@ class UserViewModelTests extends GrailsUnitTestCase {
         viewModel.user = User.findByName('Chanwit')
 
         assert viewModel.fullname == "Chanwit Kaewkasi"
-        assert viewModel.nameIsLowerCase == 'color: black'
+        assert viewModel.colorForName == 'color: black'
 
         viewModel.fullname = "chanwit kaewkasi"
         assert viewModel.fullname == "chanwit kaewkasi"
-        assert viewModel.nameIsLowerCase == 'color: red'
+        assert viewModel.colorForName == 'color: red'
     }
 
 }
