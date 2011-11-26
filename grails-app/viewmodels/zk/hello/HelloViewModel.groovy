@@ -1,8 +1,6 @@
 package zk.hello
 
-import org.zkoss.zk.grails.GrailsViewModel
-
-class HelloViewModel extends GrailsViewModel {
+class HelloViewModel {
 
     static binding = {
         lblMessage value:"message"

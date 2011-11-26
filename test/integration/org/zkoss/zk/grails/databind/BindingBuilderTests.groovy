@@ -4,6 +4,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.zkoss.zul.Window
 import org.zkoss.zul.Textbox
 import org.zkoss.zk.grails.GrailsViewModel
+import zk.User
 
 class BindingBuilderTests extends GroovyTestCase {
 
@@ -45,6 +46,7 @@ class BindingBuilderTests extends GroovyTestCase {
         assert wnd.getFellowIfAny("txtFullName") == txtFullName
 
         GrailsViewModel viewModel = userComposer.viewModel.object
+        viewModel.user = new User(name:'test', lastName:'last')
         viewModel.binds(wnd)
 
         DataBinder binder = viewModel.getBinder()
