@@ -48,5 +48,8 @@ grails.project.dependency.resolution = {
               ":svn:1.0.0.M1") {
             export = false
         }
+        compile(":resources:1.1.1") {
+            export = false
+        }
     }
 }

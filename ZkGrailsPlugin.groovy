@@ -4,6 +4,7 @@ import grails.util.GrailsUtil
 import org.zkoss.zk.grails.livemodels.LiveModelBuilder
 import org.zkoss.zk.grails.livemodels.SortingPagingListModel
 import org.zkoss.zk.grails.select.Components
+import org.zkoss.zk.grails.web.ComposerMapping;
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.grails.*
 import org.zkoss.zk.grails.artefacts.*
@@ -169,6 +170,13 @@ and seamlessly integrates them with Grails\' infrastructures.
                 }
             }
         }
+
+
+        zkgrailsComposerMapping(ComposerMapping.class) { bean ->
+            bean.scope = "singleton"
+            bean.autowire = "byName"
+        }
+
 
         // composer resolver which directly resolves Spring Beans
         ComposerResolver.init()

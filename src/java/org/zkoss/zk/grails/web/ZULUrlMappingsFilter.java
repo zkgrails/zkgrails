@@ -90,6 +90,7 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
     private StackTraceFilterer filterer;
 
     private UrlConverter urlConverter;
+    private ComposerMapping composerMapping;
 
     @Override
     protected void initFilterBean() throws ServletException {
@@ -109,6 +110,8 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
         if (applicationContext.containsBean(MimeType.BEAN_NAME)) {
             this.mimeTypes = applicationContext.getBean(MimeType.BEAN_NAME, MimeType[].class);
         }
+
+        composerMapping = applicationContext.getBean(ComposerMapping.BEAN_NAME, ComposerMapping.class);
         createStackTraceFilterer();
     }
 
@@ -158,8 +161,7 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
             Map backupParameters;
             try {
                 backupParameters = new HashMap(webRequest.getParams());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 LOG.error("Error creating params object: " + e.getMessage(), e);
                 backupParameters = Collections.EMPTY_MAP;
             }
@@ -187,8 +189,7 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                                 webRequest.setAttribute(GrailsApplicationAttributes.CONTROLLER_NAME_ATTRIBUTE, controller.getLogicalPropertyName(), WebRequest.SCOPE_REQUEST);
                             }
                         }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         if (e instanceof MultipartException) {
                             reapplySitemesh(request);
                             throw ((MultipartException)e);
@@ -213,40 +214,20 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                         }
                     } else if(viewName.endsWith(ZUL_SUFFIX)) {
                         RequestDispatcher dispatcher = request.getRequestDispatcher(viewName);
-                        /*
-                        HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request) {
-                            @Override
-                            public String getHeader(String s) {
-                                if(s.equalsIgnoreCase("Accept-Encoding"))
-                                    return "";
-                                else
-                                    return super.getHeader(s);
-                            }
-
-                            @Override
-                            public Enumeration<String> getHeaderNames() {
-                                Enumeration<String> e = super.getHeaderNames();
-                                List<String> list = new ArrayList<String>();
-                                while(e.hasMoreElements()) {
-                                    String s = e.nextElement();
-                                    if(s.equalsIgnoreCase("Accept-Encoding")) continue;
-                                    list.add(s);
-                                }
-                                return Collections.enumeration(list);
-                            }
-                        };
-                        */
                         dispatcher.forward(request, response);
                     } else {
-                        if (!renderViewForUrlMappingInfo(request, response, info, viewName)) {
+                        /*String zul = composerMapping.resolveZul(info.getControllerName());
+                        if(zul==null) {
+                            RequestDispatcher dispatcher = request.getRequestDispatcher(zul);
+                            dispatcher.forward(request, response);
+                        } else*/ if (!renderViewForUrlMappingInfo(request, response, info, viewName)) {
                             dispatched = false;
                         }
                     }
                     break;
                 }
-            }
-        }
-        finally {
+            } // for
+        } finally {
             WrappedResponseHolder.setWrappedResponse(null);
         }
 

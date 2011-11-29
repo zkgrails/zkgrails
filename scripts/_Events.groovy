@@ -42,6 +42,11 @@ eventSetClasspath = { classLoader ->
 }
 
 eventCreateWarStart = { warLocation, stagingDir ->
+
+    ant.copy(todir:"$stagingDir/WEB-INF/grails-app/zul/") {
+        fileset(dir:"$basedir/grails-app/zul")
+    }
+
     def supportZkGae
 
     //
