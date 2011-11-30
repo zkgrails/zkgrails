@@ -66,8 +66,11 @@ class ComposerMapping implements ApplicationContextAware, InitializingBean {
         //
         // map path to composer
         //
-        def key = grailsApplication.composerClasses.find { it.logicalPropertyName == composerPath }.fullName
-        return map[key.toLowerCase()]
+        def key = grailsApplication.composerClasses.find { it.logicalPropertyName == composerPath }?.fullName
+        if(key)
+            return map[key.toLowerCase()]
+        else
+            return null
     }
 
     @Override
