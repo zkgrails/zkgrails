@@ -35,8 +35,10 @@ grails.project.dependency.resolution = {
         compile ("org.zkoss.zk.grails:zul:${zkVersion}")
         compile ("org.zkoss.zk.grails:zkplus:${zkVersion}")
         compile ("org.zkoss.zk.grails:zhtml:${zkVersion}")
+        compile ("org.zkoss.zk.grails:zweb:${zkVersion}") {
+            excludes("javax.servlet:servlet-api:2.4")
+        }
 
-        compile ("org.zkoss.common:zweb:${zkVersion}")
         compile ("org.zkoss.zkforge:ckez:3.5.2.0")
 
         test ("com.h2database:h2:1.2.147")
@@ -48,7 +50,7 @@ grails.project.dependency.resolution = {
               ":svn:1.0.0.M1") {
             export = false
         }
-        compile(":resources:1.1.1") {
+        compile(":resources:1.0.2") {
             export = false
         }
     }
