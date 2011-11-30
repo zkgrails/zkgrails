@@ -91,6 +91,7 @@ public class CustomContentLoader extends ResourceLoader {
         if(!Environment.isWarDeployed()) {
             springResource = grailsApplication.getMainContext().getResource("file:./grails-app/zul" + si.path);
         } else {
+            // support only containers that expand WAR files
             String path = si.extra.getServletContext().getRealPath("WEB-INF") + "/grails-app/zul" + si.path;
             springResource = grailsApplication.getMainContext().getResource("file:/" + path);
         }
