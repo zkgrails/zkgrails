@@ -12,7 +12,7 @@ class UserComposer extends GrailsComposer {
             button(label:"B1.2")
             button(label:"B1.3")
         }
-
+        viewModel.user = new User(name:"test", lastName: "last")
         binds wnd
     }
 

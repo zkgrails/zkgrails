@@ -21,12 +21,13 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.core.io.DefaultResourceLocator;
 import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.zkoss.util.resource.Locator;
@@ -43,18 +44,18 @@ public class CustomContentLoader extends ResourceLoader {
     private static final String CONFIG_OPTION_GSP_ENCODING = "grails.views.gsp.encoding";
     private static final String CONFIG_ZKGRAILS_TAGLIB_DISABLE = "grails.zk.taglib.disabled";
 
+    private static final Log LOG = LogFactory.getLog(CustomContentLoader.class);
+
     private final WebApp webApp;
     private final ApplicationContext appCtx;
-    private DefaultResourceLocator grailsResourceLocator;
     private GrailsApplication grailsApplication;
-    private FileSystemResourceLoader defaultResourceLoader = new FileSystemResourceLoader();
 
     public CustomContentLoader(WebApp wapp) {
         webApp = wapp;
         WebApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext((ServletContext)wapp.getNativeContext());
         grailsApplication = ctx.getBean(GrailsApplication.APPLICATION_ID, GrailsApplication.class);
         appCtx = grailsApplication.getMainContext();
-        grailsResourceLocator = appCtx.getBean("grailsResourceLocator", DefaultResourceLocator.class);
+        appCtx.getBean("grailsResourceLocator", DefaultResourceLocator.class);
     }
 
     private class InternalResourceInfo {
@@ -79,7 +80,7 @@ public class CustomContentLoader extends ResourceLoader {
                 urlField.setAccessible(true);
                 this.url = (URL)urlField.get(src);
             } catch (Throwable e) {
-                System.out.println(e);
+                LOG.warn("InternalResourceInfo", e);
             }
         }
     }
@@ -89,29 +90,34 @@ public class CustomContentLoader extends ResourceLoader {
         final InternalResourceInfo si =new InternalResourceInfo(src);
         org.springframework.core.io.Resource springResource = null;
         if(!Environment.isWarDeployed()) {
-            springResource = grailsApplication.getMainContext().getResource("file:./grails-app/zul" + si.path);
+            final String path = "file:./grails-app/zul" + si.path;
+            springResource = grailsApplication.getMainContext().getResource(path);
+            LOG.debug("Get Spring Resource from: " + path);
         } else {
             // support only containers that expand WAR files
-            String path = si.extra.getServletContext().getRealPath("WEB-INF") + "/grails-app/zul" + si.path;
-            springResource = grailsApplication.getMainContext().getResource("file:/" + path);
+            final String path = "file:/" + si.extra.getServletContext().getRealPath("WEB-INF") + "/grails-app/zul" + si.path;
+            springResource = grailsApplication.getMainContext().getResource(path);
+            LOG.debug("Get Spring Resource in WAR mode from: " + path);
         }
 
         if(springResource != null) {
             try {
                 return parse(si.path, springResource, si.extra);
             } catch (Throwable e) {
-                // do nothing
+                LOG.debug("Cannot parse ZUL from springResource", e);
             }
         }
 
-        if (si.url != null)
+        if (si.url != null) {
+            LOG.debug("Load from URL: " + si.url );
             return parse(si.path, si.url, si.extra);
+        }
 
         if (!si.file.exists()) {
-            // if (D.ON && log.debugable()) log.debug("Not found: "+si.file);
+            LOG.debug("File " + si.file + " not found");
             return null; //File not found
         }
-        // if (D.ON && log.debugable()) log.debug("Loading "+si.file);
+
         try {
             return parse(si.path, si.file, si.extra);
         } catch (FileNotFoundException ex) {

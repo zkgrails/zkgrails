@@ -112,6 +112,7 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
         }
 
         composerMapping = applicationContext.getBean(ComposerMapping.BEAN_NAME, ComposerMapping.class);
+
         createStackTraceFilterer();
     }
 
@@ -184,7 +185,13 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                             final String controllerName = info.getControllerName();
                             GrailsClass controller = application.getArtefactForFeature(ControllerArtefactHandler.TYPE, WebUtils.SLASH + urlConverter.toUrlElement(controllerName) + WebUtils.SLASH + urlConverter.toUrlElement(action));
                             if (controller == null) {
-                                continue;
+                                String zul = composerMapping.resolveZul(controllerName);
+                                if(zul != null) {
+                                    RequestDispatcher dispatcher = request.getRequestDispatcher(zul);
+                                    dispatcher.forward(request, response);
+                                    dispatched = true;
+                                    break;
+                                }
                             } else {
                                 webRequest.setAttribute(GrailsApplicationAttributes.CONTROLLER_NAME_ATTRIBUTE, controller.getLogicalPropertyName(), WebRequest.SCOPE_REQUEST);
                             }
@@ -216,11 +223,7 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                         RequestDispatcher dispatcher = request.getRequestDispatcher(viewName);
                         dispatcher.forward(request, response);
                     } else {
-                        /*String zul = composerMapping.resolveZul(info.getControllerName());
-                        if(zul==null) {
-                            RequestDispatcher dispatcher = request.getRequestDispatcher(zul);
-                            dispatcher.forward(request, response);
-                        } else*/ if (!renderViewForUrlMappingInfo(request, response, info, viewName)) {
+                        if (!renderViewForUrlMappingInfo(request, response, info, viewName)) {
                             dispatched = false;
                         }
                     }

@@ -171,12 +171,10 @@ and seamlessly integrates them with Grails\' infrastructures.
             }
         }
 
-
         zkgrailsComposerMapping(ComposerMapping.class) { bean ->
             bean.scope = "singleton"
             bean.autowire = "byName"
         }
-
 
         // composer resolver which directly resolves Spring Beans
         ComposerResolver.init()
