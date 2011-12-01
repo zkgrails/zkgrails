@@ -1,5 +1,6 @@
 package org.zkoss.zk.grails.web
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import grails.util.GrailsNameUtils
@@ -31,7 +32,11 @@ class ComposerMapping implements ApplicationContextAware, InitializingBean {
 
     Map<String, String> map
 
-    def refresh() {
+    /**
+     * Construct a {@link Map} that contains mapping from a composer name to a file URI.
+     *
+     */
+    void refresh() {
         map = new ConcurrentHashMap<String, String>()
         Resource[] resources
         if(!Environment.isWarDeployed()) {
@@ -62,9 +67,16 @@ class ComposerMapping implements ApplicationContextAware, InitializingBean {
         }
     }
 
+    /**
+     * Map the composerPath to the related ZUL file.
+     *
+     * @param composerPath
+     * @return URI of the ZUL file
+     *
+     **/
     public String resolveZul(String composerPath) {
         //
-        // map path to composer
+        //
         //
         def key = grailsApplication.composerClasses.find { it.logicalPropertyName == composerPath }?.fullName
         if(key)
@@ -73,6 +85,9 @@ class ComposerMapping implements ApplicationContextAware, InitializingBean {
             return null
     }
 
+    /**
+     * After the bean is instantiated, the method {@link #refresh()} will be called.
+     **/
     @Override
     public void afterPropertiesSet() throws Exception {
         refresh()
