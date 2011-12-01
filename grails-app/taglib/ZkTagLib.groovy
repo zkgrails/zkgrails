@@ -17,6 +17,7 @@ import org.zkoss.util.Locales
 
 import org.zkoss.zk.fn.JspFns
 
+
 class ZkTagLib implements ApplicationContextAware {
 
     static namespace = "z"
@@ -112,8 +113,15 @@ class ZkTagLib implements ApplicationContextAware {
 
     def resource = { attrs ->
         def r = applicationContext.getBean("org.grails.plugin.resource.ResourceTagLib")
-        def result = r.resource(attrs)
-        out << result.replaceFirst(request.contextPath, "")
+        def result = r.resource(attrs).replaceFirst(request.contextPath, "")
+        //
+        // workaround for .png;jsessionid=72D569
+        //
+        def pos = result.lastIndexOf(";jsessionid=")
+        if(pos >= 0) {
+            result = result.substring(0, pos)
+        }
+        out << result
     }
 
     private cacheZul(url) {
