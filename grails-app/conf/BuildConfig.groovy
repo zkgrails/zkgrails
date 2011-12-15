@@ -15,11 +15,12 @@ grails.project.dependency.resolution = {
         grailsCentral()
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
-        // mavenCentral()
+        mavenCentral()
         // mavenLocal()
         // mavenRepo "http://snapshots.repository.codehaus.org"
         // mavenRepo "http://repository.codehaus.org"
         // mavenRepo "http://download.java.net/maven/2/"
+        mavenRepo "http://localhost:8081/artifactory/repo/"
         mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
         mavenRepo "http://mavensync.zkoss.org/maven2/"
     }
@@ -31,26 +32,26 @@ grails.project.dependency.resolution = {
             export = false
         }
 
-        compile ("org.zkoss.zk.grails:zk:${zkVersion}")
-        compile ("org.zkoss.zk.grails:zul:${zkVersion}")
-        compile ("org.zkoss.zk.grails:zkplus:${zkVersion}")
-        compile ("org.zkoss.zk.grails:zhtml:${zkVersion}")
-        compile ("org.zkoss.zk.grails:zweb:${zkVersion}") {
+        runtime "org.zkoss.zk.grails:zk:${zkVersion}"
+        runtime "org.zkoss.zk.grails:zul:${zkVersion}"
+        runtime "org.zkoss.zk.grails:zkplus:${zkVersion}"
+        runtime "org.zkoss.zk.grails:zhtml:${zkVersion}"
+        runtime ("org.zkoss.zk.grails:zweb:${zkVersion}") {
             excludes("javax.servlet:servlet-api:2.4")
         }
 
-        compile ("org.zkoss.zkforge:ckez:3.5.2.0")
+        runtime "org.zkoss.zkforge:ckez:3.5.2.0"
 
         test ("com.h2database:h2:1.2.147")
     }
 
     plugins {
         build(":tomcat:$grailsVersion",
-              ":release:1.0.0.RC3",
-              ":svn:1.0.0.M1") {
+              ":release:1.0.0",
+              ":svn:1.0.1") {
             export = false
         }
-        compile(":resources:1.0.2") {
+        runtime(":resources:1.1.5") {
             export = false
         }
     }
