@@ -5,13 +5,6 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import zk.UserComposer
 import org.zkoss.zul.*
 
-/**
- * Created by IntelliJ IDEA.
- * User: chanwit
- * Date: 11/5/11
- * Time: 7:59 PM
- * To change this template use File | Settings | File Templates.
- */
 class QueryWithDollarSignTests extends GrailsUnitTestCase {
 
     GrailsApplication grailsApplication

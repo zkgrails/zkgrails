@@ -13,7 +13,7 @@
     </hbox>
     
     <vbox>
-        <label>Name</label>
+        <label value="Name"/>
         <textbox id="txtName"/>
         <textbox id="txtLastName"/>
         <textbox id="txtFullName"/>

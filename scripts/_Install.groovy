@@ -40,20 +40,3 @@ if(! (new File(targetFile).exists())) {
            overwrite: true
   )
 }
-
-//
-// Issue #154 - create "zk-themes" dir
-//
-// def themesDir = "${basedir}/zk-themes/"
-// if(new File(themesDir).exists()==false) {
-//     ant.mkdir(dir: themesDir)
-// }
-
-//
-// always overwrite theme jars
-// inti the lib directory
-//
-// ant.copy(file:"${zkPluginDir}/src/templates/themes/breeze.jar",
-//          todir:"${basedir}/lib/",
-//          overwrite: true
-// )
