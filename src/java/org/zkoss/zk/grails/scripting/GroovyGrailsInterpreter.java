@@ -55,6 +55,7 @@ import org.zkoss.zkplus.spring.SpringUtil;
  * @author tomyeh
  * @author Chanwit Kaewkasi
  */
+@SuppressWarnings("unchecked")
 public class GroovyGrailsInterpreter extends GenericInterpreter {
 
     private static GroovyClassLoader GCL;
@@ -196,7 +197,7 @@ public class GroovyGrailsInterpreter extends GenericInterpreter {
             return Object.class;
         }
 
-        public Object invoke(Object obj, Object[] args) throws Exception {
+        public Object invoke(Object obj, Object... args) throws Exception {
             if (args == null)
                 return _closure.call();
             else
