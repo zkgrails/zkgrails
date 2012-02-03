@@ -4,7 +4,6 @@ grails.project.test.reports.dir = "target/test-reports"
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
 grails.project.dependency.resolution = {
-    def zkVersion = "5.0.9"
     // inherit Grails' default dependencies
     inherits("global") {
         // uncomment to disable ehcache
@@ -12,16 +11,17 @@ grails.project.dependency.resolution = {
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     repositories {
+        grailsHome()
         grailsCentral()
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         mavenCentral()
-        // mavenLocal()
+        mavenLocal()
         // mavenRepo "http://snapshots.repository.codehaus.org"
         // mavenRepo "http://repository.codehaus.org"
         // mavenRepo "http://download.java.net/maven/2/"
-        mavenRepo "http://localhost:8081/artifactory/repo/"
-        mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
+        // mavenRepo "http://localhost:8081/artifactory/repo/"
+        // mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
         mavenRepo "http://mavensync.zkoss.org/maven2/"
     }
     dependencies {
@@ -32,15 +32,14 @@ grails.project.dependency.resolution = {
             export = false
         }
 
-        runtime "org.zkoss.zk.grails:zk:${zkVersion}"
-        runtime "org.zkoss.zk.grails:zul:${zkVersion}"
-        runtime "org.zkoss.zk.grails:zkplus:${zkVersion}"
-        runtime "org.zkoss.zk.grails:zhtml:${zkVersion}"
-        runtime ("org.zkoss.zk.grails:zweb:${zkVersion}") {
-            excludes("javax.servlet:servlet-api:2.4")
-        }
+		def zkVersion = "6.0.0.FL.20120201"
 
-        runtime "org.zkoss.zkforge:ckez:3.5.2.0"
+        compile "org.zkoss.zk:zk:${zkVersion}"
+        compile "org.zkoss.zk:zul:${zkVersion}"
+        compile "org.zkoss.zk:zhtml:${zkVersion}"
+        compile "org.zkoss.zk:zkplus:${zkVersion}"
+        compile "org.zkoss.zk:zkbind:${zkVersion}"
+		compile "org.zkoss.zkforge:ckez:3.5.2.0"
 
         test ("com.h2database:h2:1.2.147")
     }
@@ -51,7 +50,7 @@ grails.project.dependency.resolution = {
               ":svn:1.0.1") {
             export = false
         }
-        runtime(":resources:1.1.5") {
+        runtime(":resources:1.1.6") {
             export = false
         }
     }
