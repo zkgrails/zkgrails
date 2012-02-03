@@ -81,7 +81,8 @@ ZKGrails adds and enhances the ZK\'s RIA capabilities
 and seamlessly integrates them with Grails\' infrastructures.
 '''
 
-    // URL to the plugin's documentation
+	def license = "LGPL"
+
     def documentation = "http://grails.org/plugin/zk"
 
     def doWithSpring = {
