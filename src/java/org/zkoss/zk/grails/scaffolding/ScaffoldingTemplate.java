@@ -8,6 +8,7 @@ public interface ScaffoldingTemplate {
     public static final String SCAFFOLDING_TEMPLATE = "zkgrailsScaffoldingTemplate";
 
     public void initComponents(Class<?> scaffoldClass,
-                                Component window, 
+                                Component window,
                                 GrailsApplication grailsApplication);
+
 }

@@ -32,7 +32,7 @@ import org.zkoss.zk.ui.util.ComposerExt;
 
 public class GrailsBindComposer<T extends Component, V> implements Composer<T>, ComposerExt<T>, Serializable, ApplicationContextAware {
 
-    private static final long serialVersionUID = 1463169907348730644L;
+    private static final long serialVersionUID = 5858943172681780132L;
 
     private static final String VM_ID = "$VM_ID$";
     private static final String BINDER_ID = "$BINDER_ID$";

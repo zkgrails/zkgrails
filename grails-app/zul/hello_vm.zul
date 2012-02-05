@@ -1,5 +1,5 @@
 <zk>
-    <window id="wnd" apply="bindComposer"
+    <window id="wnd" apply="org.zkoss.zk.grails.composer.GrailsBindComposer"
             viewModel="@id('vm') @init('helloVM')">
 
         <label id="lblMessage"/>

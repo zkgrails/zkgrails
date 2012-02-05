@@ -24,7 +24,7 @@ public class MessageHolder {
     public MessageHolder(Page page, HttpServletRequest request) {
         super();
         this.request = request;
-        ServletContext servletContext = (ServletContext)page.getDesktop().getWebApp().getNativeContext();
+        ServletContext servletContext = page.getDesktop().getWebApp().getServletContext();
         ApplicationContext ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
         messageSource = (MessageSource)ctx.getBean("messageSource");
         if(messageSource == null) {

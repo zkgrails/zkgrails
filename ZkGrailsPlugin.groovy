@@ -3,12 +3,11 @@ import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
 import grails.util.GrailsUtil
 import org.zkoss.zk.grails.livemodels.LiveModelBuilder
 import org.zkoss.zk.grails.livemodels.SortingPagingListModel
-import org.zkoss.zk.grails.select.Components
 import org.zkoss.zk.grails.web.ComposerMapping;
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.grails.*
 import org.zkoss.zk.grails.artefacts.*
-import org.zkoss.zk.grails.composer.GrailsBindComposer;
+import org.zkoss.zk.grails.composer.GrailsBindComposer
 import org.codehaus.groovy.runtime.InvokerHelper
 
 class ZkGrailsPlugin {
@@ -110,14 +109,13 @@ and seamlessly integrates them with Grails\' infrastructures.
             "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
                 bean.scope = "page"
                 bean.autowire = "byName"
-                id = viewModelClass.propertyName
             }
         }
 
         //
-        // Registering 'bindComposer'
+        // Registering 'GrailsBindComposer'
         //
-        bindComposer(GrailsBindComposer.class) { bean ->
+        "org.zkoss.zk.grails.composer.grailsBindComposer"(GrailsBindComposer.class) { bean ->
             bean.scope = 'prototype'
         }
 
@@ -132,10 +130,6 @@ and seamlessly integrates them with Grails\' infrastructures.
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
-                def viewModelBeanName = composerClass.propertyName.replace('Composer','ViewModel')
-                if(application.viewModelClasses.any { it.propertyName == viewModelBeanName }) {
-                    viewModel = ref(viewModelBeanName)
-                }
             }
         }
 
@@ -404,10 +398,6 @@ and seamlessly integrates them with Grails\' infrastructures.
                 "${composerBeanName}"(composerClass.clazz) { bean ->
                     bean.scope = "prototype"
                     bean.autowire = "byName"
-                    def viewModelBeanName = composerClass.propertyName.replace('Composer','ViewModel')
-                    if(application.viewModelClasses.any { it.propertyName == viewModelBeanName }) {
-                        viewModel = ref(viewModelBeanName)
-                    }
                 }
             }
 
