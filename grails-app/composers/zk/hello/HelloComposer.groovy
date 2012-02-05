@@ -2,8 +2,11 @@ package zk.hello
 
 import org.zkoss.zk.grails.composer.GrailsComposer
 import org.zkoss.zk.ui.select.annotation.Listen
+import org.zkoss.zk.ui.select.annotation.Wire
 
 class HelloComposer extends GrailsComposer {
+
+    @Wire lblMessage
 
     def afterCompose = { wnd ->
     }
@@ -13,11 +16,15 @@ class HelloComposer extends GrailsComposer {
     }
 
     def world(who) {
-        viewModel.message = "Hello World via Tag with $who"
+        if(who) {
+            lblMessage.value = "Hello World via Tag with who = $who"
+        } else {
+            lblMessage.value = "Hello World via Tag"
+        }
     }
 
     @Listen('onClick = #btnHello') showHello() {
-        viewModel.message = "Hello World"
+        lblMessage.value = "Hello World"
     }
 
 }
