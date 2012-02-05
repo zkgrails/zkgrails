@@ -24,7 +24,6 @@ class HangmanComposer extends GrailsComposer {
         viewModel.hangman = new Hangman()
         viewModel.hangman.init(['ABC','DEF','GHI'])
 
-        binds wnd
     }
 
     // @Listen(['onClick = #buttonRow1 > button','onClick = #buttonRow2 > button'])

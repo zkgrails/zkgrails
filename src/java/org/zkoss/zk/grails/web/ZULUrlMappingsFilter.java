@@ -124,6 +124,12 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
         UrlMappingsHolder holder = WebUtils.lookupUrlMappings(getServletContext());
 
         String uri = urlHelper.getPathWithinApplication(request);
+
+        if (uri.startsWith("/zkau")) {
+            processFilterChain(request, response, filterChain);
+            return;
+        }
+
         if (!"/".equals(uri) && noControllers() && noComposers() && noRegexMappings(holder)) {
             // not index request, no controllers, and no URL mappings for views, so it's not a Grails request
             processFilterChain(request, response, filterChain);

@@ -49,11 +49,8 @@ grails.project.dependency.resolution = {
     plugins {
         test ":selenium-rc:1.0.2"
         build(":tomcat:$grailsVersion",
-              ":release:1.0.0",
-              ":svn:1.0.1") {
-            export = false
-        }
-        runtime(":resources:1.1.6") {
+              ":release:1.0.1",
+              ":svn:1.0.2") {
             export = false
         }
     }

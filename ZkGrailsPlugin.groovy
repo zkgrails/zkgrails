@@ -3,10 +3,11 @@ import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
 import grails.util.GrailsUtil
 import org.zkoss.zk.grails.livemodels.LiveModelBuilder
 import org.zkoss.zk.grails.livemodels.SortingPagingListModel
-import org.zkoss.zk.grails.web.ComposerMapping;
+import org.zkoss.zk.grails.web.ComposerMapping
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.grails.*
 import org.zkoss.zk.grails.artefacts.*
+import org.zkoss.zk.grails.composer.GrailsComposer
 import org.zkoss.zk.grails.composer.GrailsBindComposer
 import org.codehaus.groovy.runtime.InvokerHelper
 
@@ -201,7 +202,7 @@ and seamlessly integrates them with Grails\' infrastructures.
         def grailsVersion = GrailsUtil.grailsVersion
 
         // Grails 1.3.x & Grails 2.0.x
-        def pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter"
+        def pageFilterClass = "org.zkoss.zk.grails.web.ZKGrailsPageFilter"
         def urlMappingFilterClass = "org.zkoss.zk.grails.web.ZULUrlMappingsFilter"
 
         if(grailsVersion.startsWith("2")) {
@@ -276,13 +277,6 @@ and seamlessly integrates them with Grails\' infrastructures.
                     return delegate.select(args[0], args[1])
             }
             throw new MissingMethodException(name, delegate.class, args)
-        }
-
-        Components.metaClass.methodMissing = { String name, args ->
-            for(c in delegate) {
-                InvokerHelper.invokeMethod(c, name, args)
-            }
-            return delegate
         }
 
         // Simpler way to add and remove event
