@@ -21,7 +21,7 @@ grails.project.dependency.resolution = {
         // mavenRepo "http://repository.codehaus.org"
         // mavenRepo "http://download.java.net/maven/2/"
         // mavenRepo "http://localhost:8081/artifactory/repo/"
-        // mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
+        mavenRepo "http://zkgrails.googlecode.com/svn/repo/"
         mavenRepo "http://mavensync.zkoss.org/maven2/"
     }
     dependencies {
@@ -32,19 +32,22 @@ grails.project.dependency.resolution = {
             export = false
         }
 
-		def zkVersion = "6.0.0.FL.20120201"
+        def zkVersion = "6.0.0.FL.20120201"
 
-        compile "org.zkoss.zk:zk:${zkVersion}"
-        compile "org.zkoss.zk:zul:${zkVersion}"
-        compile "org.zkoss.zk:zhtml:${zkVersion}"
-        compile "org.zkoss.zk:zkplus:${zkVersion}"
-        compile "org.zkoss.zk:zkbind:${zkVersion}"
-		compile "org.zkoss.zkforge:ckez:3.5.2.0"
+        runtime "org.zkoss.zk.grails:zk-grails-common:1.0.0.BUILD-SNAPSHOT"
+
+        runtime "org.zkoss.zk:zk:${zkVersion}"
+        runtime "org.zkoss.zk:zul:${zkVersion}"
+        runtime "org.zkoss.zk:zhtml:${zkVersion}"
+        runtime "org.zkoss.zk:zkplus:${zkVersion}"
+        runtime "org.zkoss.zk:zkbind:${zkVersion}"
+        runtime "org.zkoss.zkforge:ckez:3.5.2.0"
 
         test ("com.h2database:h2:1.2.147")
     }
 
     plugins {
+        test ":selenium-rc:1.0.2"
         build(":tomcat:$grailsVersion",
               ":release:1.0.0",
               ":svn:1.0.1") {

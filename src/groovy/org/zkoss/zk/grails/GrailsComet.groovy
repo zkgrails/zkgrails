@@ -1,6 +1,7 @@
 package org.zkoss.zk.grails;
 
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
+import org.zkoss.zk.grails.composer.GrailsComposer;
 
 
 class GrailsComet {

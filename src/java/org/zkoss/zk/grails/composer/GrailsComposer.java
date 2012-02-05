@@ -16,9 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-package org.zkoss.zk.grails;
+package org.zkoss.zk.grails.composer;
 
 import groovy.lang.Closure;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
@@ -26,35 +36,29 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.zkoss.util.Pair;
-import org.zkoss.zk.grails.databind.Attr;
-import org.zkoss.zk.grails.databind.Observable;
-import org.zkoss.zk.grails.select.ComponentUtil;
-import org.zkoss.zk.grails.select.Components;
-import org.zkoss.zk.grails.select.Selector;
+import org.zkoss.zk.grails.DesktopCounter;
+import org.zkoss.zk.grails.GrailsComet;
+import org.zkoss.zk.grails.MessageHolder;
+import org.zkoss.zk.grails.ZkBuilder;
 import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Desktop;
 import org.zkoss.zk.ui.Page;
-import org.zkoss.zk.ui.event.*;
+import org.zkoss.zk.ui.event.BookmarkEvent;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.ForwardEvent;
+import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.sys.ComponentsCtrl;
-import org.zkoss.zk.ui.util.GenericAutowireComposer;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkplus.spring.SpringUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
-
-public class GrailsComposer extends GenericForwardComposer {
+public class GrailsComposer extends GenericForwardComposer<Component> {
 
     private static final long serialVersionUID = -5307023773234300419L;
     private MessageHolder messageHolder = null;
 
     // inject
     private DesktopCounter desktopCounter;
-    private Object viewModel;
     // component holder for Selector
     private Component root;
 
@@ -64,32 +68,6 @@ public class GrailsComposer extends GenericForwardComposer {
     public GrailsComposer() {
         //default is true
         super('_', true, true);
-        try {
-            if (!shallSkipZscriptWiring()) {
-                Field ignoreZscript = GenericAutowireComposer.class.getDeclaredField("_ignoreZScript");
-                Field ignoreXel = GenericAutowireComposer.class.getDeclaredField("_ignoreXel");
-                ignoreZscript.setAccessible(true);
-                ignoreXel.setAccessible(true);
-                ignoreZscript.setBoolean(this, false);
-                ignoreXel.setBoolean(this, false);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void binds(Component comp) {
-        if(viewModel != null) {
-            ((GrailsViewModel)viewModel).binds(comp);
-        }
-    }
-
-    public void setViewModel(Object vm) {
-        this.viewModel = vm;
-    }
-
-    public Object getViewModel() {
-        return new Observable(this.viewModel, ((GrailsViewModel)this.viewModel).getBinder(), null);
     }
 
     public void setDesktopCounter(DesktopCounter dc) {
@@ -162,7 +140,7 @@ public class GrailsComposer extends GenericForwardComposer {
         this.root = comp;
         injectComet();
 
-        comp.addEventListener("onBookmarkChange", new org.zkoss.zk.ui.event.EventListener() {
+        comp.addEventListener("onBookmarkChange", new org.zkoss.zk.ui.event.EventListener<Event>() {
             public void onEvent(Event event) throws Exception {
                 BookmarkEvent be = (BookmarkEvent)event;
                 String hashtag = be.getBookmark();
@@ -177,41 +155,13 @@ public class GrailsComposer extends GenericForwardComposer {
         handleAfterComposeClosure(comp);
         handleScaffold(comp);
 
-        wireSelectorBasedHandler(comp);
+        Selectors.wireVariables(comp, this, null);
+        Selectors.wireEventListeners(comp, this);
     }
 
-    private Map<Pair, List<Method>> selectorBasedHandler = new HashMap<Pair, List<Method>>();
-    public List<Method> getSelectorBasedHandler(Pair pair) {
+    private Map<Pair<Component, String>, List<Method>> selectorBasedHandler = new HashMap<Pair<Component, String>, List<Method>>();
+    public List<Method> getSelectorBasedHandler(Pair<Component, String> pair) {
         return selectorBasedHandler.get(pair);
-    }
-
-    public void wireSelectorBasedHandler(Component comp) {
-        Method[] methods = this.getClass().getDeclaredMethods();
-        for (Method method : methods) {
-            if (method.isAnnotationPresent(Listen.class)) {
-                Listen h = method.getAnnotation(Listen.class);
-                String[] values = h.value();
-                for (String v : values) {
-                    int p = v.lastIndexOf(".");
-                    // TODO throw a proper exception when String is not in a correct format
-                    String pattern = v.substring(0, p);
-                    String eventName = v.substring(p + 1);
-                    Components components = Selector.select(pattern, comp);
-                    for (Component c : components) {
-                        c.addEventListener(eventName, this);
-                        Pair key = new Pair(c, eventName);
-                        List<Method> handlerMethods;
-                        if (selectorBasedHandler.containsKey(key) == false) {
-                            handlerMethods = new ArrayList<Method>();
-                            selectorBasedHandler.put(key, handlerMethods);
-                        } else {
-                            handlerMethods = selectorBasedHandler.get(key);
-                        }
-                        handlerMethods.add(method);
-                    }
-                }
-            }
-        }
     }
 
     private static final Method[] EMPTY_METHODS = new Method[]{};
@@ -219,7 +169,7 @@ public class GrailsComposer extends GenericForwardComposer {
         Method method = ComponentsCtrl.getEventMethod(cls, event.getName());
         if (method != null)
             return new Method[]{method};
-        List<Method> result = selectorBasedHandler.get(new Pair(event.getTarget(), event.getName()));
+        List<Method> result = selectorBasedHandler.get(new Pair<Component, String>(event.getTarget(), event.getName()));
         if (result == null)
             return EMPTY_METHODS;
         return result.toArray(new Method[result.size()]);
@@ -258,7 +208,7 @@ public class GrailsComposer extends GenericForwardComposer {
                     // one parameter, and annotation-less
                     if(anns.length == 1 && anns[0].length == 0) {
                         InvokerHelper.invokeMethod(controller, method.getName(), new Object[]{event});
-                    } else {
+                    }/* else {
                         Object[] params = new Object[anns.length];
                         int i = 0;
                         for(Annotation[] paramAnno: anns) {
@@ -272,7 +222,7 @@ public class GrailsComposer extends GenericForwardComposer {
                             i++;
                         }
                         InvokerHelper.invokeMethod(controller, method.getName(), params);
-                    }
+                    }*/
                 }
             }
         }
@@ -324,36 +274,13 @@ public class GrailsComposer extends GenericForwardComposer {
         } catch (BeansException e) { /* do nothing */}
     }
 
-    /**
-     * Issue #146 - Support for skip zscript wiring for better performance.
-     * 1st look at variable skipZscriptWiring on composer
-     * 2nd look at global config skipZscriptWiring on Config.
-     * If none specified default to false (don't skip wiring zscript variables) maintaining backward compatibility
-     * @return the check of ZScript wiring
-     */
-    private boolean shallSkipZscriptWiring() {
-        boolean shallSkipZscriptWiring;
-        Object skipZscriptWiringFromComposer = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "skipZscriptWiring");
 
-        if (skipZscriptWiringFromComposer != null &&
-                skipZscriptWiringFromComposer instanceof Boolean) {
-            shallSkipZscriptWiring = (Boolean) skipZscriptWiringFromComposer;
-        } else {
-            shallSkipZscriptWiring = ZkConfigHelper.skipZscriptWiring();
-        }
-
-        if (shallSkipZscriptWiring) {
-            return true;
-        }
-        return false;
+    public List<Component> select(String query) {
+        return Selectors.find(root, query);
     }
 
-    public Components select(String query) {
-        return Selector.select(query, root);
-    }
-
-    public Components select(String query, Iterable<Component> roots) {
-        return Selector.select(query, roots);
+    public List<Component> select(String query, Page page) {
+        return Selectors.find(page, query);
     }
 
 }

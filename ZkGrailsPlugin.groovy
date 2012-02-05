@@ -8,6 +8,7 @@ import org.zkoss.zk.grails.web.ComposerMapping;
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.grails.*
 import org.zkoss.zk.grails.artefacts.*
+import org.zkoss.zk.grails.composer.GrailsBindComposer;
 import org.codehaus.groovy.runtime.InvokerHelper
 
 class ZkGrailsPlugin {
@@ -81,7 +82,7 @@ ZKGrails adds and enhances the ZK\'s RIA capabilities
 and seamlessly integrates them with Grails\' infrastructures.
 '''
 
-	def license = "LGPL"
+    def license = "LGPL"
 
     def documentation = "http://grails.org/plugin/zk"
 
@@ -111,6 +112,13 @@ and seamlessly integrates them with Grails\' infrastructures.
                 bean.autowire = "byName"
                 id = viewModelClass.propertyName
             }
+        }
+
+        //
+        // Registering 'bindComposer'
+        //
+        bindComposer(GrailsBindComposer.class) { bean ->
+            bean.scope = 'prototype'
         }
 
         //
@@ -176,9 +184,6 @@ and seamlessly integrates them with Grails\' infrastructures.
             bean.scope = "singleton"
             bean.autowire = "byName"
         }
-
-        // composer resolver which directly resolves Spring Beans
-        ComposerResolver.init()
     }
 
     def doWithApplicationContext = { applicationContext ->

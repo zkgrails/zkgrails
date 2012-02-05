@@ -66,6 +66,8 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.util.UrlPathHelper;
 import org.zkoss.zk.grails.artefacts.ComposerArtefactHandler;
+import org.zkoss.zk.grails.web.ComposerMapping;
+import org.zkoss.zk.grails.web.ZULUrlMappingsFilter;
 
 /**
  * Uses the Grails UrlMappings to match and forward requests to a relevant controller and action.

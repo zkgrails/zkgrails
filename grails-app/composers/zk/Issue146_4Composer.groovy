@@ -1,6 +1,6 @@
 package zk
 
-import org.zkoss.zk.grails.GrailsComposer
+import org.zkoss.zk.grails.composer.GrailsComposer;
 
 class Issue146_4Composer extends GrailsComposer {
     def strZscript

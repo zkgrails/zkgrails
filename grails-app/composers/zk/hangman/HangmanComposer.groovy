@@ -1,9 +1,8 @@
 package zk.hangman
 
-import org.zkoss.zk.grails.GrailsComposer
-import org.zkoss.zk.grails.Listen
 import org.zkoss.zk.ui.Executions
-import org.zkoss.zk.grails.databind.Attr
+import org.zkoss.zk.ui.select.annotation.Listen
+import org.zkoss.zk.grails.composer.GrailsComposer
 
 class HangmanComposer extends GrailsComposer {
 
@@ -28,12 +27,13 @@ class HangmanComposer extends GrailsComposer {
         binds wnd
     }
 
-    @Listen(['#buttonRow1 > button.onClick','#buttonRow2 > button.onClick'])
-    def guess(@Attr('label') ch) {
+    // @Listen(['onClick = #buttonRow1 > button','onClick = #buttonRow2 > button'])
+    def guess(ch) {
         viewModel.hangman.guess(ch[0] as char)
     }
 
-    @Listen('#btnNewGame.onClick') newGame() {
+    @Listen('onClick = #btnNewGame') newGame() {
         Executions.sendRedirect 'index.zul'
     }
+
 }

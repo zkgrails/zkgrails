@@ -1,0 +1,8 @@
+<zk>
+    <window id="wnd" apply="bindComposer"
+            viewModel="@id('vm') @init('helloVM')">
+
+        <label id="lblMessage"/>
+        <button id="btnHello" label="Hello"/>
+    </window>
+</zk>

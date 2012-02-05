@@ -11,6 +11,11 @@ import org.zkoss.zk.ui.event.GenericEventListener;
 
 public class GrailsViewModel extends GenericEventListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6190273513182169664L;
+
     private DataBinder binder = new DataBinder(this);
 
     public static final String[] EXCLUDES = {"id", "class", "binder", "binding", "metaClass"};
@@ -18,7 +23,7 @@ public class GrailsViewModel extends GenericEventListener {
     private String id;
     public void setId(String value)  { this.id = value; }
     public String getId()            { return this.id;  }
-    
+
     public DataBinder getBinder() { return this.binder; }
 
     //
@@ -34,7 +39,7 @@ public class GrailsViewModel extends GenericEventListener {
         //
         // get static binding { }
         // and invoke to build binding
-        //        
+        //
         Object obj = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "binding");
         if(obj instanceof Closure) {
             Closure<?> c = ((Closure<?>)obj);

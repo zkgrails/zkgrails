@@ -2,7 +2,7 @@ package zk
 
 import org.zkoss.zkgrails.*
 
-class Issue142Composer extends org.zkoss.zk.grails.GrailsComposer {
+class Issue142Composer extends org.zkoss.zk.grails.composer.GrailsComposer {
 
     def issue142Comet
     def lblTest

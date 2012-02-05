@@ -3,6 +3,7 @@
     <system-config>
         <disable-event-thread/>
         <id-generator-class>org.zkoss.zk.grails.test.TestIdGenerator</id-generator-class>
+        <ui-factory-class>org.zkoss.zk.grails.ui.GrailsComposerFactory</ui-factory-class>
     </system-config>
     <listener>
         <description>ThreadLocal Synchronization Listener</description>

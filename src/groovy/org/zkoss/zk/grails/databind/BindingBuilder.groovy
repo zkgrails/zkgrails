@@ -2,6 +2,7 @@ package org.zkoss.zk.grails.databind
 
 import java.lang.reflect.Field
 import org.zkoss.zk.grails.GrailsViewModel
+import org.zkoss.zk.grails.composer.databind.DependsOn;
 import org.zkoss.zk.ui.Component
 
 class BindingBuilder {

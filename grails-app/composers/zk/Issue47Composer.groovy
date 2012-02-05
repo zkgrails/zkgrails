@@ -2,7 +2,7 @@ package zk
 
 import org.zkoss.zkgrails.*
 
-class Issue47Composer extends org.zkoss.zk.grails.GrailsComposer {
+class Issue47Composer extends org.zkoss.zk.grails.composer.GrailsComposer {
     
     static scaffold = true
 

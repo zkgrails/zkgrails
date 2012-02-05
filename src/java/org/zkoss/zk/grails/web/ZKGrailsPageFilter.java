@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.zkoss.zk.grails;
+package org.zkoss.zk.grails.web;
 
 import grails.util.GrailsWebUtil;
 
@@ -39,6 +39,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.util.UrlPathHelper;
+import org.zkoss.zk.grails.ZkConfigHelper;
 
 import com.opensymphony.module.sitemesh.Config;
 import com.opensymphony.module.sitemesh.DecoratorMapper;
