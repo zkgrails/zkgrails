@@ -34,14 +34,14 @@ grails.project.dependency.resolution = {
 
         def zkVersion = "6.0.0.FL.20120201"
 
-        runtime "org.zkoss.zk.grails:zk-grails-common:1.0.0.BUILD-SNAPSHOT"
+        compile "org.zkoss.zk.grails:zk-grails-common:1.0.0.BUILD-SNAPSHOT"
 
-        runtime "org.zkoss.zk:zk:${zkVersion}"
-        runtime "org.zkoss.zk:zul:${zkVersion}"
-        runtime "org.zkoss.zk:zhtml:${zkVersion}"
-        runtime "org.zkoss.zk:zkplus:${zkVersion}"
-        runtime "org.zkoss.zk:zkbind:${zkVersion}"
-        runtime "org.zkoss.zkforge:ckez:3.5.2.0"
+        compile "org.zkoss.zk:zk:${zkVersion}"
+        compile "org.zkoss.zk:zul:${zkVersion}"
+        compile "org.zkoss.zk:zhtml:${zkVersion}"
+        compile "org.zkoss.zk:zkplus:${zkVersion}"
+        compile "org.zkoss.zk:zkbind:${zkVersion}"
+        compile "org.zkoss.zkforge:ckez:3.5.2.0"
 
         test ("com.h2database:h2:1.2.147")
     }
@@ -51,6 +51,9 @@ grails.project.dependency.resolution = {
         build(":tomcat:$grailsVersion",
               ":release:1.0.1",
               ":svn:1.0.2") {
+            export = false
+        }
+        runtime(":resources:1.1.6") {
             export = false
         }
     }
