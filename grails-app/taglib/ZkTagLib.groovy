@@ -113,14 +113,7 @@ class ZkTagLib implements ApplicationContextAware {
 
     def resource = { attrs ->
         def r = applicationContext.getBean("org.grails.plugin.resource.ResourceTagLib")
-        def result = r.resource(attrs).replaceFirst(request.contextPath, "")
-        //
-        // workaround for .png;jsessionid=72D569
-        //
-        def pos = result.lastIndexOf(";jsessionid=")
-        if(pos >= 0) {
-            result = result.substring(0, pos)
-        }
+        String result = r.resource(attrs).replaceFirst(request.contextPath, "")
         out << result
     }
 

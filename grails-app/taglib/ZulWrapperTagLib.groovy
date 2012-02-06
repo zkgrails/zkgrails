@@ -24,10 +24,12 @@ class ZulWrapperTagLib implements ApplicationContextAware, InitializingBean {
     GrailsPluginManager pluginManager
 
     public void afterPropertiesSet() {
+        /*
         def config = applicationContext.getBean(GrailsApplication.APPLICATION_ID).config
         if (config.grails.views.enable.jsessionid instanceof Boolean) {
             useJsessionId = config.grails.views.enable.jsessionid
         }
+        */
     }
 
     def wrapper = { attrs, b ->
