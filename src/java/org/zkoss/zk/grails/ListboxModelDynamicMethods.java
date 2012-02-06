@@ -25,6 +25,7 @@ import java.util.*;
 
 public class ListboxModelDynamicMethods {
 
+    @SuppressWarnings("rawtypes")
     public static void setModel(Listbox delegate, Object list) {
         if(list instanceof Set) {
             ArrayList<Object> newList = new ArrayList<Object>();

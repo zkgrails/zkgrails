@@ -199,6 +199,11 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
                                     dispatcher.forward(request, response);
                                     dispatched = true;
                                     break;
+                                } else if(uri.endsWith(".zul")) {
+                                    RequestDispatcher dispatcher = request.getRequestDispatcher(uri);
+                                    dispatcher.forward(request, response);
+                                    dispatched = true;
+                                    break;
                                 }
                             } else {
                                 webRequest.setAttribute(GrailsApplicationAttributes.CONTROLLER_NAME_ATTRIBUTE, controller.getLogicalPropertyName(), WebRequest.SCOPE_REQUEST);
