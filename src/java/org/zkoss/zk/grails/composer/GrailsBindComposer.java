@@ -42,7 +42,7 @@ public class GrailsBindComposer<T extends Component, V> implements Composer<T>, 
     private final Map<String, Converter> _converters;
     private final Map<String, Validator> _validators;
 
-    @Autowired private ApplicationContext ctx;
+    @Autowired private ApplicationContext applicationContext;
 
     private static final String ID_ANNO = "id";
     private static final String INIT_ANNO = "init";
@@ -149,12 +149,12 @@ public class GrailsBindComposer<T extends Component, V> implements Composer<T>, 
         try {
             if(vm instanceof String){
                 String beanOrClassName = (String)vm;
-                if(ctx.containsBean(beanOrClassName)) {
-                    vm = (V)ctx.getBean(beanOrClassName);
+                if(applicationContext.containsBean(beanOrClassName)) {
+                    vm = (V)applicationContext.getBean(beanOrClassName);
                 } else {
                     Class<?> vmClass = comp.getPage().resolveClass(beanOrClassName);
                     try {
-                        vm = ctx.getBean(vmClass);
+                        vm = applicationContext.getBean(vmClass);
                     } catch(BeansException be) {
                         vm = vmClass;
                     }
@@ -285,7 +285,7 @@ public class GrailsBindComposer<T extends Component, V> implements Composer<T>, 
 
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        this.ctx = ctx;
+        this.applicationContext = ctx;
     }
 
 }

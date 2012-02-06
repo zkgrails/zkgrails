@@ -116,8 +116,9 @@ and seamlessly integrates them with Grails\' infrastructures.
         //
         // Registering 'GrailsBindComposer'
         //
-        "org.zkoss.zk.grails.composer.grailsBindComposer"(GrailsBindComposer.class) { bean ->
+        "grailsBindComposer"(GrailsBindComposer.class) { bean ->
             bean.scope = 'prototype'
+            bean.autowire = "byName"
         }
 
         //

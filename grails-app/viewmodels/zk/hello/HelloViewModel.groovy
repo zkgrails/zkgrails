@@ -1,11 +1,15 @@
 package zk.hello
 
+import org.zkoss.bind.annotation.Command
+import org.zkoss.bind.annotation.NotifyChange
+
 class HelloViewModel {
 
-    static binding = {
-        lblMessage value:"message"
-    }
+    String message = "default text"
 
-    String message
+    @NotifyChange(['message'])
+    @Command buttonClicked() {
+        message = "hello"
+    }
 
 }

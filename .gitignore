@@ -21,3 +21,4 @@ bin/
 # ViM swap files
 *.swp
 
+lib/
