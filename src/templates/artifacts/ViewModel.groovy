@@ -7,8 +7,7 @@ import org.zkoss.zk.ui.select.annotation.Wire
 class @artifact.name@ {
 
     String message
-
-    @Wire btnHello
+    @Wire  btnHello
 
     @NotifyChange(['message'])
     @Command clickMe() {

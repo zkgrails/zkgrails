@@ -18,7 +18,7 @@ target ('default': "Creates a new ViewModel") {
 	
 	def name = argsMap["params"][0]
 	name = name.replace('/', '.').replace('\\', '.')
-	
+
 	if(name.endsWith(TYPE))
 		name = name.substring(0, name.indexOf(TYPE))
 		

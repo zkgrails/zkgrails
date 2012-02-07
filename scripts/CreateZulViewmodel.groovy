@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2009 the original author or authors.
+ * Copyright 2011-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  *
  * @author Chanwit Kaewkasi
  *
- * @since 0.7
+ * @since 2.0
  */
 
 import grails.util.GrailsNameUtils
@@ -43,11 +43,11 @@ target ('default': "Creates a new zul page") {
     //
     // #110 - Removes the last Composer if user accidentally inputted
     //
-    if(name.endsWith("Composer"))
-        name = name.substring(0, name.indexOf("Composer"))
+    if(name.endsWith("ViewModel"))
+        name = name.substring(0, name.indexOf("ViewModel"))
 
-    def suffix = "Composer"
-    def artifactPath = "grails-app/composers"
+    def suffix = "ViewModel"
+    def artifactPath = "grails-app/viewmodels"
     createArtifact(name: name, suffix: suffix, type: suffix, path: artifactPath)
 
     def pkg = null
@@ -78,20 +78,20 @@ target ('default': "Creates a new zul page") {
 
     def propName  = GrailsNameUtils.getPropertyNameRepresentation(name)
     def className = GrailsNameUtils.getClassNameRepresentation(name)
-    def zulFile = "${basedir}/views/zul/${zulPkgPath}${propName}.zul"
+    def zulFile = "${basedir}/grails-app/zul/${zulPkgPath}${propName}.zul"
 
-    className = "${pkgPath.replace('/', '.')}${className}Composer"
-    propName  = "${pkgPath.replace('/', '.')}${propName}Composer"
+    className = "${pkgPath.replace('/', '.')}${className}ViewModel"
+    propName  = "${propName}ViewModel"
 
     ant.copy(
-        file:"${zkPluginDir}/src/templates/artifacts/template.zul",
+        file:"${zkPluginDir}/src/templates/artifacts/template_vm.zul",
         tofile: zulFile,
         overwrite: true
     )
     ant.replace(
         file: zulFile,
         token: "@artifact.name@",
-        value: className
+        value: propName
     )
 
     // Convert the given name into class name and property name
