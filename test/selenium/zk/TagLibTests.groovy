@@ -12,7 +12,7 @@ class TagLibTests extends GroovyTestCase {
             setSpeed "1000"
             open "/zk/taglib_tests.zul"
             def src = getAttribute("zk_comp_1@src")
-            assertTrue src.startsWith("/zk/static/images/grails_logo.png;")
+            assertTrue src.startsWith("/zk/static/images/grails_logo.png")
         }
     }
 

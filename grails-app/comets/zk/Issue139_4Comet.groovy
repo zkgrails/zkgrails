@@ -16,7 +16,7 @@ class Issue139_4Comet extends GrailsComet {
         i++
         lblTest4.value = "time4 : ${i}"
 
-        if(i == 5) {
+        if(i == 2) {
             i = 0
             stop()
         }
