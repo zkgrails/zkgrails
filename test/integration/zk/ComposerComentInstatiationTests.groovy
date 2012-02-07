@@ -1,5 +1,4 @@
-package zk;
-
+package zk
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 

@@ -1,6 +1,6 @@
 import org.zkoss.zkgrails.*
 
-class NonPackageComposer extends org.zkoss.zk.grails.GrailsComposer {
+class NonPackageComposer extends org.zkoss.zk.grails.composer.GrailsComposer {
 
     def btnAdd
 

@@ -2,7 +2,7 @@ package zk
 
 import org.zkoss.zkgrails.*
 
-class Issue74Composer extends org.zkoss.zk.grails.GrailsComposer {
+class Issue74Composer extends org.zkoss.zk.grails.composer.GrailsComposer {
     
     def lblUser
     def lblUser_2

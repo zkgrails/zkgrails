@@ -1,0 +1,10 @@
+<zk>
+    <window id="wnd" apply="grailsBindComposer"
+            viewModel="@id('vm') @init('helloViewModel')">
+
+        <label id="lblMessage" value="@bind(vm.message)"/>
+
+        <button id="btnHello" label="Hello" onClick="@command('buttonClicked')"/>
+
+    </window>
+</zk>

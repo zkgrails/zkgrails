@@ -24,7 +24,7 @@ public class MessageHolder {
     public MessageHolder(Page page, HttpServletRequest request) {
         super();
         this.request = request;
-        ServletContext servletContext = (ServletContext)page.getDesktop().getWebApp().getNativeContext();
+        ServletContext servletContext = page.getDesktop().getWebApp().getServletContext();
         ApplicationContext ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
         messageSource = (MessageSource)ctx.getBean("messageSource");
         if(messageSource == null) {
@@ -40,12 +40,11 @@ public class MessageHolder {
                );
     }
 
-    @SuppressWarnings("unchecked")
-    public String call(Map map) {
+    public String call(Map<?,?> map) {
 
         ObjectError error = (ObjectError)map.get("error");
         String code = (String)map.get("code");
-        List args   = (List)map.get("args");
+        List<?> args   = (List<?>)map.get("args");
 
         if(error != null) {
             String text;

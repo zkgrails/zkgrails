@@ -5,10 +5,11 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.ui.sys.ComponentsCtrl
 import org.springframework.web.context.support.WebApplicationContextUtils
+import org.zkoss.zk.ui.Component
 
 class ZkBuilder {
 
-    private static ZKNODES = new ConcurrentHashMap();
+    static Map<String,Component> ZKNODES = new ConcurrentHashMap();
 
     def page
     def parent
@@ -36,7 +37,7 @@ class ZkBuilder {
         // first try on LanguageDefinition
         // (might have custom/macro components on lang-addon.xml)
         //
-        def comdef = page.getLanguageDefinition().getComponentDefinitionIfAny(tag)
+        def comdef = page?.getLanguageDefinition()?.getComponentDefinitionIfAny(tag)
 
         //
         // if nothing on LanguageDefinition
@@ -55,7 +56,7 @@ class ZkBuilder {
 
     def methodMissing(String name, args) {
         if (!name.startsWith('on') && getTag(name)) {
-            def zkObject = null
+            def zkObject
             Closure closure = null
             switch (args.length) {
                 case 0:
@@ -109,6 +110,7 @@ class ZkBuilder {
         else if (!createEventListener(parent, name, args)) {
             throw new MissingMethodException(name, getClass(), args, false)
         }
+        throw new MissingMethodException(name, getClass(), args, false)
     }
 
     private createEventListener(zkObject, String name, args) {

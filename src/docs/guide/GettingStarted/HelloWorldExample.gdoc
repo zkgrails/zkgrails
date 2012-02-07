@@ -1,0 +1,39 @@
+After installing the ZK plugin for Grails, you can now start the Grails interactive shell by calling @grails@ on the prompt.
+{code}
+$ grails
+
+| Enter a script name to run. Use TAB for completion:
+grails>
+{code}
+
+To create the Hello World example, run the @create-zul@ command in the shell. Hint: pressing Tab key to complete the command.
+
+{code}
+grails> create-zul hello
+{code}
+
+This will create a ZUL file and its composer. The new ZUL file, namely hello.zul, will be put in the web-app directory. The composer namely @helloworld.HelloComposer@ in the @grails-app/composers@ directory.
+We now write a simple method to say "Hello World" via a message box. See the code in method @world@.
+
+{code}
+package helloworld
+
+class HelloComposer extends GrailsComposer {
+
+    def afterCompose = { wnd ->
+    }
+
+    def world() {
+        alert('Hello World')
+    }
+
+}
+{code}
+
+After that, the application can be run using the @run-app@ command. Simply type @run-app@ in the Grails' interactive shell.
+
+{code}
+grails> run-app
+{code}
+
+You can now point your web browser to @http://localhost:8080/helloworld/hello#world@ and you will see a message box saying "Hello World".

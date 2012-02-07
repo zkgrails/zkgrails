@@ -1,0 +1,15 @@
+Before using the ZK plugin, you are always required to install Grails. You can skip the fist step, if you already have Grails 2.0 installed on your machine.
+
+First, [download|http://grails.org/Download] a binary distribution of Grails 2.x. Unzip and set the @GRAILS_HOME@ environment variable to where you unzipped it. Then add the @bin@ directory to your @PATH@ variable. If you are not sure what to do, please refere to the Grails user guide [here|http://grails.org/doc/2.0.x/guide/gettingStarted.html#downloadingAndInstalling].
+
+Second, create a Grails application using the @create-app@ command. The following example is to create a Grails application named @helloworld@.
+
+{code:java}
+grails create-app helloworld
+{code}
+
+Finally, change into the newly created @helloworld@ directory. Then install the ZK plugin for Grails using the @install-plugin@ command.
+
+{code:java}
+grails install-plugin zk
+{code}

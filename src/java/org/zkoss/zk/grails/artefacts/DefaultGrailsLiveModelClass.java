@@ -29,8 +29,7 @@ public class DefaultGrailsLiveModelClass extends AbstractInjectableGrailsClass i
 
     public static final String LIVE_MODEL = "LiveModel";
 
-    @SuppressWarnings("unchecked")
-    public DefaultGrailsLiveModelClass(Class clazz) {
+    public DefaultGrailsLiveModelClass(@SuppressWarnings("rawtypes") Class clazz) {
         super(clazz, LIVE_MODEL);
     }
 }

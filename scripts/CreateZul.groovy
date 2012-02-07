@@ -78,7 +78,7 @@ target ('default': "Creates a new zul page") {
 
     def propName  = GrailsNameUtils.getPropertyNameRepresentation(name)
     def className = GrailsNameUtils.getClassNameRepresentation(name)
-    def zulFile = "${basedir}/web-app/${zulPkgPath}${propName}.zul"
+    def zulFile = "${basedir}/views/zul/${zulPkgPath}${propName}.zul"
 
     className = "${pkgPath.replace('/', '.')}${className}Composer"
     propName  = "${pkgPath.replace('/', '.')}${propName}Composer"

@@ -5,6 +5,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 //
 // Helper class to get the Url Mapping in the ZKPageFilter and ZkGrailsPlugin
 //
+@SuppressWarnings("deprecation")
 class ZkConfigHelper {
 
     //
@@ -25,12 +26,12 @@ class ZkConfigHelper {
     // Default to false to maintan backward compatibility.
     //
     static boolean skipZscriptWiring() {
-        def skipZscriptWiring = ConfigurationHolder.config?.grails.zk.skipZscriptWiring
+        def skipZscriptWiring = ConfigurationHolder.config?.grails?.zk?.skipZscriptWiring
 
         if(skipZscriptWiring != null) {
             return skipZscriptWiring
         }
-        
+
         return false
     }
 }

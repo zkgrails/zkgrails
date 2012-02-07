@@ -1,7 +1,5 @@
 import grails.util.Environment
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
@@ -19,30 +17,25 @@ import org.zkoss.util.Locales
 
 import org.zkoss.zk.fn.JspFns
 
-class ZkTagLib implements ApplicationContextAware, InitializingBean {
+
+class ZkTagLib implements ApplicationContextAware {
 
     static namespace = "z"
 
+    GrailsApplication grailsApplication
     ApplicationContext applicationContext
     GrailsPluginManager pluginManager
 
-    public void afterPropertiesSet() {
-        def config = applicationContext.getBean(GrailsApplication.APPLICATION_ID).config
-        if (config.grails.views.enable.jsessionid instanceof Boolean) {
-            useJsessionId = config.grails.views.enable.jsessionid
-        }
-    }
-    
     def wrapper = { attrs, b ->
         def url = attrs.remove('url')
         if (url == null) {
             url = "/${controllerName}/${actionName}.zul"
-        }        
+        }
         out << '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="-1" />    
+<meta http-equiv="Expires" content="-1" />
 '''
         out << JspFns.outZkHtmlTags(servletContext, request, response, null)
         out << "\n"
@@ -54,29 +47,6 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         out << "</html>"
     }
 
-/*
-    def head = { attrs, b ->
-        cacheZul(attrs['zul'])
-        out << "<head>\n"
-        out << "<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n"
-        out << "<meta http-equiv=\"Expires\" content=\"-1\" />\n"
-        out	<< b()
-        out << pageScope.model['head']
-        out << "</head>\n"
-    }
-
-    def body = { attrs, b ->
-        cacheZul(attrs['zul'])
-        out << "<body>\n"
-        out << b()
-        def autoHeight = attrs['autoHeight']
-        if(autoHeight==null || (autoHeight!=null && autoHeight=="true"))
-            out << pageScope.model['body']
-        else
-            out << pageScope.model['_body']
-        out << "</body>\n"
-    }
-*/
     def div = { attrs, b ->
         cacheZul(attrs['zul'])
         out << pageScope.model[attrs['part']]
@@ -141,66 +111,10 @@ class ZkTagLib implements ApplicationContextAware, InitializingBean {
         return u
     }
 
-    /**
-     * Check for "absolute" attribute and render server URL if available from Config or deducible in non-production
-     */
-    private handleAbsolute(attrs) {
-        def base = attrs.remove('base')
-        if (base) {
-            return base
-        }
-        else {
-            def abs = attrs.remove("absolute")
-            if (Boolean.valueOf(abs)) {
-                def u = makeServerURL()
-                if (u) {
-                    return u
-                } else {
-                    throwTagError("Attribute absolute='true' specified but no grails.serverURL set in Config")
-                }
-            }
-            else {
-                //
-                // return nothing because ZK will handle contextPath automatically
-                //
-                return "" // GrailsWebRequest.lookup(request).contextPath
-            }
-        }
-    }
-
-    def resource = { attrs, body ->
-        def result = resourceImpl(attrs)
+    def resource = { attrs ->
+        def r = applicationContext.getBean("org.grails.plugin.resource.ResourceTagLib")
+        String result = r.resource(attrs).replaceFirst(request.contextPath, "")
         out << result
-    }
-
-    def resourceImpl(attrs) {
-        def writer = new StringBuffer("")
-        writer << handleAbsolute(attrs)
-        def dir = attrs['dir']
-        if (attrs.plugin) {
-            def pp = pluginManager.getPluginPath(attrs.plugin)
-            writer << (pp ?: '')
-        }
-        else {
-            if (attrs.contextPath) {
-                writer << attrs.contextPath.toString()
-            }
-            else {
-                def pluginContextPath = pageScope.pluginContextPath
-                if (dir != pluginContextPath) {
-                    def pcp = pluginContextPath
-                    writer << (pcp ?: '')
-                }
-            }
-        }
-        if (dir) {
-            writer << (dir.startsWith("/") ? dir : "/${dir}")
-        }
-        def file = attrs['file']
-        if (file) {
-            writer << (file.startsWith("/") || dir?.endsWith('/') ? file : "/${file}")
-        }
-        return writer.toString()
     }
 
     private cacheZul(url) {

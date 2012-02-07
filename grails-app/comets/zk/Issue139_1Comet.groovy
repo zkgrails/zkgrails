@@ -14,7 +14,7 @@ class Issue139_1Comet extends org.zkoss.zk.grails.GrailsComet {
         i++
         lblTest1.value = "time1 : ${i}"
 
-        if(i == 5) {
+        if(i == 2) {
             i = 0
             stop()
         }

@@ -1,6 +1,9 @@
 class ZkUrlMappings {
 
     static excludes = ['/zkau/*']
-    static mappings = {}
+
+    static mappings = {
+        "/"(view:"/index.zul")
+    }
 
 }

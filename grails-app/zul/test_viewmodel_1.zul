@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<?page zscriptLanguage="GroovyGrails"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul"
+    xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
+
+<window id="wnd" apply="zk.UserComposer">
+    <hbox>
+        <image src="${z.resource(dir:'images', file:'grails_logo.png')}"/>
+    </hbox>
+    
+    <vbox>
+        <label value="Name"/>
+        <textbox id="txtName"/>
+        <textbox id="txtLastName"/>
+        <textbox id="txtFullName"/>
+        <vbox id="buttonHolder"/>
+    </vbox>
+</window>
+
+</zk>

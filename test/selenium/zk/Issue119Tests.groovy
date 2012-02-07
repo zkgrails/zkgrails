@@ -11,7 +11,8 @@ class Issue119Tests extends GroovyTestCase {
         selenium.with {
             setSpeed "1000"
             open "/zk/issue_119.zul"
-            assertEquals "/zk/images/grails_logo.png", getAttribute("zk_comp_1@src")
+            def src = getAttribute("zk_comp_1@src")
+            assertTrue src.startsWith("/zk/static/images/grails_logo.png")
         }
     }
 

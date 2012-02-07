@@ -1,17 +1,16 @@
-final ZK_THEMES_DIR = "${basedir}/zk-themes/"
-
 eventSetClasspath = { classLoader ->
 
     //
-    // support themes
+    // support themes:
+    // check if exists META-INF\maven\org.zkoss.theme in JAR file
     //
-    // if(new File(ZK_THEMES_DIR).exists()) {
-    //     println "Adding theme jars to class loader"
-    //     def themeJars = resolveResources("file:${ZK_THEMES_DIR}*.jar")
-    //     for(jar in themeJars) {
-    //         classLoader.addURL(jar.URL)
-    //     }
-    // }
+    def themeJars = resolveResources("file:${basedir}/lib/*.jar")
+    for(lib in themeJars) {
+        def themeDir = resolveResources("jar:${lib.getURL()}!/META-INF/maven/org.zkoss.theme")
+        if(themeDir.size() > 0 && themeDir[0].exists()) {
+            classLoader.addURL(lib.getURL())
+        }
+    }
 
     //
     // Issue #140 - Support sub-plugins for every plugin with 'zk' prefix.
@@ -21,8 +20,8 @@ eventSetClasspath = { classLoader ->
     //   println delegate.variables.each { k, v -> println k }
     //
     try {
-        def subPluginDirs = delegate.variables.collect { k, v -> 
-            if(k.startsWith("zk")      && 
+        def subPluginDirs = delegate.variables.collect { k, v ->
+            if(k.startsWith("zk")      &&
                k.endsWith("PluginDir") &&
                k != "zkPluginDir")
                 return v
@@ -30,7 +29,7 @@ eventSetClasspath = { classLoader ->
 
         subPluginDirs.each { dir ->
             if(new File("${dir}/lib/").exists()) {
-                println "Adding jars from ${dir} to the class loader"
+                // println "Adding jars from ${dir} to the class loader"
                 def eeJars = resolveResources("${dir}/lib/*.jar")
                 for(jar in eeJars) {
                     classLoader.addURL(jar.URL)
@@ -43,6 +42,11 @@ eventSetClasspath = { classLoader ->
 }
 
 eventCreateWarStart = { warLocation, stagingDir ->
+
+    ant.copy(todir:"$stagingDir/WEB-INF/grails-app/zul/") {
+        fileset(dir:"$basedir/grails-app/zul")
+    }
+
     def supportZkGae
 
     //
@@ -76,10 +80,4 @@ eventCreateWarStart = { warLocation, stagingDir ->
 """
     }
 
-    // Include ZK's themes in war. Issue #42
-    if (new File(ZK_THEMES_DIR).exists()) {
-        ant.copy(todir: new File(stagingDir, 'WEB-INF/lib')) {
-            fileset(dir: ZK_THEMES_DIR, includes: '*.jar')
-        }
-    }
 }

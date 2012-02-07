@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zk>
     <system-config>
-        <disable-event-thread/>
+        <ui-factory-class>org.zkoss.zk.grails.ui.GrailsComposerFactory</ui-factory-class>
         <id-generator-class>org.zkoss.zk.grails.test.TestIdGenerator</id-generator-class>
-    </system-config>    
+    </system-config>
     <listener>
         <description>ThreadLocal Synchronization Listener</description>
         <listener-class>org.zkoss.zkplus.util.ThreadLocalListener</listener-class>
@@ -26,6 +26,6 @@
     </preference>
     <library-property>
         <name>org.zkoss.zk.ui.metainfo.page.Loader.class</name>
-        <value>org.zkoss.web.util.resource.CustomContentLoader</value>
-    </library-property>    
+        <value>org.zkoss.web.util.resource.GrailsContentLoader</value>
+    </library-property>
 </zk>

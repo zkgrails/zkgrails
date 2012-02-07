@@ -1,6 +1,6 @@
 package zk
 
-import org.zkoss.zk.grails.GrailsComposer;
+import org.zkoss.zk.grails.composer.GrailsComposer;
 
 class MyComposer extends GrailsComposer {
 
@@ -10,6 +10,7 @@ class MyComposer extends GrailsComposer {
     def afterCompose = {    }
 
     def onClick_btnStart() {
+        println "start"
         myComet.start()
     }
 

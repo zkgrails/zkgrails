@@ -1,0 +1,16 @@
+<window id="wnd" apply="zk.hangman.HangmanComposer">
+    <vbox>
+        <hbox>
+            Number of Wrong Guess: <label id="lblCount" />
+        </hbox>
+        <image id="imgStep" />
+        <hbox>
+            The Word: <label id="lblAnswer" />
+        </hbox>
+        Chracters:
+        <hbox id="buttonRow1" />
+        <hbox id="buttonRow2" />
+        <box height="20px"/>
+        <label id="btnNewGame" value="New Game?" style="cursor: pointer; text-decoration: underline; color: maroon;"/>
+    </vbox>
+</window>

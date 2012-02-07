@@ -1,28 +1,21 @@
 import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
 
-import grails.util.Environment
 import grails.util.GrailsUtil
-
-import org.zkoss.zk.ui.event.EventListener
-
-import org.zkoss.zk.grails.ComposerResolver
-import org.zkoss.zk.grails.DesktopCounter
-import org.zkoss.zk.grails.ZkBuilder
 import org.zkoss.zk.grails.livemodels.LiveModelBuilder
-import org.zkoss.zk.grails.ListboxModelDynamicMethods
-import org.zkoss.zk.grails.artefacts.CometArtefactHandler
-import org.zkoss.zk.grails.artefacts.ComposerArtefactHandler
-import org.zkoss.zk.grails.artefacts.FacadeArtefactHandler
-import org.zkoss.zk.grails.artefacts.LiveModelArtefactHandler
-
 import org.zkoss.zk.grails.livemodels.SortingPagingListModel
-import org.zkoss.zk.grails.ZkConfigHelper
+import org.zkoss.zk.grails.web.ComposerMapping
+import org.zkoss.zk.ui.event.EventListener
+import org.zkoss.zk.grails.*
+import org.zkoss.zk.grails.artefacts.*
+import org.zkoss.zk.grails.composer.GrailsComposer
+import org.zkoss.zk.grails.composer.GrailsBindComposer
+import org.codehaus.groovy.runtime.InvokerHelper
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "1.1.BUILD-SNAPSHOT"
+    def version = "2.0.0.BUILD-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "1.2 > *"
+    def grailsVersion = "1.3 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
     def loadAfter = ['core', 'controllers']
@@ -32,6 +25,7 @@ class ZkGrailsPlugin {
         ComposerArtefactHandler,
         FacadeArtefactHandler,
         LiveModelArtefactHandler,
+        ViewModelArtefactHandler,
     ]
 
     def watchedResources = ["file:./grails-app/composers/**/*Composer.groovy",
@@ -41,21 +35,25 @@ class ZkGrailsPlugin {
                             "file:./grails-app/facade/**/*Facade.groovy",
                             "file:./plugins/*/grails-app/facade/**/*Facade.groovy",
                             "file:./grails-app/livemodels/**/*LiveModel.groovy",
-                            "file:./plugins/*/grails-app/livemodels/**/*LiveModel.groovy"]
-
+                            "file:./plugins/*/grails-app/livemodels/**/*LiveModel.groovy",
+                            "file:./grails-app/viewmodels/**/*ViewModel.groovy",
+                            "file:./plugins/*/grails-app/viewmodels/**/*ViewModel.groovy"
+                            ]
 
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/conf/Config.groovy",
-        "grails-app/conf/BuildConfig.groovy",
         "grails-app/conf/SeleniumConfig.groovy",
+        "grails-app/conf/TestUrlMappings.groovy",
         "grails-app/domain/zk/**",
+        "grails-app/services/zk/**",
         "grails-app/comets/**",
         "grails-app/controllers/zk/**",
         "grails-app/composers/**",
         "grails-app/facade/**",
         "grails-app/livemodels/**",
         "grails-app/views/**",
+        "grails-app/viewmodels/**",
         "grails-app/taglib/MyTagLib.groovy",
         "grails-app/i18n/*.properties",
         "web-app/css/**",
@@ -69,32 +67,57 @@ class ZkGrailsPlugin {
         "web-app/images/grails_*",
         "web-app/images/leftnav_*",
         "web-app/images/sp*",
-        "web-app/*.zul",
-        "test/**"
+        "web-app/**/*.zul",
+        "test/**",
+        "src/docs/**",
+        "src/java/org/zkoss/zk/grails/test/**"
     ]
 
-    // TODO Fill in these fields
-    def author = "chanwit"
+    def author = "Chanwit Kaewkasi"
     def authorEmail = "chanwit@gmail.com"
     def title = "ZKGrails: ZK plugin for Grails"
-    def description = '''\\
-Originated from Flyisland ZK Grails Plugin,
-this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails applications.
+    def description = '''
+Originated from Flyisland\'s ZK Plugin,
+ZKGrails adds and enhances the ZK\'s RIA capabilities
+and seamlessly integrates them with Grails\' infrastructures.
 '''
 
-    // URL to the plugin's documentation
+    def license = "LGPL"
+
     def documentation = "http://grails.org/plugin/zk"
 
     def doWithSpring = {
-
-        boolean developmentMode = !application.warDeployed
-        Environment env = Environment.current
-        // boolean enableReload = env.isReloadEnabled() || application.config.grails.gsp.enable.reload || (developmentMode && env == Environment.DEVELOPMENT)
-        // boolean warDeployedWithReload = application.warDeployed && enableReload
+        //
+        // Registering new scopes
+        //
+        desktopScope(org.zkoss.zk.grails.scope.DesktopScope)
+        pageScope   (org.zkoss.zk.grails.scope.PageScope   )
+        zkgrailsScopesConfigurer(org.springframework.beans.factory.config.CustomScopeConfigurer) {
+            scopes = ['desktop': ref('desktopScope'),
+                      'page'   : ref('pageScope')   ]
+        }
 
         // Registering desktopCounter
-        desktopCounter(DesktopCounter.class) { bean ->
+        desktopCounter(org.zkoss.zk.grails.DesktopCounter) { bean ->
             bean.scope = "singleton"
+            bean.autowire = "byName"
+        }
+
+        //
+        // Registering ViewModel Beans to support MVVM
+        //
+        application.viewModelClasses.each { viewModelClass ->
+            "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
+                bean.scope = "page"
+                bean.autowire = "byName"
+            }
+        }
+
+        //
+        // Registering 'GrailsBindComposer'
+        //
+        "grailsBindComposer"(GrailsBindComposer.class) { bean ->
+            bean.scope = 'prototype'
             bean.autowire = "byName"
         }
 
@@ -104,13 +127,12 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         application.composerClasses.each { composerClass ->
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
-                composerBeanName = composerClass.packageName + "." + composerBeanName
+                composerBeanName = "${composerClass.packageName}.${composerBeanName}"
             }
             "${composerBeanName}"(composerClass.clazz) { bean ->
                 bean.scope = "prototype"
                 bean.autowire = "byName"
             }
-
         }
 
         //
@@ -154,8 +176,10 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             }
         }
 
-        // composer resolver which directly resolves Spring Beans
-        ComposerResolver.init()
+        zkgrailsComposerMapping(ComposerMapping.class) { bean ->
+            bean.scope = "singleton"
+            bean.autowire = "byName"
+        }
     }
 
     def doWithApplicationContext = { applicationContext ->
@@ -168,32 +192,30 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         def supportExts = ZkConfigHelper.supportExtensions
 
         //
-        // e.g. ["*.zul", "/zkau/*"]
-        //
-        def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
-
-        //
         // e.g. ["*.zul", "*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
         //
-        def urls = supportExts.collect{ "*." + it } + ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
-
+        def urls = supportExts.collect { "*." + it } + ["*.dsp", "*.zhtml", "*.svg", "*.xml2html"]
 
         // quick hack for page filtering
         def pageFilter = xml.filter.find { it.'filter-name'.text() == 'sitemesh' }
+        def urlMappingFilter = xml.filter.find { it.'filter-name'.text() == 'urlMapping' }
 
         def grailsVersion = GrailsUtil.grailsVersion
 
         // Grails 1.3.x & Grails 2.0.x
-        def pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter"
-        if (grailsVersion.startsWith("1.2") || grailsVersion.startsWith("1.1")) {
-            pageFilterClass = "org.zkoss.zk.grails.ZKGrailsPageFilter12x"
-        }
-        if(grailsVersion.startsWith("2.0")) {
+        def pageFilterClass = "org.zkoss.zk.grails.web.ZKGrailsPageFilter"
+        def urlMappingFilterClass = "org.zkoss.zk.grails.web.ZULUrlMappingsFilter"
+
+        if(grailsVersion.startsWith("2")) {
             pageFilter.'filter-class'.replaceNode {
                 'filter-class'(pageFilterClass)
             }
+            urlMappingFilter.'filter-class'.replaceNode {
+                'filter-class'(urlMappingFilterClass)
+            }
         } else {
             pageFilter.'filter-class'.replaceBody(pageFilterClass)
+            urlMappingFilter.'filter-class'.replaceBody(urlMappingFilterClass)
         }
 
         def listenerElements = xml.'listener'[0]
@@ -215,11 +237,15 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                     'param-name' ("update-uri")
                     'param-value' ("/zkau")
                 }
+                'init-param' {
+                    'param-name' ("compress")
+                    'param-value' ("false")
+                }
                 'load-on-startup' (0)
             }
         }
 
-        urls.each {p ->
+        urls.each { p ->
             mappingElements + {
                 'servlet-mapping' {
                     'servlet-name'("zkLoader")
@@ -244,6 +270,16 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
 
     def doWithDynamicMethods = { ctx ->
 
+        GrailsComposer.metaClass.methodMissing = { String name, args ->
+            if(name=='$') {
+                if(args.size() == 1)
+                    return delegate.select(args[0])
+                else if(args.size() == 2)
+                    return delegate.select(args[0], args[1])
+            }
+            throw new MissingMethodException(name, delegate.class, args)
+        }
+
         // Simpler way to add and remove event
         org.zkoss.zk.ui.AbstractComponent.metaClass.propertyMissing = { String name, handler ->
             if(name.startsWith("on") && handler instanceof Closure) {
@@ -254,7 +290,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
         }
 
         // Simpler way to add and remove event
-        org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = {String name, args ->
+        org.zkoss.zk.ui.AbstractComponent.metaClass.methodMissing = { String name, args ->
             // converts OnXxxx to onXxxx
             name.metaClass.toEventName {return substring(indexOf("On"), length()).replace("On", "on")}
 
@@ -350,7 +386,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
             def composerClass = application.addArtefact(ComposerArtefactHandler.TYPE, event.source)
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
-                composerBeanName = composerClass.packageName + "." + composerBeanName
+                composerBeanName = "${composerClass.packageName}.${composerBeanName}"
             }
             // composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
@@ -405,8 +441,7 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                     log.debug("Application context not found. Can't reload")
                 return
             }
-            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE,
-                                                     event.source)
+            def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE, event.source)
             def cfg = GCU.getStaticPropertyValue(modelClass.clazz, "config")
             if(cfg) {
                 def lmb = new LiveModelBuilder()
@@ -426,10 +461,9 @@ this plugin adds ZK Ajax framework (www.zkoss.org) support to Grails application
                 }
             }
         }
+        // TODO else reload ViewModel
     }
 
     def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
     }
 }

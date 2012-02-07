@@ -5,10 +5,8 @@
 TODO.txt
 *.zip
 stacktrace.log
-docs/
 grails-app/i18n/
 .svn
-docs
 plugin.xml
 
 # IntelliJ IDEA project files
@@ -17,8 +15,10 @@ plugin.xml
 /out/
 
 target/
+target-eclipse/
 bin/
 
 # ViM swap files
 *.swp
 
+lib/

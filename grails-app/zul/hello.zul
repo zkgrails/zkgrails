@@ -1,0 +1,6 @@
+<zk>
+    <window id="wnd" apply="zk.hello.HelloComposer">
+        <label id="lblMessage"/>
+        <button id="btnHello" label="Hello"/>
+    </window>
+</zk>
