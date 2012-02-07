@@ -113,6 +113,7 @@ public class GrailsBindComposer<T extends Component, V> implements Composer<T>, 
         ValidationMessages _vmsgs = initValidationMessages(evalx, comp, _binder);
 
         //wire before call init
+        Selectors.wireComponents(comp, _viewModel, true);
         Selectors.wireVariables(comp, _viewModel, Selectors.newVariableResolvers(_viewModel.getClass(), null));
         if(_vmsgs!=null){
             ((BinderCtrl)_binder).setValidationMessages(_vmsgs);
