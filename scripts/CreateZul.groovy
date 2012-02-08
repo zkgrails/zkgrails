@@ -58,17 +58,17 @@ target ('default': "Creates a new zul page") {
     }
 
     // Convert the package into a file path.
-    
+
     def pkgPath = ''
     def zulPkgPath = ''
     if (pkg) {
         pkgPath = pkg.replace('.' as char, '/' as char)
         pkgPath += '/'
-        
+
         zulPkgPath = pkgPath
     }
     //
-    // #109 - Grails enforces use of package, we have to go along then    
+    // #109 - Grails enforces use of package, we have to go along then
     // #132 - Ignore #109 just for .zul files, to conform Grails' convention
     //
     else {
@@ -78,7 +78,7 @@ target ('default': "Creates a new zul page") {
 
     def propName  = GrailsNameUtils.getPropertyNameRepresentation(name)
     def className = GrailsNameUtils.getClassNameRepresentation(name)
-    def zulFile = "${basedir}/views/zul/${zulPkgPath}${propName}.zul"
+    def zulFile = "${basedir}/grails-app/zul/${zulPkgPath}${propName}.zul"
 
     className = "${pkgPath.replace('/', '.')}${className}Composer"
     propName  = "${pkgPath.replace('/', '.')}${propName}Composer"
