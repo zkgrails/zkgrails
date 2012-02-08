@@ -53,4 +53,20 @@ public class JQuery {
         return this
     }
 
+    def append(Closure builder) {
+        def comp = components?.get(0)
+        if(comp) {
+            comp.append builder
+        }
+        return this
+    }
+
+    def size() {
+        return components?.size()
+    }
+
+    def getLength() {
+        return components?.size()
+    }
+
 }

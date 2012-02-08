@@ -11,7 +11,7 @@ class QueryWithDollarSignTests extends GrailsUnitTestCase {
 
     void testQuery() {
         def appCtx = grailsApplication.getMainContext()
-        UserComposer userComposer = appCtx.getBean("zk.userComposer")
+        def userComposer = appCtx.getBean("zk.userComposer")
         assert userComposer != null
 
         ZkBuilder.ZKNODES['button'] = Button.class
@@ -26,7 +26,7 @@ class QueryWithDollarSignTests extends GrailsUnitTestCase {
             button(label:"B1.2")
             button(label:"B1.3")
         }
-        assert userComposer.$('#buttonHolder > button').size() == 3
+        assert userComposer.select('#buttonHolder > button').size() == 3
     }
 
 }

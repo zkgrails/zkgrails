@@ -280,7 +280,7 @@ public class GrailsComposer extends GenericForwardComposer<Component> {
         if(args.length == 1) {
             Object arg0 = args[0];
             if(arg0 instanceof String) {
-                return new JQuery(Selectors.find(page, (String)arg0));
+                return new JQuery(Selectors.find(root, (String)arg0));
             } else if(arg0 instanceof Component) {
                 ArrayList<Component> comps = new ArrayList<Component>();
                 comps.add((Component)arg0);
