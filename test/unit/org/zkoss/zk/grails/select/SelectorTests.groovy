@@ -5,6 +5,7 @@ import org.zkoss.zul.Button
 
 import org.zkoss.zul.Vbox
 import org.zkoss.zk.ui.Component
+import org.zkoss.zk.ui.select.Selectors
 
 class SelectorTests extends GroovyTestCase {
 
@@ -12,7 +13,7 @@ class SelectorTests extends GroovyTestCase {
         def wnd = new Window(id: 'wnd')
         def button = new Button(id:'test')
         wnd.appendChild(button)
-        def a = Selector.select('#test', wnd)
+        def a = Selectors.find(wnd, '#test')
         assert a.size()==1
         assert a[0] == button
         assert a[0].id == 'test'
@@ -24,7 +25,7 @@ class SelectorTests extends GroovyTestCase {
         def b2  = new Button(id: 'test2')
         wnd.appendChild(b1)
         wnd.appendChild(b2)
-        def a = Selector.select('button', wnd)
+        def a = Selectors.find(wnd, 'button')
         assert a.size()==2
         assert a[0] == b1
         assert a[1] == b2
@@ -39,7 +40,7 @@ class SelectorTests extends GroovyTestCase {
         vbox.id = 'box'
         wnd.appendChild(vbox)
         wnd.appendChild(b3)
-        def a = Selector.select('#box > button', wnd)
+        def a = Selectors.find(wnd, '#box > button')
         assert a.size()==2
         assert a[0] == b1
         assert a[1] == b2

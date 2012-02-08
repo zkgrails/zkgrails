@@ -7,9 +7,12 @@ import org.zkoss.zk.grails.web.ComposerMapping
 import org.zkoss.zk.ui.event.EventListener
 import org.zkoss.zk.grails.*
 import org.zkoss.zk.grails.artefacts.*
+import org.zkoss.zk.grails.composer.JQueryComposer
 import org.zkoss.zk.grails.composer.GrailsComposer
 import org.zkoss.zk.grails.composer.GrailsBindComposer
 import org.codehaus.groovy.runtime.InvokerHelper
+
+import org.zkoss.zk.grails.select.JQuery
 
 class ZkGrailsPlugin {
     // the plugin version
@@ -129,9 +132,18 @@ and seamlessly integrates them with Grails\' infrastructures.
             if(composerClass.packageName) {
                 composerBeanName = "${composerClass.packageName}.${composerBeanName}"
             }
-            "${composerBeanName}"(composerClass.clazz) { bean ->
-                bean.scope = "prototype"
-                bean.autowire = "byName"
+            Class clazz = composerClass.clazz
+            if(clazz.superclass == Script.class) {
+                "${composerBeanName}"(JQueryComposer.class) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                    innerComposer = clazz
+                }
+            } else {
+                "${composerBeanName}"(composerClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
             }
         }
 
@@ -270,14 +282,16 @@ and seamlessly integrates them with Grails\' infrastructures.
 
     def doWithDynamicMethods = { ctx ->
 
-        GrailsComposer.metaClass.methodMissing = { String name, args ->
-            if(name=='$') {
-                if(args.size() == 1)
-                    return delegate.select(args[0])
-                else if(args.size() == 2)
-                    return delegate.select(args[0], args[1])
+        application.composerClasses.each { composerClass ->
+            Class clazz = composerClass.clazz
+            if(clazz.superclass == Script.class) {
+                clazz.metaClass.methodMissing = { String name, args ->
+                    if(name=='$') {
+                        return composer.select(args)
+                    }
+                    throw new MissingMethodException(name, delegate.class, args)
+                }
             }
-            throw new MissingMethodException(name, delegate.class, args)
         }
 
         // Simpler way to add and remove event
@@ -390,9 +404,18 @@ and seamlessly integrates them with Grails\' infrastructures.
             }
             // composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
-                "${composerBeanName}"(composerClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
+                Class clazz = composerClass.clazz
+                if(clazz.superclass == Script.class) {
+                    "${composerBeanName}"(JQueryComposer.class) { bean ->
+                        bean.scope = "prototype"
+                        bean.autowire = "byName"
+                        innerComposer = clazz
+                    }
+                } else {
+                    "${composerBeanName}"(composerClass.clazz) { bean ->
+                        bean.scope = "prototype"
+                        bean.autowire = "byName"
+                    }
                 }
             }
 

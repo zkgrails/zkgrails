@@ -23,6 +23,7 @@ import groovy.lang.Closure;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.zkoss.zk.grails.GrailsComet;
 import org.zkoss.zk.grails.MessageHolder;
 import org.zkoss.zk.grails.ZkBuilder;
 import org.zkoss.zk.grails.scaffolding.ScaffoldingTemplate;
+import org.zkoss.zk.grails.select.JQuery;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Desktop;
 import org.zkoss.zk.ui.Page;
@@ -274,13 +276,26 @@ public class GrailsComposer extends GenericForwardComposer<Component> {
         } catch (BeansException e) { /* do nothing */}
     }
 
-
-    public List<Component> select(String query) {
-        return Selectors.find(root, query);
-    }
-
-    public List<Component> select(String query, Page page) {
-        return Selectors.find(page, query);
+    public JQuery select(Object[] args) {
+        if(args.length == 1) {
+            Object arg0 = args[0];
+            if(arg0 instanceof String) {
+                return new JQuery(Selectors.find(page, (String)arg0));
+            } else if(arg0 instanceof Component) {
+                ArrayList<Component> comps = new ArrayList<Component>();
+                comps.add((Component)arg0);
+                return new JQuery(comps);
+            } else if(arg0 instanceof List) {
+                return new JQuery((List<Component>)arg0);
+            }
+        } else if(args.length == 2) {
+            Object arg0 = args[0];
+            Object arg1 = args[1];
+            if(arg0 instanceof String && arg1 instanceof Page) {
+                throw new RuntimeException("NYI");
+            }
+        }
+        return null;
     }
 
 }

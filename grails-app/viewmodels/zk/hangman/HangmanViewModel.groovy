@@ -21,20 +21,16 @@ class HangmanViewModel {
         }
     }
 
-    def step = {
-        get {
-            "images/hangman/step${hangman.wrong}.gif"
-        }
+    String getStep() {
+        "images/hangman/step${hangman.wrong}.gif"
     }
 
-    def revealedWord = {
-        get {
-            def r=''
-            hangman.buffer.each {
-                r += "${it} "
-            }
-            return r
+    String getRevealedWord() {
+        def r=''
+        hangman.buffer.each {
+            r += "${it} "
         }
+        return r
     }
 
 }

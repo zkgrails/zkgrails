@@ -1,0 +1,6 @@
+<zk>
+    <window id="wnd" apply="zk.select.testComposer">
+        <label id="lblMessage"/>
+        <button id="button" label="Hello"/>
+    </window>
+</zk>

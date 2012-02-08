@@ -32,7 +32,7 @@ public class ListboxModelDynamicMethods {
             for(Object e: (Set<?>)list) {
                 newList.add(e);
             }
-            list = (java.util.List<?>)newList;
+            list = newList;
         }
 
         if(list instanceof java.util.List) {

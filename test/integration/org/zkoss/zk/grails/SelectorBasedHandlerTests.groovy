@@ -2,6 +2,7 @@ package org.zkoss.zk.grails
 
 import grails.test.GrailsUnitTestCase
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Window
 import zk.hangman.HangmanComposer
 import org.zkoss.zul.Vbox
@@ -25,7 +26,8 @@ class SelectorBasedHandlerTests extends GrailsUnitTestCase {
         wnd.appendChild(buttonRow2)
         def button1 = new Button(label:'test')
         buttonRow1.appendChild(button1)
-        hangmanComposer.wireSelectorBasedHandler(wnd)
+
+        Selectors.wireComponents(wnd, hangmanComposer, true)
 
         def pair1 = new Pair(button1,"onClick")
         def methods = hangmanComposer.getSelectorBasedHandler(pair1)
