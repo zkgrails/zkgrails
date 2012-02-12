@@ -68,5 +68,22 @@ public class JQuery {
     def getLength() {
         return components?.size()
     }
+    
+    def addClass(String styleClass) {
+        components.each { comp ->
+            if(comp.sclass.size() == 0) {
+                comp.sclass = styleClass
+            } else {
+                comp.sclass += (' ' + styleClass)
+            }
+        }
+        return this
+    }
 
+    def removeClass(String styleClass) {
+        throw new RuntimeException("NYI")        
+        components.each { comp ->            
+        }
+        return this
+    }
 }
