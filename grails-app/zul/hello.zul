@@ -1,6 +1,14 @@
 <zk>
+    <style>
+        .red {
+            color: red;
+        }
+        .underline {
+            text-decoration: underline;
+        }
+    </style>
     <window id="wnd" apply="zk.hello.HelloComposer">
-        <label id="lblMessage"/>
+        <label id="lblMessage">Hello World</label>
         <button id="btnHello" label="Hello"/>
     </window>
 </zk>

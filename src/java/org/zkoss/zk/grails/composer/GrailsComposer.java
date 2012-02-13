@@ -243,8 +243,7 @@ public class GrailsComposer extends GenericForwardComposer<Component> {
         try {
             ApplicationContext ctx = SpringUtil.getApplicationContext();
 
-            Object scaffold =
-                    GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
+            Object scaffold = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(this, "scaffold");
             if (scaffold != null) {
                 GrailsApplication app = ctx.getBean(
                         GrailsApplication.APPLICATION_ID,
@@ -273,7 +272,9 @@ public class GrailsComposer extends GenericForwardComposer<Component> {
                     template.initComponents((Class<?>) scaffold, comp, app);
                 }
             }
-        } catch (BeansException e) { /* do nothing */}
+        } catch (BeansException e) {
+            System.out.println("Warning : " + e.getMessage());
+        }
     }
 
     public JQuery select(Object[] args) {

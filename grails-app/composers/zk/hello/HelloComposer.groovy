@@ -24,7 +24,7 @@ class HelloComposer extends GrailsComposer {
     }
 
     @Listen('onClick = #btnHello') showHello() {
-        lblMessage.value = "Hello World"
+        select('#lblMessage').addClass("red underline").removeClass("underline")
     }
 
 }
