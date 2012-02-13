@@ -23,7 +23,7 @@ class ZkBuilder {
             def ctx  = WebApplicationContextUtils.getRequiredWebApplicationContext(p.desktop.webApp.nativeContext)
             z = ctx.getBean('ZkTagLib')
         }        
-        return z.resourceImpl(dir:dir, file: file)
+        return z.resource(dir:dir, file: file)
     }
 
     boolean getTag(String tag) {
