@@ -390,13 +390,15 @@ and seamlessly integrates them with Grails\' infrastructures.
     }
 
     def onChange = { event ->
+
+        def context = event.ctx
+        if (!context) {
+            if (log.isDebugEnabled())
+                log.debug("Application context not found. Can't reload")
+            return
+        }
+
         if (application.isArtefactOfType(ComposerArtefactHandler.TYPE, event.source)) {
-            def context = event.ctx
-            if (!context) {
-                if (log.isDebugEnabled())
-                    log.debug("Application context not found. Can't reload")
-                return
-            }
             def composerClass = application.addArtefact(ComposerArtefactHandler.TYPE, event.source)
             def composerBeanName = composerClass.propertyName
             if(composerClass.packageName) {
@@ -418,22 +420,20 @@ and seamlessly integrates them with Grails\' infrastructures.
                     }
                 }
             }
+            beanDefinitions.registerBeans(context)
 
-            //
-            // now that we have a BeanBuilder calling registerBeans and passing the app ctx will
-            // register the necessary beans with the given app ctx
-            beanDefinitions.registerBeans(event.ctx)
-
-            // Add the dynamic methods back to the class (since it's
-            // effectively a completely new class).
-            // event.manager?.getGrailsPlugin("zk")?.doWithDynamicMethods(event.ctx)
-        } else if (application.isArtefactOfType(FacadeArtefactHandler.TYPE, event.source)) {
-            def context = event.ctx
-            if (!context) {
-                if (log.isDebugEnabled())
-                    log.debug("Application context not found. Can't reload")
-                return
+        } else if(application.isArtefactOfType(ViewModelArtefactHandler.TYPE, event.source)) {
+            def viewModelClass = application.addArtefact(ViewModelArtefactHandler.TYPE, event.source)
+            def beanDefinitions = beans {
+                "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
+                    bean.scope = "page"
+                    bean.autowire = "byName"
+                }
             }
+
+            beanDefinitions.registerBeans(context)
+
+        } else if (application.isArtefactOfType(FacadeArtefactHandler.TYPE, event.source)) {
             def facadeClass = application.addArtefact(FacadeArtefactHandler.TYPE, event.source)
             def beanDefinitions = beans {
                 "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
@@ -441,14 +441,9 @@ and seamlessly integrates them with Grails\' infrastructures.
                     bean.autowire = "byName"
                 }
             }
-            beanDefinitions.registerBeans(event.ctx)
+            beanDefinitions.registerBeans(context)
+
         } else if (application.isArtefactOfType(CometArtefactHandler.TYPE, event.source)) {
-            def context = event.ctx
-            if (!context) {
-                if (log.isDebugEnabled())
-                    log.debug("Application context not found. Can't reload")
-                return
-            }
             def cometClass = application.addArtefact(CometArtefactHandler.TYPE, event.source)
             def beanDefinitions = beans {
                 "${cometClass.propertyName}"(cometClass.clazz) { bean ->
@@ -456,14 +451,9 @@ and seamlessly integrates them with Grails\' infrastructures.
                     bean.autowire = "byName"
                 }
             }
-            beanDefinitions.registerBeans(event.ctx)
+            beanDefinitions.registerBeans(context)
+
         } else if (application.isArtefactOfType(LiveModelArtefactHandler.TYPE, event.source)) {
-            def context = event.ctx
-            if (!context) {
-                if (log.isDebugEnabled())
-                    log.debug("Application context not found. Can't reload")
-                return
-            }
             def modelClass = application.addArtefact(LiveModelArtefactHandler.TYPE, event.source)
             def cfg = GCU.getStaticPropertyValue(modelClass.clazz, "config")
             if(cfg) {
@@ -480,11 +470,10 @@ and seamlessly integrates them with Grails\' infrastructures.
                             map = lmb.map.clone()
                         }
                     }
-                    beanDefinitions.registerBeans(event.ctx)
+                    beanDefinitions.registerBeans(context)
                 }
             }
         }
-        // TODO else reload ViewModel
     }
 
     def onConfigChange = { event ->
