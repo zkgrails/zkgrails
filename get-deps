@@ -1,6 +1,6 @@
 rm -Rf ./lib/*.jar
 cp ../zkgrails-common/target/zk*.jar ./lib/zk-grails-common.jar
-wget http://downloads.sourceforge.net/project/zk1/ZK%20Freshly/zk-6.0.0/zk-6.0.0-FL-2012-02-13/zk-bin-6.0.0-FL-2012-02-13.zip -O zkce.zip
+# wget http://downloads.sourceforge.net/project/zk1/ZK%20Freshly/zk-6.0.0/zk-6.0.0-FL-2012-02-13/zk-bin-6.0.0-FL-2012-02-13.zip -O zkce.zip
 unzip -j zkce.zip z*.jar -x *-sources.jar -d ./lib/
 rm zkce.zip
 rm ./lib/sapphire.jar
