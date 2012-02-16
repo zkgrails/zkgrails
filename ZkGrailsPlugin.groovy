@@ -404,7 +404,6 @@ and seamlessly integrates them with Grails\' infrastructures.
             if(composerClass.packageName) {
                 composerBeanName = "${composerClass.packageName}.${composerBeanName}"
             }
-            // composerBeanName = composerBeanName.replace('.', '_')
             def beanDefinitions = beans {
                 Class clazz = composerClass.clazz
                 if(clazz.superclass == Script.class) {
