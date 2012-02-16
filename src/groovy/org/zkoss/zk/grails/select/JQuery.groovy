@@ -93,4 +93,20 @@ public class JQuery {
         }
         return this
     }
+
+    def attr(String name) {
+        def comp = components?.get(0)
+        if(comp) {
+            return comp."$name"
+        }
+        return null
+    }
+
+    def attr(String name, def value) {
+        components.each { comp ->
+            comp."$name" = value
+        }
+        return this
+    }
+
 }
