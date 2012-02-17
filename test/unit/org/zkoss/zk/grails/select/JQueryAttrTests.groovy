@@ -26,4 +26,25 @@ class JQueryAttrTests extends GroovyTestCase {
         assert b2.label == 'changed'
     }
 
+    def testJQueryAttr_2() {
+        Button b1 = new Button(id:'myButton1',label:'OK')
+        Button b2 = new Button(id:'myButton2',label:'Cancel')
+        new JQuery([b1, b2]).attr(label:'changed', width: '100')
+
+        assert b1.label == 'changed'
+        assert b1.width == '100'
+        assert b2.label == 'changed'
+        assert b2.width == '100'
+    }
+
+    def testJQueryAttr_3() {
+        Button b1 = new Button(id:'myButton1',label:'OK')
+        Button b2 = new Button(id:'myButton2',label:'Cancel')
+        new JQuery([b1, b2]).attr('label', { i, val ->
+            return val + "_changed"
+        });
+        assert b1.label == 'OK_changed'
+        assert b2.label == 'Cancel_changed'
+    }
+
 }

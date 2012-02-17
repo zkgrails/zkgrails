@@ -109,4 +109,20 @@ public class JQuery {
         return this
     }
 
+    def attr(Map map) {
+        map.each { k, v ->
+            attr(k, v)
+        }
+        return this
+    }
+
+    def attr(String name, Closure c) {
+        components.eachWithIndex { comp, i ->
+            def newVal = c.call(i, comp."$name")
+            if(newVal) {
+                comp."$name" = newVal
+            }
+        }
+        return this
+    }
 }
