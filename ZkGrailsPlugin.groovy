@@ -16,7 +16,7 @@ import org.zkoss.zk.grails.select.JQuery
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "2.0.0.BUILD-SNAPSHOT"
+    def version = "2.0.0.M5"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
@@ -391,6 +391,8 @@ and seamlessly integrates them with Grails\' infrastructures.
 
     def onChange = { event ->
 
+        if(event.source instanceof Class == false) return
+
         def context = event.ctx
         if (!context) {
             if (log.isDebugEnabled())
@@ -408,14 +410,14 @@ and seamlessly integrates them with Grails\' infrastructures.
                 Class clazz = composerClass.clazz
                 if(clazz.superclass == Script.class) {
                     "${composerBeanName}"(JQueryComposer.class) { bean ->
-                        bean.scope = "prototype"
-                        bean.autowire = "byName"
+                        bean.scope = 'prototype'
+                        bean.autowire = 'byName'
                         innerComposer = clazz
                     }
                 } else {
                     "${composerBeanName}"(composerClass.clazz) { bean ->
-                        bean.scope = "prototype"
-                        bean.autowire = "byName"
+                        bean.scope = 'prototype'
+                        bean.autowire = 'byName'
                     }
                 }
             }
@@ -425,8 +427,8 @@ and seamlessly integrates them with Grails\' infrastructures.
             def viewModelClass = application.addArtefact(ViewModelArtefactHandler.TYPE, event.source)
             def beanDefinitions = beans {
                 "${viewModelClass.propertyName}"(viewModelClass.clazz) { bean ->
-                    bean.scope = "page"
-                    bean.autowire = "byName"
+                    bean.scope = 'page'
+                    bean.autowire = 'byName'
                 }
             }
 
@@ -436,8 +438,8 @@ and seamlessly integrates them with Grails\' infrastructures.
             def facadeClass = application.addArtefact(FacadeArtefactHandler.TYPE, event.source)
             def beanDefinitions = beans {
                 "${facadeClass.propertyName}"(facadeClass.clazz) { bean ->
-                    bean.scope = "session"
-                    bean.autowire = "byName"
+                    bean.scope = 'session'
+                    bean.autowire = 'byName'
                 }
             }
             beanDefinitions.registerBeans(context)
@@ -446,8 +448,8 @@ and seamlessly integrates them with Grails\' infrastructures.
             def cometClass = application.addArtefact(CometArtefactHandler.TYPE, event.source)
             def beanDefinitions = beans {
                 "${cometClass.propertyName}"(cometClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
+                    bean.scope = 'prototype'
+                    bean.autowire = 'byName'
                 }
             }
             beanDefinitions.registerBeans(context)
@@ -463,9 +465,9 @@ and seamlessly integrates them with Grails\' infrastructures.
                 if (lmb.map['model'] == 'page') {
                     def beanDefinitions = beans {
                         "${modelClass.propertyName}"(SortingPagingListModel.class) { bean ->
-                            bean.scope = "prototype"
-                            bean.autowire = "byName"
-                            bean.initMethod = "init"
+                            bean.scope = 'prototype'
+                            bean.autowire = 'byName'
+                            bean.initMethod = 'init'
                             map = lmb.map.clone()
                         }
                     }
