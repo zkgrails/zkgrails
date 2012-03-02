@@ -278,6 +278,32 @@ and seamlessly integrates them with Grails\' infrastructures.
                 'url-pattern'("/zkau/*")
             }
         }
+
+        final String GOSIV_CLASS = "org.zkoss.zk.grails.web.ZKGrailsOpenSessionInViewFilter"
+
+        //
+        // e.g. ["*.zul", "/zkau/*"]
+        //
+        def filterUrls = supportExts.collect{ "*." + it } + ["/zkau/*"]
+
+        // adding GrailsOpenSessionInView
+        def filterElements = xml.'filter'[0]
+        filterElements + {
+            'filter' {
+                'filter-name' ("GOSIVFilter")
+                'filter-class' (GOSIV_CLASS)
+            }
+        }
+        // filter for each ZK urls
+        def filterMappingElements = xml.'filter-mapping'[0]
+        filterUrls.each {p ->
+            filterMappingElements + {
+                'filter-mapping' {
+                    'filter-name'("GOSIVFilter")
+                    'url-pattern'("${p}")
+                }
+            }
+        }
     }
 
     def doWithDynamicMethods = { ctx ->
