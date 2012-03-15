@@ -16,7 +16,7 @@ import org.zkoss.zk.grails.select.JQuery
 
 class ZkGrailsPlugin {
     // the plugin version
-    def version = "2.0.0.BUILD-SNAPSHOT"
+    def version = "2.0.0.M6"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
@@ -370,20 +370,6 @@ and seamlessly integrates them with Grails\' infrastructures.
             closure.delegate = new ZkBuilder(parent: delegate)
             closure.resolveStrategy = Closure.OWNER_FIRST
             closure.call()
-        }
-
-        org.zkoss.zul.Listbox.metaClass.clear = { ->
-            while (delegate.itemCount > 0) {
-                delegate.removeItemAt(0)
-            }
-        }
-
-        org.zkoss.zul.Listbox.metaClass.setModel = { list ->
-            ListboxModelDynamicMethods.setModel(delegate, list)
-        }
-
-        org.zkoss.zul.Listbox.metaClass.getModel = { ->
-            delegate.getModel()
         }
 
         org.zkoss.zul.AbstractListModel.metaClass.getAt = { Integer i ->
