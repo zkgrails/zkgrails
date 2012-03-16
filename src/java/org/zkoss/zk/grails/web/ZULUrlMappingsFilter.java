@@ -125,7 +125,9 @@ public class ZULUrlMappingsFilter extends OncePerRequestFilter {
 
         String uri = urlHelper.getPathWithinApplication(request);
 
-        if (uri.startsWith("/zkau") || uri.startsWith("/dbconsole")) {
+        if (uri.startsWith("/zkau") || 
+            uri.startsWith("/dbconsole") || 
+            uri.startsWith("~.")) {
             processFilterChain(request, response, filterChain);
             return;
         }
