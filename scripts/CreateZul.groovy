@@ -105,4 +105,5 @@ target ('default': "Creates a new zul page") {
         token: "@artifact.name.prop@",
         value: propName
     )
+    createUnitTest(name: name, suffix: "Composer")
 }

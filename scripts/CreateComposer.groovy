@@ -69,7 +69,7 @@ target ('default': "Creates a new composer") {
     //
     // #109 - Grails enforces use of package, we have to go along then
     //
-	def filename = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/" + GrailsNameUtils.getClassName(name, type)
+    def filename = (config.grails.project.groupId ?: grailsAppName).replace('-','/').toLowerCase() + "/" + GrailsNameUtils.getClassName(name, type)
     if(pkg)
         filename = pkgPath + GrailsNameUtils.getClassName(name, type)
 
@@ -79,4 +79,5 @@ target ('default': "Creates a new composer") {
         token: "@artifact.name.prop@",
         value: propName
     )
+    createUnitTest(name: name, suffix: TYPE)
 }
